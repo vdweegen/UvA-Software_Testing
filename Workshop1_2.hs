@@ -2,6 +2,9 @@ import Prelude
 import Test.QuickCheck
 
 -- QuickCheck implementation of Workshop 1, exercise 2
+-- time spent: 30 minutes
+-- reason: Initial trial / error of QuickCheck
+
 main = quickCheck prop_Compare
 
 prop_Compare (Positive n) = summedSquaredListOfNumbers n == otherSquaredListOfNumbers n

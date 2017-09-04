@@ -1,7 +1,10 @@
 import Prelude
 import Test.QuickCheck
 
--- QuickCheck implementation of Workshop 1, exercise 3
+-- QuickCheck implementation of Workshop 1, exercise 3 
+-- time spent: < 10 minutes
+-- reason: Nearly identical to Previous exercise
+
 main = quickCheck prop_Compare
 
 prop_Compare (Positive n) = summedThirdPowerListOfNumbers n == otherThirdPowerListOfNumbers n
