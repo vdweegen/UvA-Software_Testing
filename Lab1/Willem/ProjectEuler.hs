@@ -22,3 +22,20 @@ solution10 = sum ( takeWhile (< 2000000) primes )
 
 solution9 :: Integer
 solution9 = head [a * b * c | a <- [1..1000], b <- [a..1000], let c = 1000 - a -b, a^2 + b^2 == c^2]
+
+-- Reusing reversal from exercise
+reversal :: Integer -> Integer
+reversal = read . reverse . show
+
+-- helper method to check if reversal is also prime
+primeReverse :: Integer -> Bool
+primeReverse n = prime n && prime (reversal n)
+
+-- simply filter the list
+solution5a :: [Integer]
+solution5a = filter primeReverse [0..9999]
+
+-- bit more efficient, instead of first generating the entire list,
+-- now only create a list with the correct values on the fly
+solution5b :: [Integer]
+solution5b = [a | a <- [1..9999], primeReverse a]
