@@ -74,7 +74,11 @@ result3 = quickCheckResult(\n -> n >= 0 --> base3 n == induction3 n)
 
 -- Assignment 5 --
 
+-- TODO
+
 -- Assignment 6 --
+
+-- TODO
 
 -- Assignment 7 --
 toDigits :: Integer -> [Integer]
@@ -138,3 +142,5 @@ result7 = do
   print(isMaster 53029243834379)
 
 -- Assignment 8 --
+
+-- TODO
