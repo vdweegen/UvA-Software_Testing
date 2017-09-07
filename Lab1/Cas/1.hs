@@ -25,7 +25,7 @@ main = do
     putStrLn $ "Assignment 2"
     result2
     putStrLn $ "Assignment 3"
-    -- TODO
+    result3
     putStrLn $ "Assignment 4"
     -- TODO
     putStrLn $ "Assignment 5"
@@ -61,6 +61,11 @@ induction2 = \n -> length(subsequences[1..n])
 result2 = quickCheckResult(\n -> n >= 0 --> induction2 n == base2 n)
 
 -- Assignment 3 --
+base3 :: Int -> Int
+induction3 :: Int -> Int
+base3 = \n -> length(permutations [1..n])
+induction3 = \n -> product([1..n])
+result3 = quickCheckResult(\n -> n >= 0 --> base3 n == induction3 n)
 
 -- Assignment 4 --
 
