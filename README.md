@@ -17,7 +17,7 @@ runhaskell <program>.hs
 ```
 
 # Assignments
-# Assignment 1
+## Assignment 1
 ### Exercise 1.1
 TODO
 ### Exercise 1.2
