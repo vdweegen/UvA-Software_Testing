@@ -3,6 +3,9 @@ import Data.List
 import Prelude
 
 
+-- An hour :(
+-- Feels like I am testing my PC :P can't handle creating powersets of large sets.
+
 cardinality :: [[Int]] -> Int
 cardinality a = length a
 
