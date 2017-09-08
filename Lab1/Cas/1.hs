@@ -28,9 +28,9 @@ main = do
     putStrLn $ "Assignment 3"
     -- result3
     putStrLn $ "Assignment 4"
-    result4
+    -- result4
     putStrLn $ "Assignment 5"
-    -- TODO
+    result5
     putStrLn $ "Assignment 6"
     -- TODO
     putStrLn $ "Assignment 7"
@@ -79,8 +79,11 @@ result4 = do
   print $ takeWhile (< 10000) emirps
 
 -- Assignment 5 --
+sumprimes :: Integer
+sumprimes = sum (takeWhile (< 101) primes)
 
--- TODO
+result5 = do
+  print sumprimes
 
 -- Assignment 6 --
 
