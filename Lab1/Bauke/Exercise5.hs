@@ -12,14 +12,27 @@ import Test.QuickCheck
 -- All combinations could be checked, but this is exactly what the algorithm does.
 -- If the result matches the new prime, it is valid
 
-main = findSum 0 101
+-- Whilst trying to optimize I noticed i forgot the termination in the elem call. So any non-prime number (4) would cause
+-- the elem .. primes to run forever.
+-- Fixed this by introducing primesTill ..., which returns the list up and including the argument passed
 
-findSum :: Int -> Int -> [Int]
-findSum start amount | elem (sum $ primeList start amount) primes =  primeList start amount
-                     | otherwise = findSum (start+1) amount
+main = sum $ findConsecutive 101
+
+findConsecutive :: Int -> [Int]
+findConsecutive size = findSum size size (sum $ primeList 0 size)
+
+findSum :: Int -> Int -> Int -> [Int]
+findSum size nextIndex actualValue | elem actualValue (primesTill actualValue) = primeList (nextIndex-size) size
+                                   | otherwise = findSum size (nextIndex+1) (updateSum size nextIndex actualValue)
+
+primesTill :: Int -> [Int]
+primesTill a = takeWhile(<= a) primes
 
 primeList :: Int -> Int -> [Int]
 primeList a b = drop a $ take (a+b) primes
+
+updateSum :: Int -> Int -> Int -> Int
+updateSum size index sumValue = sumValue + (primes !! index) - (primes !! (index - size))
 
 primes :: [Int]
 primes = 2 : filter prime [3..]
