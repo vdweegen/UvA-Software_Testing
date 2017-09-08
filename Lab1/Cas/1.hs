@@ -30,13 +30,13 @@ main = do
     putStrLn $ "Assignment 4"
     -- result4
     putStrLn $ "Assignment 5"
-    -- TODO
+    -- result5
     putStrLn $ "Assignment 6"
-    -- TODO
+    result6
     putStrLn $ "Assignment 7"
     -- result7
     putStrLn $ "Assignment 8"
-    result8
+    -- result8
     putStrLn $ "BONUS"
     -- TODO
 
@@ -69,16 +69,24 @@ induction3 = \n -> product([1..n])
 result3 = quickCheckResult(\n -> n >= 0 --> base3 n == induction3 n)
 
 -- Assignment 4 --
+reversal :: Integer -> Integer
+reversal = read . reverse . show
 
--- TODO
+emirps :: [Integer]
+emirps = [p | p <- primes, let rev = reversal p, prime rev, p /= rev]
+
+result4 = do
+  print $ takeWhile (< 10000) emirps
 
 -- Assignment 5 --
+sumprimes :: Integer
+sumprimes = sum (takeWhile (< 101) primes)
 
--- TODO
+result5 = do
+  print sumprimes
 
 -- Assignment 6 --
-
--- TODO
+result6 = quickCheckResult(\n -> n > 2 --> prime (sum(takeWhile (< n) primes) + 1))
 
 -- Assignment 7 --
 toDigits :: Integer -> [Integer]
