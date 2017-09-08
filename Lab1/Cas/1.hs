@@ -34,9 +34,9 @@ main = do
     putStrLn $ "Assignment 6"
     -- TODO
     putStrLn $ "Assignment 7"
-    result7
+    -- result7
     putStrLn $ "Assignment 8"
-    -- TODO
+    result8
     putStrLn $ "BONUS"
     -- TODO
 
@@ -142,5 +142,28 @@ result7 = do
   print(isMaster 53029243834379)
 
 -- Assignment 8 --
+data Boy = Matthew | Peter | Jack | Arnold | Carl
+  deriving (Eq,Show)
+boys = [Matthew, Peter, Jack, Arnold, Carl]
 
--- TODO
+accuses :: Boy -> Boy -> Bool
+accuses Matthew n = (n /= Carl && n /= Matthew)
+accuses Peter n = (n == Matthew || n == Jack)
+accuses Jack n = not(accuses Matthew n || accuses Peter n)
+accuses Arnold n = (accuses Matthew n || accuses Peter n) && not(accuses Matthew n && accuses Peter n)
+accuses Carl n = not(accuses Arnold n)
+
+accusers :: Boy -> [Boy]
+accusers x = [y | y <- boys, accuses y x]
+
+guilty, honest :: [Boy]
+-- 3 tell the truth (so we check who is accused exactly 3 times)
+guilty = [x | x <- boys, length (accusers x) == 3]
+-- 2 always lie (find out who accused the guilty boy and didn't accuse the innocent)
+honest = nub [x | x <- boys, y <- guilty, z <- (boys \\ guilty), accuses x y && not (accuses x z)]
+
+result8 = do
+  print "Guilty"
+  print guilty
+  print "Honest"
+  print honest
