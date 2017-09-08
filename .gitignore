@@ -2,3 +2,5 @@
 .idea
 Lab1/.DS_Store
 .DS_Store
+*.hi
+*.o
