@@ -30,9 +30,9 @@ main = do
     putStrLn $ "Assignment 4"
     -- result4
     putStrLn $ "Assignment 5"
-    result5
+    -- result5
     putStrLn $ "Assignment 6"
-    -- TODO
+    result6
     putStrLn $ "Assignment 7"
     -- result7
     putStrLn $ "Assignment 8"
@@ -86,8 +86,7 @@ result5 = do
   print sumprimes
 
 -- Assignment 6 --
-
--- TODO
+result6 = quickCheckResult(\n -> n > 2 --> prime (sum(takeWhile (< n) primes) + 1))
 
 -- Assignment 7 --
 toDigits :: Integer -> [Integer]
