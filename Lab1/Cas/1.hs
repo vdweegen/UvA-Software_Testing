@@ -39,35 +39,35 @@ main = do
     putStrLn $ "BONUS"
     -- TODO
 
--- Assignment 1.1 --
+-- Assignment 1.1 :: time spent:  +- 45 minutes --
 base1_1 :: Integer -> Integer
 induction1_1 :: Integer -> Integer
 base1_1 = \n -> sum(map(^2)[0..n])
 induction1_1 = \n -> (n*(n+1)*(2*n+1)) `div` 6
 result1_1 = quickCheckResult(\n -> n >= 0 --> base1_1 n == induction1_1 n)
 
--- Assignment 1.2 --
+-- Assignment 1.2 :: time spent: +- 45 minutes --
 base1_2 :: Integer -> Integer
 induction1_2 :: Integer -> Integer
 base1_2 = \n -> sum(map(^3)[0..n])
 induction1_2 = \n -> ((n*(n+1)) `div` 2 ) ^ 2
 result1_2 = quickCheckResult(\n -> n >= 0 --> base1_2 n == induction1_2 n)
 
--- Assignment 2 --
+-- Assignment 2 :: time spent: +- 30 minutes --
 base2 :: Int -> Int
 induction2 :: Int -> Int
 base2 = \n -> 2^n
 induction2 = \n -> length(subsequences[1..n])
 result2 = quickCheckResult(\n -> n >= 0 --> induction2 n == base2 n)
 
--- Assignment 3 --
+-- Assignment 3 :: time spent: +- 60 minutes --
 base3 :: Int -> Int
 induction3 :: Int -> Int
 base3 = \n -> length(permutations [1..n])
 induction3 = \n -> product([1..n])
 result3 = quickCheckResult(\n -> n >= 0 --> base3 n == induction3 n)
 
--- Assignment 4 --
+-- Assignment 4 :: time spent: +- 30 minutes --
 reversal :: Integer -> Integer
 reversal = read . reverse . show
 
@@ -77,17 +77,17 @@ emirps = [p | p <- primes, let rev = reversal p, prime rev, p /= rev]
 result4 = do
   print $ takeWhile (< 10000) emirps
 
--- Assignment 5 --
+-- Assignment 5 :: time spent: +- 30 minutes --
 sumprimes :: Integer
 sumprimes = sum (takeWhile (< 101) primes)
 
 result5 = do
   print sumprimes
 
--- Assignment 6 --
+-- Assignment 6 :: time spent: +- 10 minutes --
 result6 = quickCheckResult(\n -> n > 2 --> prime (sum(takeWhile (< n) primes) + 1))
 
--- Assignment 7 --
+-- Assignment 7 :: time spent: 120 minutes --
 toDigits :: Integer -> [Integer]
 toDigits n = map (\x -> read [x] :: Integer) (show n)
 
@@ -148,7 +148,7 @@ result7 = do
   print("Check Master (INVALID CARD) 53029243834379")
   print(isMaster 53029243834379)
 
--- Assignment 8 --
+-- Assignment 8 :: time spent: 45 minutes --
 data Boy = Matthew | Peter | Jack | Arnold | Carl
   deriving (Eq,Show)
 boys = [Matthew, Peter, Jack, Arnold, Carl]
