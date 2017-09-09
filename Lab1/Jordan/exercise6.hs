@@ -12,5 +12,6 @@ primes = 2 : filter prime [3..]
 
 primeProduct n = prime $ (+) 1 $ product [1..n]
 
+main = do
 -- Smallest counterexample
-head $ filter (not .primeProduct) $ [1..]
+    print $ head $ filter (not .primeProduct) $ [1..]
