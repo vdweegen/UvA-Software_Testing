@@ -26,12 +26,17 @@ solution9 = head [a * b * c | a <- [1..1000], b <- [a..1000], let c = 1000 - a -
 
 -- 49: create a list of primes between 1000 and 10000
 -- generate a tuple which differs by 3330 and are ale in the primes1000 list
--- Time spent: 15 min (not finished yet)
+-- check for permutations with built-in elem and permutations function
+-- Time spent: 20 min
 
 primes1000 :: [Integer]
 primes1000 = dropWhile (< 1000) $ takeWhile (< 10000) primes
 
-isPermutation :: (Integer, Integer, Integer) -> Boolean
+digits :: Integer -> [Int]
+digits = map (read . return) . show
+
+isPermutation :: (Integer, Integer, Integer) -> Bool
+isPermutation (a, b, c) = (elem (digits b) $ permutations (digits a)) && (elem (digits c) $ permutations (digits a))
 
 solution49 :: [(Integer, Integer, Integer)]
-solution49 = [(a , b, c) | a <- primes1000, let b = a + 3330, let c = b + 3330, elem b primes1000, elem c primes1000]
+solution49 = filter isPermutation [(a , b, c) | a <- primes1000, let b = a + 3330, let c = b + 3330, elem b primes1000, elem c primes1000]
