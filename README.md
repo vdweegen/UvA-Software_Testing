@@ -12,10 +12,7 @@ Repository for the course 'Software Testing' at the 'Universiteit van Amsterdam'
   - Cas van der Weegen
 
 # Notes
-Run Programs:
-```
-runhaskell <program>.hs
-```
+TODO
 
 # Assignments
 ## Assignment 1
