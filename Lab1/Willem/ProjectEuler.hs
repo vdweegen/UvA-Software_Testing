@@ -1,7 +1,8 @@
-module Exercise1 where
+module ProjectEuler where
 import Data.List
 import Test.QuickCheck
 import Control.Monad
+import Data.Bits
 
 prime :: Integer -> Bool
 prime n = n > 1 && all (\ x -> rem n x /= 0) xs
@@ -23,19 +24,14 @@ solution10 = sum ( takeWhile (< 2000000) primes )
 solution9 :: Integer
 solution9 = head [a * b * c | a <- [1..1000], b <- [a..1000], let c = 1000 - a -b, a^2 + b^2 == c^2]
 
--- Reusing reversal from exercise
-reversal :: Integer -> Integer
-reversal = read . reverse . show
+-- 49: create a list of primes between 1000 and 10000
+-- generate a tuple which differs by 3330 and are ale in the primes1000 list
+-- Time spent: 15 min (not finished yet)
 
--- helper method to check if reversal is also prime
-primeReverse :: Integer -> Bool
-primeReverse n = prime n && prime (reversal n)
+primes1000 :: [Integer]
+primes1000 = dropWhile (< 1000) $ takeWhile (< 10000) primes
 
--- simply filter the list
-solution5a :: [Integer]
-solution5a = filter primeReverse [0..9999]
+isPermutation :: (Integer, Integer, Integer) -> Boolean
 
--- bit more efficient, instead of first generating the entire list,
--- now only create a list with the correct values on the fly
-solution5b :: [Integer]
-solution5b = [a | a <- [1..9999], primeReverse a]
+solution49 :: [(Integer, Integer, Integer)]
+solution49 = [(a , b, c) | a <- primes1000, let b = a + 3330, let c = b + 3330, elem b primes1000, elem c primes1000]
