@@ -1,6 +1,5 @@
 module Lab1 where
 import Data.List
-import Text.Regex.Posix
 import Test.QuickCheck
 
 -- Lab Week 1 --
