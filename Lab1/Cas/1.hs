@@ -20,23 +20,23 @@ forall = flip all
 -- Define Main --
 main = do
     putStrLn $ "Assignment 1.1"
-    -- result1_1
+    result1_1
     putStrLn $ "Assignment 1.2"
-    -- result1_2
+    result1_2
     putStrLn $ "Assignment 2"
-    -- result2
+    result2
     putStrLn $ "Assignment 3"
-    -- result3
+    result3
     putStrLn $ "Assignment 4"
-    -- result4
+    result4
     putStrLn $ "Assignment 5"
     result5
     putStrLn $ "Assignment 6"
-    -- result6
+    result6
     putStrLn $ "Assignment 7"
-    -- result7
+    result7
     putStrLn $ "Assignment 8"
-    -- result8
+    result8
     putStrLn $ "BONUS"
     -- TODO
 
@@ -100,11 +100,11 @@ toRevDigits n = if n <= 0 then []
   else mod n 10 : toRevDigits (div n 10)
 
 doubleEveryOther :: [Integer] -> [Integer]
-doubleEveryOther (n1 : n2 : ns) = n1 : 2 * n2 : doubleEveryOther ns
+doubleEveryOther (n1 : n2 : m) = n1 : 2 * n2 : doubleEveryOther m
 doubleEveryOther catch = catch
 
 sumDigits :: [Integer] -> Integer
-sumDigits (x:xs) = sum(toRevDigits x) + sumDigits xs
+sumDigits (x:y) = sum(toRevDigits x) + sumDigits y
 sumDigits [] = 0
 
 luhn :: Integer -> Bool
