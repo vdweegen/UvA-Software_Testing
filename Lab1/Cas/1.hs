@@ -1,5 +1,6 @@
 module Lab1 where
 import Data.List
+import Data.Function (on)
 import Test.QuickCheck
 
 -- Lab Week 1 --
@@ -29,9 +30,9 @@ main = do
     putStrLn $ "Assignment 4"
     -- result4
     putStrLn $ "Assignment 5"
-    -- result5
+    result5
     putStrLn $ "Assignment 6"
-    result6
+    -- result6
     putStrLn $ "Assignment 7"
     -- result7
     putStrLn $ "Assignment 8"
@@ -77,12 +78,15 @@ emirps = [p | p <- primes, let rev = reversal p, prime rev, p /= rev]
 result4 = do
   print $ takeWhile (< 10000) emirps
 
--- Assignment 5 :: time spent: +- 30 minutes --
-sumprimes :: Integer
-sumprimes = sum (takeWhile (< 101) primes)
+-- Assignment 5 :: time spent: +- 60 minutes --
+consecutive :: [Integer] -> Integer
+consecutive n
+    | prime m = m
+    | otherwise = consecutive (tail n)
+    where m = sum(take 101 n)
 
 result5 = do
-  print sumprimes
+  print (consecutive (takeWhile (<10000) primes))
 
 -- Assignment 6 :: time spent: +- 10 minutes --
 result6 = quickCheckResult(\n -> n > 2 --> prime (sum(takeWhile (< n) primes) + 1))
