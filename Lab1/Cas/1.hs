@@ -1,6 +1,5 @@
 module Lab1 where
 import Data.List
-import Data.Function (on)
 import Test.QuickCheck
 
 -- Lab Week 1 --
