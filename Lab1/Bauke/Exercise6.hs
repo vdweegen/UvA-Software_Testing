@@ -4,7 +4,7 @@ import Data.List
 -- List comprehension took some time.
 -- the Let introduces the ability to use local scoped variables.
 
-main = print $ take 1 listOfCounters
+main = print $ head listOfCounters
 
 listOfCounters :: [[Int]]
 listOfCounters = [ take a primes | a <- [1..], let xs = take a primes, not $ prime $ 1 + product xs ]
