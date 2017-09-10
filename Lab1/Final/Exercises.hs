@@ -32,9 +32,9 @@ main = do
     putStrLn $ "Exercise 4"
     exercise4
     putStrLn $ "Exercise 5"
-    -- exercise5
+    exercise5
     putStrLn $ "Exercise 6"
-    exercise6
+    -- exercise6
     putStrLn $ "Exercise 7"
     -- exercise7
     putStrLn $ "Exercise 8"
@@ -88,7 +88,11 @@ exercise4 = do
   print $ solution4b
 
 -- Exercise 5
+primesSum x y = sum $ take x $ drop y primes
+primesconsum =  head $ filter (prime) $ map (primesSum 101) $ [0..]
 
+exercise5 = do
+    print $ primesconsum
 -- Exercise 6
 
 -- Exercise 7
