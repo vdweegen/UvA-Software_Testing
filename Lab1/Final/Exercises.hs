@@ -88,6 +88,24 @@ exercise4 = do
   print $ solution4b
 
 -- Exercise 5
+
+-- It's way too slow. it will find for 2, but certainly not for 101.
+-- 5 primes takes ages
+-- main issue is probably the drop & take, it re-generates the list one every iteration
+
+-- While the iteration is performed forwards, testing it would result in performing the same operation again.
+-- All combinations could be checked, but this is exactly what the algorithm does.
+-- If the result matches the new prime, it is valid
+
+-- Whilst trying to optimize I noticed i forgot the termination in the elem call. So any non-prime number (4) would cause
+-- the elem .. primes to run forever.
+-- Fixed this by introducing primesTill ..., which returns the list up and including the argument passed
+
+-- How to test is your answer is correct:
+-- Take the list of all primes up to the maximum prime value in the solution list
+-- Compose all lists of 101 primes from this list
+-- Validate that NO sum of these lists is a prime
+
 primesSum x y = sum $ take x $ drop y primes
 primesconsum =  head $ filter (prime) $ map (primesSum 101) $ [0..]
 
