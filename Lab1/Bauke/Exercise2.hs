@@ -14,7 +14,4 @@ main = quickCheckWith stdArgs { maxSize = 25 } prop_subsequenceSize
 
 prop_subsequenceSize :: [Integer] -> Bool
 prop_subsequenceSize xs =
-  assumedSize (genericLength xs) == genericLength (subsequences xs)
-
-assumedSize :: Integer -> Integer
-assumedSize n = 2^n
+  (^) 2 (genericLength xs) == genericLength (subsequences xs)
