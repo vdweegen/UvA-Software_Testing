@@ -23,7 +23,7 @@ main = do
     putStrLn $ "Assignment 1.2"
     result1_2
     putStrLn $ "Assignment 2"
-    -- result2
+    result2
     putStrLn $ "Assignment 3"
     result3
     putStrLn $ "Assignment 4"
@@ -54,18 +54,18 @@ inductioncase2 n = ((n*(n+1)) `div` 2 ) ^ 2
 result1_2 = quickCheckResult(\n -> n >= 0 --> basecase2 n == inductioncase2 n)
 
 -- Assignment 2 :: time spent: +- 30 minutes --
-base2 :: Integer -> Integer
-induction2 :: Integer -> Integer
-base2 n = 2^n
-induction2 n = genericLength(subsequences[1..n])
-result2 = quickCheckResult(\n -> n >= 0 --> induction2 n == base2 n)
+basecase3 :: Integer -> Integer
+inductioncase3 :: Integer -> Integer
+basecase3 n = 2^n
+inductioncase3 n = genericLength(subsequences[1..n])
+result2 = quickCheckResult(\n -> n >= 0 --> basecase3 n == inductioncase3 n)
 
 -- Assignment 3 :: time spent: +- 60 minutes --
-base3 :: Integer -> Integer
-induction3 :: Integer -> Integer
-base3 = \n -> genericLength(permutations [1..n])
-induction3 = \n -> product([1..n])
-result3 = quickCheckResult(\n -> n >= 0 --> base3 n == induction3 n)
+basecase4 :: Integer -> Integer
+inductioncase4 :: Integer -> Integer
+basecase4 n = genericLength(permutations [1..n])
+inductioncase4 n = product([1..n])
+result3 = quickCheckResult(\n -> n >= 0 --> basecase4 n == inductioncase4 n)
 
 -- Assignment 4 :: time spent: +- 30 minutes --
 reversal :: Integer -> Integer
