@@ -34,7 +34,7 @@ main = do
     putStrLn $ "Exercise 5"
     -- exercise5
     putStrLn $ "Exercise 6"
-    -- exercise6
+    exercise6
     putStrLn $ "Exercise 7"
     -- exercise7
     putStrLn $ "Exercise 8"
@@ -81,7 +81,6 @@ primeReverse n = prime n && prime (reversal n)
 
 -- bit more efficient, instead of first generating the entire list,
 -- now only create a list with the correct values on the fly
--- Time spent: 5 min
 solution4b :: [Integer]
 solution4b = [a | a <- [1..9999], primeReverse a]
 
