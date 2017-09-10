@@ -38,8 +38,8 @@ digits = map (read . return) . show
 isPermutation :: (Integer, Integer, Integer) -> Bool
 isPermutation (a, b, c) = elem (digits b) (permutations (digits a)) && elem (digits c) (permutations (digits a))
 
-result :: (Integer, Integer, Integer) -> Integer
-result (a, b, c) = a * 100000000 + b * 10000 + c
+result :: (Integer, Integer, Integer) -> String
+result (a, b, c) = (show a) ++ (show b) ++ (show c)
 
-solution49 :: Integer
+solution49 :: String
 solution49 = result $ last $ filter isPermutation [(a , b, c) | a <- primes1000, let b = a + 3330, let c = b + 3330, b `elem` primes1000, c `elem` primes1000]
