@@ -23,9 +23,9 @@ main = do
     putStrLn $ "Assignment 1.2"
     result1_2
     putStrLn $ "Assignment 2"
-    result2
+    -- result2
     putStrLn $ "Assignment 3"
-    result3
+    -- result3
     putStrLn $ "Assignment 4"
     result4
     putStrLn $ "Assignment 5"
