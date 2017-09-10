@@ -26,7 +26,7 @@ main = do
     putStrLn $ "Exercise 1.2"
     exercise1_2
     putStrLn $ "Exercise 2"
-    -- exercise2
+    exercise2
     putStrLn $ "Exercise 3"
     -- exercise3
     putStrLn $ "Exercise 4"
@@ -57,6 +57,10 @@ inductioncase2 n = ((n*(n+1)) `div` 2 ) ^ 2
 exercise1_2 = quickCheckResult(\n -> n >= 0 --> basecase2 n == inductioncase2 n)
 
 -- Exercise 2
+prop_subsequenceSize :: [Integer] -> Bool
+prop_subsequenceSize xs =
+  (^) 2 (genericLength xs) == genericLength (subsequences xs)
+exercise2 = quickCheckWith stdArgs { maxSize = 25 } prop_subsequenceSize
 
 -- Exercise 3
 
