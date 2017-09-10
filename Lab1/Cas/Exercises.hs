@@ -40,32 +40,32 @@ main = do
     -- TODO
 
 -- Assignment 1.1 :: time spent:  +- 45 minutes --
-base1_1 :: Integer -> Integer
-induction1_1 :: Integer -> Integer
-base1_1 = \n -> sum(map(^2)[0..n])
-induction1_1 = \n -> (n*(n+1)*(2*n+1)) `div` 6
-result1_1 = quickCheckResult(\n -> n >= 0 --> base1_1 n == induction1_1 n)
+basecase1 :: Integer -> Integer
+inductioncase1 :: Integer -> Integer
+basecase1 n = sum [ a^2 | a <- [0..n]]
+inductioncase1 n = (n*(n+1)*(2*n+1)) `div` 6
+result1_1 = quickCheckResult(\n -> n >= 0 --> basecase1 n == inductioncase1 n)
 
 -- Assignment 1.2 :: time spent: +- 45 minutes --
-base1_2 :: Integer -> Integer
-induction1_2 :: Integer -> Integer
-base1_2 = \n -> sum(map(^3)[0..n])
-induction1_2 = \n -> ((n*(n+1)) `div` 2 ) ^ 2
-result1_2 = quickCheckResult(\n -> n >= 0 --> base1_2 n == induction1_2 n)
+basecase2 :: Integer -> Integer
+inductioncase2 :: Integer -> Integer
+basecase2 n = sum [ a^3 | a <- [0..n]]
+inductioncase2 n = ((n*(n+1)) `div` 2 ) ^ 2
+result1_2 = quickCheckResult(\n -> n >= 0 --> basecase2 n == inductioncase2 n)
 
 -- Assignment 2 :: time spent: +- 30 minutes --
-base2 :: Int -> Int
-induction2 :: Int -> Int
-base2 = \n -> 2^n
-induction2 = \n -> length(subsequences[1..n])
-result2 = quickCheckResult(\n -> n >= 0 --> induction2 n == base2 n)
+basecase3 :: Integer -> Integer
+inductioncase3 :: Integer -> Integer
+basecase3 n = 2^n
+inductioncase3 n = genericLength(subsequences[1..n])
+result2 = quickCheckResult(\n -> n >= 0 --> basecase3 n == inductioncase3 n)
 
 -- Assignment 3 :: time spent: +- 60 minutes --
-base3 :: Int -> Int
-induction3 :: Int -> Int
-base3 = \n -> length(permutations [1..n])
-induction3 = \n -> product([1..n])
-result3 = quickCheckResult(\n -> n >= 0 --> base3 n == induction3 n)
+basecase4 :: Integer -> Integer
+inductioncase4 :: Integer -> Integer
+basecase4 n = genericLength(permutations [1..n])
+inductioncase4 n = product([1..n])
+result3 = quickCheckResult(\n -> n >= 0 --> basecase4 n == inductioncase4 n)
 
 -- Assignment 4 :: time spent: +- 30 minutes --
 reversal :: Integer -> Integer
