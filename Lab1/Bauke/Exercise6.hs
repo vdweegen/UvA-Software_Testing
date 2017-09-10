@@ -10,11 +10,7 @@ listOfCounters :: [[Int]]
 listOfCounters = [ take a primes | a <- [1..], let xs = take a primes, False == (prime $ calculateAssumedPrime xs) ]
 
 calculateAssumedPrime :: [Int] -> Int
-calculateAssumedPrime xs = calculatePrimes 1 xs
-
-calculatePrimes :: Int -> [Int] -> Int
-calculatePrimes a [x] = (a * x) + 1
-calculatePrimes a (x:xs) = calculatePrimes (a*x) xs
+calculateAssumedPrime xs = (product xs) + 1
 
 primes :: [Int]
 primes = 2 : filter prime [3..]
