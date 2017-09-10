@@ -12,6 +12,6 @@ import Test.QuickCheck
 
 main = quickCheckWith stdArgs { maxSize = 25 } prop_subsequenceSize
 
-prop_subsequenceSize :: [Int] -> Bool
+prop_subsequenceSize :: [Integer] -> Bool
 prop_subsequenceSize xs =
-  (^) 2 (length xs) == length (subsequences xs)
+  (^) 2 (genericLength xs) == genericLength (subsequences xs
