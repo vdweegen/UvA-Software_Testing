@@ -60,12 +60,12 @@ exercise1_2 = quickCheckResult(\n -> n >= 0 --> basecase2 n == inductioncase2 n)
 prop_subsequenceSize :: [Integer] -> Bool
 prop_subsequenceSize n =
   (^) 2 (genericLength n) == genericLength (subsequences n)
-exercise2 = quickCheckWith stdArgs { maxSize = 25 } prop_subsequenceSize
+exercise2 = quickCheckWith stdArgs { maxSize = 20 } prop_subsequenceSize
 
 -- Exercise 3
 factorial n  = product [1..n]
 solution3 (Positive n) = (length $ permutations [1..n]) == factorial(n)
-exercise3 = quickCheckWith stdArgs { maxSize=10 } solution3
+exercise3 = quickCheckWith stdArgs { maxSize = 10 } solution3
 
 -- Exercise 4
 reversal :: Integer -> Integer
