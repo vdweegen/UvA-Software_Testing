@@ -16,7 +16,7 @@ primes :: [Integer]
 primes = 2 : filter prime [3..] 
 
 primesSum x y = sum $ take x $ drop y primes
-primesconsum n =  head $ filter (prime) $ map (primesSum n) $ [0..]
+primesconsum =  head $ filter (prime) $ map (primesSum 101) $ [0..]
 
 main = do 
-    print $ primesconsum 101
+    print $ primesconsum 
