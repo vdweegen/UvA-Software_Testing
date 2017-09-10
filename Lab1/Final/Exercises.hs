@@ -22,9 +22,9 @@ main = do
     putStrLn $ "Assignment 1 / Lab 1"
     putStrLn $ "===================="
     putStrLn $ "Exercise 1.1"
-    -- exercise1_1
+    exercise1_1
     putStrLn $ "Exercise 1.2"
-    -- exercise1_2
+    exercise1_2
     putStrLn $ "Exercise 2"
     -- exercise2
     putStrLn $ "Exercise 3"
@@ -43,8 +43,18 @@ main = do
     -- TODO
 
 -- Exercise 1.1
+basecase1 :: Integer -> Integer
+inductioncase1 :: Integer -> Integer
+basecase1 = \n -> sum(map(^2)[0..n])
+inductioncase1 = \n -> (n*(n+1)*(2*n+1)) `div` 6
+exercise1_1 = quickCheckResult(\n -> n >= 0 --> basecase1 n == inductioncase1 n)
 
 -- Exercise 1.2
+basecase2 :: Integer -> Integer
+inductioncase2 :: Integer -> Integer
+basecase2 = \n -> sum(map(^3)[0..n])
+inductioncase2 = \n -> ((n*(n+1)) `div` 2 ) ^ 2
+exercise1_2 = quickCheckResult(\n -> n >= 0 --> basecase2 n == inductioncase2 n)
 
 -- Exercise 2
 
