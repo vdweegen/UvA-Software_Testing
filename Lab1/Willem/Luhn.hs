@@ -1,15 +1,28 @@
 module Luhn where
 
+-- Exercise 7: Helper methods to doubleEveryOther, sumDigits
+-- and to split a number in to an array with digits
+-- source: https://en.wikipedia.org/wiki/Payment_card_number
+-- source: https://en.wikipedia.org/wiki/Luhn_algorithm
+-- Time spent: 30 min
+
 luhn :: Integer -> Bool
 luhn n = (flip mod 10 $ sumDigits $ doubleEveryOther $ reverse $ digits n) == 00
 
 isAmericanExpress, isMaster, isVisa :: Integer -> Bool
-isAmericanExpress n = luhn n && length(digits n) == 15 && head (digits n) == 3 && (head (drop 1 (digits n)) == 7 || head (drop 1 (digits n)) == 4)
-isMaster n = luhn n
-isVisa n = head (digits n) == 4 && (length (digits n) == 15 || length (digits n) == 16 || length (digits n) == 17) && luhn n
+isAmericanExpress n = luhn n
+                    && length(digits n) == 15
+                    && digits n !! 0 == 3
+                    && (digits n !! 1 == 7 || digits n !! 1 == 4)
 
-isVisa1 :: [Integer] -> Bool
-isVisa1 n@(4:_) = luhn n
+isMaster n = luhn n
+           && length(digits n) == 16
+           && ((digits n !! 0 == 5) && ((digits n !! 1 >= 1) && (digits n !! 1 <= 5)))
+
+isVisa n = luhn n
+         && head (digits n) == 4
+         && (length (digits n) == 15 || length (digits n) == 16 || length (digits n) == 17)
+
 
 doubleEveryOther :: [Int] -> [Int]
 doubleEveryOther [] = []
@@ -23,4 +36,3 @@ sumDigits (x:xs) | x < 10 = x + sumDigits xs
 
 digits :: Integer -> [Int]
 digits = map (read . return) . show
-
