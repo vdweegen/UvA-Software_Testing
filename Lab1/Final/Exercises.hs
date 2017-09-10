@@ -1,6 +1,8 @@
 module Lab1 where
 import Data.List
 import Test.QuickCheck
+import Data.Bits
+
 
 -- Assignment 1 / Lab 1 :: Group 14 --
 
@@ -38,7 +40,7 @@ main = do
     putStrLn $ "Exercise 7"
     -- exercise7
     putStrLn $ "Exercise 8"
-    -- exercise8
+    exercise8
     putStrLn $ "BONUS"
     -- TODO
 
@@ -122,3 +124,45 @@ exercise6 = do
 -- Exercise 7
 
 -- Exercise 8
+-- Encode everything as Haskell
+-- Also provide base case when a boy doesn't mention all the boys otherwise we get a match error
+-- We need three accusers to make someone guilty as 3 of them are speaking the truth
+-- The boys who accused the guilty boy are honest
+data Boy = Matthew | Peter | Jack | Arnold | Carl deriving (Eq,Show)
+
+boys :: [Boy]
+boys = [Matthew, Peter, Jack, Arnold, Carl]
+
+accuses :: Boy -> Boy -> Bool
+
+-- Matthew: Carl didn't do it, and neither did I.
+accuses Matthew Carl = False
+accuses Matthew Matthew = False
+accuses Matthew _ = True
+
+-- Peter It was Matthew or it was Jack.
+accuses Peter Matthew = True
+accuses Peter Jack = True
+accuses Peter _ = False
+
+-- Jack Matthew and Peter are both lying.
+accuses Jack b = not ( accuses Matthew b) && not ( accuses Peter b)
+
+-- Arnold Matthew or Peter is speaking the truth, but not both.
+accuses Arnold b =  accuses Matthew b `xor` accuses Peter b
+
+-- Carl What Arnold says is not true.
+accuses Carl b = not ( accuses Arnold b)
+
+accusers :: Boy -> [Boy]
+accusers x = [y | y <- boys, accuses y x]
+
+guilty, honest :: [Boy]
+guilty = [x | x <- boys, length (accusers x) == 3]
+honest = accusers $ (guilty !! 0)
+
+exercise8 = do
+  print "Guilty"
+  print guilty
+  print "Honest"
+  print honest
