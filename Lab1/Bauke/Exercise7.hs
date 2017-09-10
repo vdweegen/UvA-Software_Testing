@@ -5,10 +5,10 @@
 -- Will read again tomorrow and work out. It appears that the last number should be simply compared.
 -- Added implementation for checking the checkDigit and comparing it against the account number + check digit
 
-main = print $ checkAccountNumber 79927398713
+main = print $ luhn 79927398713
 
-checkAccountNumber :: Int -> Bool
-checkAccountNumber account = ((actualCheckDigit account) == (head $ show $ returnCheckDigit account))
+luhn :: Int -> Bool
+luhn account = ((actualCheckDigit account) == (head $ show $ returnCheckDigit account))
                             && (mod (summedValue account + returnCheckDigit account) 10 == 0 )
 
 actualCheckDigit :: Int -> Char
