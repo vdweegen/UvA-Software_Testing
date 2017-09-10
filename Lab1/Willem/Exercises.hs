@@ -24,8 +24,8 @@ solution4a = filter primeReverse [0..9999]
 -- bit more efficient, instead of first generating the entire list,
 -- now only create a list with the correct values on the fly
 -- Time spent: 5 min
-solution5b :: [Integer]
-solution5b = [a | a <- [1..9999], primeReverse a]
+solution4b :: [Integer]
+solution4b = [a | a <- [1..9999], primeReverse a]
 
 -- Exercise 5:
 --
