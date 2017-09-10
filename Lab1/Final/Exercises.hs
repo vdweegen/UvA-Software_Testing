@@ -26,15 +26,15 @@ main = do
     putStrLn $ "Exercise 1.2"
     exercise1_2
     putStrLn $ "Exercise 2"
-    -- exercise2
+    exercise2
     putStrLn $ "Exercise 3"
-    -- exercise3
+    exercise3
     putStrLn $ "Exercise 4"
-    -- exercise4
+    exercise4
     putStrLn $ "Exercise 5"
     -- exercise5
     putStrLn $ "Exercise 6"
-    -- exercise6
+    exercise6
     putStrLn $ "Exercise 7"
     -- exercise7
     putStrLn $ "Exercise 8"
@@ -57,10 +57,35 @@ inductioncase2 n = ((n*(n+1)) `div` 2 ) ^ 2
 exercise1_2 = quickCheckResult(\n -> n >= 0 --> basecase2 n == inductioncase2 n)
 
 -- Exercise 2
+prop_subsequenceSize :: [Integer] -> Bool
+prop_subsequenceSize n =
+  (^) 2 (genericLength n) == genericLength (subsequences n)
+exercise2 = quickCheckWith stdArgs { maxSize = 25 } prop_subsequenceSize
 
 -- Exercise 3
+factorial n  = product [1..n]
+solution3 (Positive n) = (length $ permutations [1..n]) == factorial(n)
+exercise3 = quickCheckWith stdArgs { maxSize=10 } solution3
 
 -- Exercise 4
+reversal :: Integer -> Integer
+reversal = read . reverse . show
+
+-- helper method to check if reversal is also prime
+primeReverse :: Integer -> Bool
+primeReverse n = prime n && prime (reversal n)
+
+-- simply filter the list
+-- solution4a :: [Integer]
+-- solution4a = filter primeReverse [0..9999]
+
+-- bit more efficient, instead of first generating the entire list,
+-- now only create a list with the correct values on the fly
+solution4b :: [Integer]
+solution4b = [a | a <- [1..9999], primeReverse a]
+
+exercise4 = do
+  print $ solution4b
 
 -- Exercise 5
 
