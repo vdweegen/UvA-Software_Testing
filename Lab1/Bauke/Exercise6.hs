@@ -7,10 +7,7 @@ import Data.List
 main = print $ take 1 listOfCounters
 
 listOfCounters :: [[Int]]
-listOfCounters = [ take a primes | a <- [1..], let xs = take a primes, not $ prime $ calculateAssumedPrime xs ]
-
-calculateAssumedPrime :: [Int] -> Int
-calculateAssumedPrime xs = (product xs) + 1
+listOfCounters = [ take a primes | a <- [1..], let xs = take a primes, not $ prime $ 1 + product xs ]
 
 primes :: [Int]
 primes = 2 : filter prime [3..]
