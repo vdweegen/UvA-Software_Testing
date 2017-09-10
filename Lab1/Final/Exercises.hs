@@ -30,7 +30,7 @@ main = do
     putStrLn $ "Exercise 3"
     -- exercise3
     putStrLn $ "Exercise 4"
-    -- exercise4
+    exercise4
     putStrLn $ "Exercise 5"
     -- exercise5
     putStrLn $ "Exercise 6"
@@ -64,7 +64,27 @@ exercise2 = quickCheckWith stdArgs { maxSize = 25 } prop_subsequenceSize
 
 -- Exercise 3
 
+
 -- Exercise 4
+reversal :: Integer -> Integer
+reversal = read . reverse . show
+
+-- helper method to check if reversal is also prime
+primeReverse :: Integer -> Bool
+primeReverse n = prime n && prime (reversal n)
+
+-- simply filter the list
+-- solution4a :: [Integer]
+-- solution4a = filter primeReverse [0..9999]
+
+-- bit more efficient, instead of first generating the entire list,
+-- now only create a list with the correct values on the fly
+-- Time spent: 5 min
+solution4b :: [Integer]
+solution4b = [a | a <- [1..9999], primeReverse a]
+
+exercise4 = do
+  print $ solution4b
 
 -- Exercise 5
 
