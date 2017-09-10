@@ -28,7 +28,7 @@ main = do
     putStrLn $ "Exercise 2"
     exercise2
     putStrLn $ "Exercise 3"
-    -- exercise3
+    exercise3
     putStrLn $ "Exercise 4"
     exercise4
     putStrLn $ "Exercise 5"
@@ -58,12 +58,14 @@ exercise1_2 = quickCheckResult(\n -> n >= 0 --> basecase2 n == inductioncase2 n)
 
 -- Exercise 2
 prop_subsequenceSize :: [Integer] -> Bool
-prop_subsequenceSize xs =
-  (^) 2 (genericLength xs) == genericLength (subsequences xs)
+prop_subsequenceSize n =
+  (^) 2 (genericLength n) == genericLength (subsequences n)
 exercise2 = quickCheckWith stdArgs { maxSize = 25 } prop_subsequenceSize
 
 -- Exercise 3
-
+factorial n  = product [1..n]
+solution3 (Positive n) = (length $ permutations [1..n]) == factorial(n)
+exercise3 = quickCheckWith stdArgs { maxSize=10 } solution3
 
 -- Exercise 4
 reversal :: Integer -> Integer
