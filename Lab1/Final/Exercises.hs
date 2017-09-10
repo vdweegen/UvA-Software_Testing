@@ -34,7 +34,7 @@ main = do
     putStrLn $ "Exercise 5"
     exercise5
     putStrLn $ "Exercise 6"
-    -- exercise6
+    exercise6
     putStrLn $ "Exercise 7"
     -- exercise7
     putStrLn $ "Exercise 8"
@@ -111,7 +111,13 @@ primesconsum =  head $ filter (prime) $ map (primesSum 101) $ [0..]
 
 exercise5 = do
     print $ primesconsum
+
 -- Exercise 6
+listOfCounters :: [[Integer]]
+listOfCounters = [ take a primes | a <- [1..], let xs = take a primes, not $ prime $ 1 + product xs ]
+
+exercise6 = do
+  print $ head listOfCounters
 
 -- Exercise 7
 
