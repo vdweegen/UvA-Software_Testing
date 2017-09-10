@@ -4,7 +4,6 @@ import Prelude
 
 -- -/+ 1 hour But thought about the problem for 2 days before attempting to solve it in Haskell. 
 
-
 digits :: Integral x  => x -> [x]
 digits 0 = []
 digits x = digits (x `div` 10 ) ++ [x `mod` 10]
@@ -13,25 +12,40 @@ numbers :: [Integer] -> Integer
 numbers [] = 0
 numbers (x:xs) = x * (10 ^ (length xs)) + (numbers xs)
 
--- 4255895263372077 test :)
-
+first :: [a] -> [a]
 first [] = []
 first (x:xs) = x:second xs
 
+second :: [a] -> [a]
 second [] = []
 second (x:xs) = first xs
 
+reverseDigits :: Integer -> [Integer]
 reverseDigits =  reverse . digits
+
+doubleDigits :: [Integer] -> [Integer]
 doubleDigits = map (sum . digits) 
+
+sumDoubleDigits :: [Integer] -> Integer
 sumDoubleDigits = sum . doubleDigits 
 
+luhnvalue :: Integer -> Integer
 luhnvalue x = ((sum $ first $ reverseDigits x) +  (sumDoubleDigits $ map (*2) $ second $ reverseDigits x) ) 
+
+luhn :: Integer -> Bool
 luhn x =  (luhnvalue x )`mod` 10  == 0
 
+checkPrefix :: Integer -> [Integer] -> Bool
 checkPrefix x y = and (zipWith (==) y (digits x))
+
+checkPrefixRange :: Integer -> [Integer]  -> Bool
 checkPrefixRange x range = or $ map(checkPrefix x) $ map(digits) range
+
+checkPrefixRanges :: Integer -> [[Integer]]  -> Bool
 checkPrefixRanges x ranges  = or $ map(checkPrefixRange x) ranges
-checkCardFormat prefixranges numberlength x = checkPrefixRanges x prefixranges && elem (length $ digits x) numberlength
+
+checkCardFormat :: [[Integer]] -> [Integer] -> Integer -> Bool
+checkCardFormat prefixRanges numberLength x = checkPrefixRanges x prefixRanges && elem (genericLength $ digits x) numberLength
 
 isAmericanExpress, isMaster, isVisa :: Integer -> Bool
 isAmericanExpress  = checkCardFormat [[34,37]] [15] 
