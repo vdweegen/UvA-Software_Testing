@@ -16,6 +16,11 @@ import Test.QuickCheck
 -- the elem .. primes to run forever.
 -- Fixed this by introducing primesTill ..., which returns the list up and including the argument passed
 
+-- How to test is your answer is correct:
+-- Take the list of all primes up to the maximum prime value in the solution list
+-- Compose all lists of 101 primes from this list
+-- Validate that NO sum of these lists is a prime
+
 main = sum $ findConsecutive 101
 
 findConsecutive :: Int -> [Int]
