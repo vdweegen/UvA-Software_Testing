@@ -42,7 +42,7 @@ main = do
     putStrLn $ "> Exercise 8"
     exercise8
     putStrLn $ "> BONUS"
-    exercisebonus
+    exerciseBonus
 
 -- Exercise 1.1
 basecase1 :: Integer -> Integer
@@ -249,16 +249,16 @@ guilty = [x | x <- boys, length (accusers x) == 3]
 honest = accusers $ (guilty !! 0)
 
 exercise8 = do
-  print "Guilty"
-  print guilty
-  print "Honest"
-  print honest
+  putStr "Guilty: "
+  putStr $ show guilty
+  putStr ", Honest: "
+  putStrLn $ show honest
 
 -- Bonus Exercises
 
 -- Euler 9
 euler9 :: Integer
-euler9 = head [a * b * c | a <- [1..1000], b <- [a..1000], let c = 1000 - a -b, a^2 + b^2 == c^2]
+euler9 = head [a * b * c | a <- [1..1000], b <- [a..1000], let c = 1000 - a - b, a^2 + b^2 == c^2]
 
 -- Euler 10
 euler10 :: Integer
@@ -277,10 +277,10 @@ result (a, b, c) = (show a) ++ (show b) ++ (show c)
 euler49 :: String
 euler49 = result $ last $ filter isPermutation [(a , b, c) | a <- primes1000, let b = a + 3330, let c = b + 3330, b `elem` primes1000, c `elem` primes1000]
 
-exercisebonus = do
-  putStrLn "Project Euler #9"
+exerciseBonus = do
+  putStr "Project Euler #9: "
   print euler9
-  putStrLn "Project Euler #10"
+  putStr "Project Euler #10: "
   print euler10
-  putStrLn "Project Euler #49"
+  putStr "Project Euler #49: "
   print euler49
