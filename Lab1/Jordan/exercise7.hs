@@ -45,15 +45,16 @@ checkPrefixRanges :: Integer -> [[Integer]]  -> Bool
 checkPrefixRanges x ranges  = or $ map(checkPrefixRange x) ranges
 
 checkCardFormat :: [[Integer]] -> [Integer] -> Integer -> Bool
-checkCardFormat prefixRanges numberLength x = checkPrefixRanges x prefixRanges && elem (genericLength $ digits x) numberLength
+checkCardFormat prefixRanges numberLength x = luhn x && ( checkPrefixRanges x prefixRanges && elem (genericLength $ digits x) numberLength)
 
 isAmericanExpress, isMaster, isVisa :: Integer -> Bool
 isAmericanExpress  = checkCardFormat [[34,37]] [15] 
 isMaster  = checkCardFormat [[51..55], [2221..2720]] [16] 
 isVisa  = checkCardFormat [[4]] [13, 16, 19] 
 
-mastercards = [
- 5204740009900014,	
+masterCards :: [Integer]
+masterCards = [
+ 5204740009900014,
  5420923878724339,	
  5455330760000018,	
  5506900490000436,	
@@ -66,7 +67,8 @@ mastercards = [
  5555553753048194,	
  5555555555554444]
 
-visas = [4012888888881881,
+visaCards :: [Integer]
+visaCards = [4012888888881881,
  4111111111111111,
  4444333322221111,
  4911830000000,
@@ -74,16 +76,17 @@ visas = [4012888888881881,
  4462030000000000,
  4917610000000000003]
 
-americanExpress = [
+americanExpressCards :: [Integer]
+americanExpressCards = [
  371449635398431,
  378282246310005]
 
 main = do 
     putStrLn "Mastercard cards"
-    print $ all isMaster mastercards   
+    print $ all isMaster masterCards   
 
     putStrLn "AmericanExpress cards"
-    print $ all isAmericanExpress americanExpress   
+    print $ all isAmericanExpress americanExpressCards   
 
     putStrLn "Visa cards"
-    print $ all isVisa visas  
+    print $ all isVisa visaCards  
