@@ -45,15 +45,15 @@ main = do
 -- Exercise 1.1
 basecase1 :: Integer -> Integer
 inductioncase1 :: Integer -> Integer
-basecase1 = \n -> sum(map(^2)[0..n])
-inductioncase1 = \n -> (n*(n+1)*(2*n+1)) `div` 6
+basecase1 n = sum [ a^2 | a <- [0..n]]
+inductioncase1 n = (n*(n+1)*(2*n+1)) `div` 6
 exercise1_1 = quickCheckResult(\n -> n >= 0 --> basecase1 n == inductioncase1 n)
 
 -- Exercise 1.2
 basecase2 :: Integer -> Integer
 inductioncase2 :: Integer -> Integer
-basecase2 = \n -> sum(map(^3)[0..n])
-inductioncase2 = \n -> ((n*(n+1)) `div` 2 ) ^ 2
+basecase2 n = sum [ a^3 | a <- [0..n]]
+inductioncase2 n = ((n*(n+1)) `div` 2 ) ^ 2
 exercise1_2 = quickCheckResult(\n -> n >= 0 --> basecase2 n == inductioncase2 n)
 
 -- Exercise 2
