@@ -23,26 +23,26 @@ main = do
     putStrLn $ "===================="
     putStrLn $ "Assignment 1 / Lab 1"
     putStrLn $ "===================="
-    putStrLn $ "Exercise 1.1"
+    putStrLn $ "> Exercise 1.1"
     exercise1_1
-    putStrLn $ "Exercise 1.2"
+    putStrLn $ "> Exercise 1.2"
     exercise1_2
-    putStrLn $ "Exercise 2"
+    putStrLn $ "> Exercise 2"
     exercise2
-    putStrLn $ "Exercise 3"
+    putStrLn $ "> Exercise 3"
     exercise3
-    putStrLn $ "Exercise 4"
+    putStrLn $ "> Exercise 4"
     exercise4
-    putStrLn $ "Exercise 5"
+    putStrLn $ "> Exercise 5"
     exercise5
-    putStrLn $ "Exercise 6"
+    putStrLn $ "> Exercise 6"
     exercise6
-    putStrLn $ "Exercise 7"
+    putStrLn $ "> Exercise 7"
     exercise7
-    putStrLn $ "Exercise 8"
+    putStrLn $ "> Exercise 8"
     exercise8
-    putStrLn $ "BONUS"
-    -- TODO
+    putStrLn $ "> BONUS"
+    exercisebonus
 
 -- Exercise 1.1
 basecase1 :: Integer -> Integer
@@ -253,3 +253,34 @@ exercise8 = do
   print guilty
   print "Honest"
   print honest
+
+-- Bonus Exercises
+
+-- Euler 9
+euler9 :: Integer
+euler9 = head [a * b * c | a <- [1..1000], b <- [a..1000], let c = 1000 - a -b, a^2 + b^2 == c^2]
+
+-- Euler 10
+euler10 :: Integer
+euler10 = sum $ takeWhile (< 2000000) primes
+
+-- Euler 49
+primes1000 :: [Integer]
+primes1000 = dropWhile (< 1000) $ takeWhile (< 10000) primes
+
+isPermutation :: (Integer, Integer, Integer) -> Bool
+isPermutation (a, b, c) = elem (digits b) (permutations (digits a)) && elem (digits c) (permutations (digits a))
+
+result :: (Integer, Integer, Integer) -> String
+result (a, b, c) = (show a) ++ (show b) ++ (show c)
+
+euler49 :: String
+euler49 = result $ last $ filter isPermutation [(a , b, c) | a <- primes1000, let b = a + 3330, let c = b + 3330, b `elem` primes1000, c `elem` primes1000]
+
+exercisebonus = do
+  putStrLn "Project Euler #9"
+  print euler9
+  putStrLn "Project Euler #10"
+  print euler10
+  putStrLn "Project Euler #49"
+  print euler49
