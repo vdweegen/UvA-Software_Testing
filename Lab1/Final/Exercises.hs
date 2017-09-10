@@ -65,6 +65,7 @@ prop_subsequenceSize n =
 exercise2 = quickCheckWith stdArgs { maxSize = 20 } prop_subsequenceSize
 
 -- Exercise 3
+factorial :: Int -> Int
 factorial n  = product [1..n]
 solution3 (Positive n) = (length $ permutations [1..n]) == factorial(n)
 exercise3 = quickCheckWith stdArgs { maxSize = 10 } solution3
@@ -77,17 +78,13 @@ reversal = read . reverse . show
 primeReverse :: Integer -> Bool
 primeReverse n = prime n && prime (reversal n)
 
--- simply filter the list
--- solution4a :: [Integer]
--- solution4a = filter primeReverse [0..9999]
-
 -- bit more efficient, instead of first generating the entire list,
 -- now only create a list with the correct values on the fly
-solution4b :: [Integer]
-solution4b = [a | a <- [1..9999], primeReverse a]
+solution4 :: [Integer]
+solution4 = [a | a <- [1..9999], primeReverse a]
 
 exercise4 = do
-  print $ solution4b
+  print $ solution4
 
 -- Exercise 5
 
@@ -108,11 +105,13 @@ exercise4 = do
 -- Compose all lists of 101 primes from this list
 -- Validate that NO sum of these lists is a prime
 
+primesSum :: Int -> Int -> Integer
 primesSum x y = sum $ take x $ drop y primes
-primesconsum =  head $ filter (prime) $ map (primesSum 101) $ [0..]
+primesConSum :: Integer
+primesConSum =  head $ filter (prime) $ map (primesSum 101) $ [0..]
 
 exercise5 = do
-    print $ primesconsum
+    print $ primesConSum
 
 -- Exercise 6
 listOfCounters :: [[Integer]]
