@@ -1,6 +1,8 @@
 module Lab1 where
 import Data.List
 import Test.QuickCheck
+import Data.Bits
+
 
 -- Assignment 1 / Lab 1 :: Group 14 --
 
@@ -36,9 +38,9 @@ main = do
     putStrLn $ "Exercise 6"
     exercise6
     putStrLn $ "Exercise 7"
-    -- exercise7
+    exercise7
     putStrLn $ "Exercise 8"
-    -- exercise8
+    exercise8
     putStrLn $ "BONUS"
     -- TODO
 
@@ -60,12 +62,12 @@ exercise1_2 = quickCheckResult(\n -> n >= 0 --> basecase2 n == inductioncase2 n)
 prop_subsequenceSize :: [Integer] -> Bool
 prop_subsequenceSize n =
   (^) 2 (genericLength n) == genericLength (subsequences n)
-exercise2 = quickCheckWith stdArgs { maxSize = 25 } prop_subsequenceSize
+exercise2 = quickCheckWith stdArgs { maxSize = 20 } prop_subsequenceSize
 
 -- Exercise 3
 factorial n  = product [1..n]
 solution3 (Positive n) = (length $ permutations [1..n]) == factorial(n)
-exercise3 = quickCheckWith stdArgs { maxSize=10 } solution3
+exercise3 = quickCheckWith stdArgs { maxSize = 10 } solution3
 
 -- Exercise 4
 reversal :: Integer -> Integer
@@ -120,5 +122,134 @@ exercise6 = do
   print $ head listOfCounters
 
 -- Exercise 7
+digits :: Integral x  => x -> [x]
+digits 0 = []
+digits x = digits (x `div` 10 ) ++ [x `mod` 10]
+
+numbers :: [Integer] -> Integer
+numbers [] = 0
+numbers (x:xs) = x * (10 ^ (length xs)) + (numbers xs)
+
+first :: [a] -> [a]
+first [] = []
+first (x:xs) = x:second xs
+
+second :: [a] -> [a]
+second [] = []
+second (x:xs) = first xs
+
+reverseDigits :: Integer -> [Integer]
+reverseDigits =  reverse . digits
+
+doubleDigits :: [Integer] -> [Integer]
+doubleDigits = map (sum . digits)
+
+sumDoubleDigits :: [Integer] -> Integer
+sumDoubleDigits = sum . doubleDigits
+
+luhnvalue :: Integer -> Integer
+luhnvalue x = ((sum $ first $ reverseDigits x) +  (sumDoubleDigits $ map (*2) $ second $ reverseDigits x) )
+
+luhn :: Integer -> Bool
+luhn x =  (luhnvalue x )`mod` 10  == 0
+
+checkPrefix :: Integer -> [Integer] -> Bool
+checkPrefix x y = and (zipWith (==) y (digits x))
+
+checkPrefixRange :: Integer -> [Integer]  -> Bool
+checkPrefixRange x range = or $ map(checkPrefix x) $ map(digits) range
+
+checkPrefixRanges :: Integer -> [[Integer]]  -> Bool
+checkPrefixRanges x ranges  = or $ map(checkPrefixRange x) ranges
+
+checkCardFormat :: [[Integer]] -> [Integer] -> Integer -> Bool
+checkCardFormat prefixRanges numberLength x = checkPrefixRanges x prefixRanges && elem (genericLength $ digits x) numberLength
+
+isAmericanExpress, isMaster, isVisa :: Integer -> Bool
+isAmericanExpress  = checkCardFormat [[34,37]] [15]
+isMaster  = checkCardFormat [[51..55], [2221..2720]] [16]
+isVisa  = checkCardFormat [[4]] [13, 16, 19]
+
+mastercards = [
+  5204740009900014,
+  5420923878724339,
+  5455330760000018,
+  5506900490000436,
+  5506900490000444,
+  5506900510000234,
+  5506920809243667,
+  5506922400634930,
+  5506927427317625,
+  5553042241984105,
+  5555553753048194,
+  5555555555554444
+  ]
+
+visas = [
+  4012888888881881,
+  4111111111111111,
+  4444333322221111,
+  4911830000000,
+  4917610000000000,
+  4462030000000000,
+  4917610000000000003
+  ]
+
+americanExpress = [
+  371449635398431,
+  378282246310005
+  ]
+
+exercise7 = do
+    putStrLn "Mastercard cards"
+    print $ all isMaster mastercards
+
+    putStrLn "AmericanExpress cards"
+    print $ all isAmericanExpress americanExpress
+
+    putStrLn "Visa cards"
+    print $ all isVisa visas
 
 -- Exercise 8
+-- Encode everything as Haskell
+-- Also provide base case when a boy doesn't mention all the boys otherwise we get a match error
+-- We need three accusers to make someone guilty as 3 of them are speaking the truth
+-- The boys who accused the guilty boy are honest
+data Boy = Matthew | Peter | Jack | Arnold | Carl deriving (Eq,Show)
+
+boys :: [Boy]
+boys = [Matthew, Peter, Jack, Arnold, Carl]
+
+accuses :: Boy -> Boy -> Bool
+
+-- Matthew: Carl didn't do it, and neither did I.
+accuses Matthew Carl = False
+accuses Matthew Matthew = False
+accuses Matthew _ = True
+
+-- Peter It was Matthew or it was Jack.
+accuses Peter Matthew = True
+accuses Peter Jack = True
+accuses Peter _ = False
+
+-- Jack Matthew and Peter are both lying.
+accuses Jack b = not ( accuses Matthew b) && not ( accuses Peter b)
+
+-- Arnold Matthew or Peter is speaking the truth, but not both.
+accuses Arnold b =  accuses Matthew b `xor` accuses Peter b
+
+-- Carl What Arnold says is not true.
+accuses Carl b = not ( accuses Arnold b)
+
+accusers :: Boy -> [Boy]
+accusers x = [y | y <- boys, accuses y x]
+
+guilty, honest :: [Boy]
+guilty = [x | x <- boys, length (accusers x) == 3]
+honest = accusers $ (guilty !! 0)
+
+exercise8 = do
+  print "Guilty"
+  print guilty
+  print "Honest"
+  print honest
