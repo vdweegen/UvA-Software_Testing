@@ -2,6 +2,9 @@ import Test.QuickCheck
 import Data.List
 import Prelude
 
+-- -/+ 1 hour But thought about the problem for 2 days before attempting to solve it in Haskell. 
+
+
 digits :: Integral x  => x -> [x]
 digits 0 = []
 digits x = digits (x `div` 10 ) ++ [x `mod` 10]
@@ -31,9 +34,9 @@ checkPrefixRanges x ranges  = or $ map(checkPrefixRange x) ranges
 checkCardFormat prefixranges numberlength x = checkPrefixRanges x prefixranges && elem (length $ digits x) numberlength
 
 isAmericanExpress, isMaster, isVisa :: Integer -> Bool
-isAmericanExpress x = checkCardFormat [[34,37]] [15] x 
-isMaster x = checkCardFormat [[51..55], [2221..2720]] [16] x
-isVisa x = checkCardFormat [[4]] [13, 16, 19] x
+isAmericanExpress  = checkCardFormat [[34,37]] [15] 
+isMaster  = checkCardFormat [[51..55], [2221..2720]] [16] 
+isVisa  = checkCardFormat [[4]] [13, 16, 19] 
 
 mastercards = [
  5204740009900014,	

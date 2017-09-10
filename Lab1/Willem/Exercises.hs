@@ -1,6 +1,15 @@
 module Exercises where
 
--- Exercise 5: Reusing reversal from exercise
+import Data.Bits
+
+prime :: Integer -> Bool
+prime n = n > 1 && all (\ x -> rem n x /= 0) xs
+  where xs = takeWhile (\ y -> y^2 <= n) primes
+
+primes :: [Integer]
+primes = 2 : filter prime [3..]
+
+-- Exercise 4: Reusing reversal from exercise
 reversal :: Integer -> Integer
 reversal = read . reverse . show
 
@@ -9,14 +18,28 @@ primeReverse :: Integer -> Bool
 primeReverse n = prime n && prime (reversal n)
 
 -- simply filter the list
-solution5a :: [Integer]
-solution5a = filter primeReverse [0..9999]
+solution4a :: [Integer]
+solution4a = filter primeReverse [0..9999]
 
 -- bit more efficient, instead of first generating the entire list,
 -- now only create a list with the correct values on the fly
 -- Time spent: 5 min
 solution5b :: [Integer]
 solution5b = [a | a <- [1..9999], primeReverse a]
+
+-- Exercise 5:
+--
+
+-- Exercise 6:
+--
+primeProduct :: Int -> Bool
+primeProduct n = prime ((product $ take n primes) + 1)
+
+solution6 :: Int
+solution6 = head $ filter (primeProduct) [1..]
+
+
+-- Exercise 7: see Luhn.sh
 
 -- Exercise 8:
 -- Encode everything as Haskell
