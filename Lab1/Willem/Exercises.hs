@@ -32,6 +32,11 @@ solution5b = [a | a <- [1..9999], primeReverse a]
 
 -- Exercise 6:
 --
+primeProduct :: Int -> Bool
+primeProduct n = prime ((product $ take n primes) + 1)
+
+solution6 :: Int
+solution6 = head $ filter (primeProduct) [1..]
 
 
 -- Exercise 7: see Luhn.sh
