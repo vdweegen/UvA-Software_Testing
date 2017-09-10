@@ -95,7 +95,7 @@ reversal = read . reverse . show
 -- Fixed this by introducing primesTill ..., which returns the list up and including the argument passed
 
 -- How to test is your answer is correct:
--- Take the list of all primes up to the maximum prime value in the solution list
+-- Take the list of all primes up to the solution's prime
 -- Compose all lists of 101 primes from this list
 -- Validate that NO sum of these lists is a prime
 
