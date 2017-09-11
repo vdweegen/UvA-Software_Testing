@@ -36,7 +36,31 @@ main = do
     exercisebonus
 
 -- Exercise 1
-exercise1 = print()
+exercise1 = solution1
+
+probs :: Int -> IO [Float]
+probs 0 = return []
+probs n = do
+  p <- getStdRandom random
+  ps <- probs (n-1)
+  return (p:ps)
+
+filterLower :: Float -> [Float] -> [Float]
+filterHigher :: Float -> [Float] -> [Float]
+filterLower n list = filter (\x -> x>n) list
+filterHigher n list = filter (\x -> x<=n) list
+
+solution1 = do
+  numbers <- probs 10000
+  let q1 = intersect (filterLower 0.0 numbers) (filterHigher 0.25 numbers)
+  let q2 = intersect (filterLower 0.25 numbers) (filterHigher 0.50 numbers)
+  let q3 = intersect (filterLower 0.50 numbers) (filterHigher 0.75 numbers)
+  let q4 = intersect (filterLower 0.75 numbers) (filterHigher 1.00 numbers)
+  print (length q1)
+  print (length q2)
+  print (length q3)
+  print (length q4)
+
 
 -- Exercise 2
 exercise2 = print()
