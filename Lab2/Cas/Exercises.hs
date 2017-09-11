@@ -63,7 +63,26 @@ solution1 = do
 
 
 -- Exercise 2
-exercise2 = print()
+exercise2 = solution2
+
+data Shape = NoTriangle | Equilateral
+  | Isosceles  | Rectangular | Other deriving (Eq,Show)
+
+triangle :: Integer -> Integer -> Integer -> Shape
+
+triangle x y z
+  | x + y <= z || x + z <= y || y + z <= x = NoTriangle
+  | x == y && y == z && z == y = Equilateral
+  | x^2 + y^2 == z^2 || x^2 + z^2 == y^2 || y^2 + z^2 == x^2 = Rectangular
+  | x == y || x == z || y == z = Isosceles
+  | otherwise = Other
+
+solution2 = do
+  print(triangle 1 1 1)
+  print(triangle 1 2 2)
+  print(triangle 3 4 5)
+  print(triangle 1 3 3)
+  print(triangle 1 1 0)
 
 -- Exercise 3a
 exercise3a = print()
