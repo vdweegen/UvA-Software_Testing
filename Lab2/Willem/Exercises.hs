@@ -44,3 +44,17 @@ distribution n = do
                     let x = (chi a m) + (chi b m) + (chi c m) + (chi d m)
                     print (a,b,c,d,x)
 
+-- Exercise 2
+data Shape = NoTriangle | Equilateral
+            | Isosceles  | Rectangular | Other deriving (Eq,Show)
+
+triangle :: Integer -> Integer -> Integer -> Shape
+triangle a b c = NoTriangle
+
+noTriangle, equilateral, isosceles, rectangular, other :: Integer -> Integer -> Integer -> Bool
+noTriangle a b c = ((a+b) >= c) || ((a+c) >= b) || ((b+c) >= a)
+
+equilateral a b c = True
+isosceles a b c = True
+rectangular a b c = True
+other a b c = True
