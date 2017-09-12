@@ -146,7 +146,7 @@ merge [] ys = ys
 merge (x:xs) (y:ys) = x : y : merge xs ys
 
 -- Exercise 4
-exercise4 = print()
+exercise4 = print $ isPermutation [1,2,3,4] [4,2,3,1]
 
 -- implementation of perms using the earlier provided isSubset method
 -- note, as specified in the assignment, it does not process lists with dupes dupes.
