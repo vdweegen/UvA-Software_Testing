@@ -3,7 +3,6 @@ import Data.List
 
 import Lab2.Util.Random
 import Lab2.Util.Infix
-import Lab2.Util.Perms
 
 -- Define Main --
 main = do
@@ -127,11 +126,6 @@ largerThan3 = filter (>3) domain
 evenList :: [Integer]
 evenList = filter even domain
 
-asSet :: [Integer] -> [Integer]
-asSet [] = []
-asSet (x:xs) | elem x xs = asSet xs
-             | otherwise = x : asSet xs
-
 compareProperties :: [Integer] -> [Integer] -> PropertyStrength
 compareProperties lhs rhs | isSubset lhs rhs && isSubset rhs lhs = Both_Stronger
                           | isSubset lhs rhs = Left_Stronger
@@ -143,24 +137,36 @@ compareSets xs ys | isSubset xs ys = LT
                   | isSubset ys xs = GT
                   | otherwise = EQ
 
-isSubset :: [Integer] -> [Integer] -> Bool
-isSubset [] set = True
-isSubset [x] set = elem x set
-isSubset (x:xs) set = elem x set && isSubset xs set
-
 domain :: [Integer]
 domain = [-10..10]
-
--- Exercise 4
-exercise4 = print()
-
-isPermutation :: Eq a => [a] -> [a] -> Bool
-isPermutation xs ys = elem xs $ perms ys
 
 merge :: [Integer] -> [Integer] -> [Integer]
 merge xs [] = xs
 merge [] ys = ys
 merge (x:xs) (y:ys) = x : y : merge xs ys
+
+-- Exercise 4
+exercise4 = print()
+
+-- implementation of perms using the earlier provided isSubset method
+-- note, as specified in the assignment, it does not process lists with dupes dupes.
+-- If the dupes were important, one could simply count occurrences and compare this.
+-- if xs /= ys and sort xs == sort ys, then it's a permutation.
+-- For the testing procedure, it means you have to remove any duplicate from the input lists
+isPermutation :: Eq a => [a] -> [a] -> Bool
+isPermutation xs ys | xs == ys = False
+                    | (asSet xs) /= xs = False
+                    | (asSet ys) /= ys = False
+                    | otherwise = isSubset xs ys && isSubset ys xs
+
+isSubset :: Eq a => [a] -> [a] -> Bool
+isSubset [] set = True
+isSubset (x:xs) set = elem x set && isSubset xs set
+
+asSet :: Eq a => [a] -> [a]
+asSet [] = []
+asSet (x:xs) | elem x xs = asSet xs
+             | otherwise = x : asSet xs
 
 -- Exercise 5
 exercise5 = print()
