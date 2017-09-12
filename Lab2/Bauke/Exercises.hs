@@ -211,10 +211,36 @@ isUpperCase char = ('A' <= char) && ('Z' >= char)
 
 
 -- Exercise 7
-exercise7 = undefined
+-- Implementation time: 45 minutes
+-- Had some issues reading back the string to an integer
+-- The algorithm was fairly simply, followed wiki steps and got it first time right
+
+-- Specifications for the iban
+-- country code = 2 chars
+-- check number = 2 chars
+-- rest is max 30 chars
+
+exercise7 = do
+              putStr "My IBAN bank account number, NL62RABO0308713079 is valid: "
+              print $ iban "NL62RABO0308713079"
 
 iban :: String -> Bool
-iban = undefined
+iban account = calculatedNumber account == actualNumber account
+
+calculatedNumber :: String -> Integer
+calculatedNumber account = (-) 98 $ flip mod 97 $ read (convertChars $ preProcess account) :: Integer
+
+actualNumber :: String -> Integer
+actualNumber (_:_:c1:c2:_) = read ([c1] ++ [c2]) :: Integer
+
+preProcess :: String -> String
+preProcess (a:b:_:_:rest) = rest ++ [a] ++ [b]
+
+convertChars :: String -> String
+convertChars [] = "00"
+convertChars (x:xs) | ('A' <= x) && ('Z' >= x) = (show $ (+) 10 $ (ord x) - (ord 'A')) ++ convertChars xs
+                    | otherwise = [x] ++ convertChars xs
+
 
 -- Bonus Exercises
 exercisebonus = print()
