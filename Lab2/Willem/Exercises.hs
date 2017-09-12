@@ -46,6 +46,13 @@ probs n = do
              ps <- probs (n-1)
              return (p:ps)
 
+forall :: [a] -> (a -> Bool) -> Bool
+forall = flip all
+
+stronger, weaker :: [a] -> (a -> Bool) -> (a -> Bool) -> Bool
+stronger xs p q = forall xs (\ x -> p x --> q x)
+weaker   xs p q = stronger xs q p
+
 -- Exercise 1
 -- About one hour also to think of chi test
 quartile :: Float -> Float -> Float -> Bool
@@ -108,6 +115,8 @@ exercise3b = print()
 
 -- Exercise 4
 exercise4 = print()
+isPermutation :: Eq a => [a] -> [a] -> Bool
+isPermutation xs ys = (length xs == length ys) && (foldr (\x z-> elem x ys && z) True ys)
 
 -- Exercise 5
 exercise5 = print()
