@@ -1,4 +1,6 @@
 module Exercises where
+
+import Data.Char
 import Data.List
 
 import Lab2.Util.Random
@@ -126,16 +128,6 @@ largerThan3 = filter (>3) domain
 evenList :: [Integer]
 evenList = filter even domain
 
-merge :: [Integer] -> [Integer] -> [Integer]
-merge xs [] = xs
-merge [] ys = ys
-merge (x:xs) (y:ys) = x : y : merge xs ys
-
-asSet :: [Integer] -> [Integer]
-asSet [] = []
-asSet (x:xs) | elem x xs = asSet xs
-             | otherwise = x : asSet xs
-
 compareProperties :: [Integer] -> [Integer] -> PropertyStrength
 compareProperties lhs rhs | isSubset lhs rhs && isSubset rhs lhs = Both_Stronger
                           | isSubset lhs rhs = Left_Stronger
@@ -147,25 +139,82 @@ compareSets xs ys | isSubset xs ys = LT
                   | isSubset ys xs = GT
                   | otherwise = EQ
 
-isSubset :: [Integer] -> [Integer] -> Bool
-isSubset [] set = True
-isSubset [x] set = elem x set
-isSubset (x:xs) set = elem x set && isSubset xs set
-
 domain :: [Integer]
 domain = [-10..10]
 
+merge :: [Integer] -> [Integer] -> [Integer]
+merge xs [] = xs
+merge [] ys = ys
+merge (x:xs) (y:ys) = x : y : merge xs ys
+
 -- Exercise 4
-exercise4 = print()
+exercise4 = print $ isPermutation [1,2,3,4] [4,2,3,1]
+
+-- implementation of perms using the earlier provided isSubset method
+-- note, as specified in the assignment, it does not process lists with dupes dupes.
+-- If the dupes were important, one could simply count occurrences and compare this.
+-- if xs /= ys and sort xs == sort ys, then it's a permutation.
+-- For the testing procedure, it means you have to remove any duplicate from the input lists
+
+-- properties:
+-- non equal lists
+-- lists have the same length
+-- lists contain the same items
+
+isPermutation :: Eq a => [a] -> [a] -> Bool
+isPermutation xs ys | xs == ys = False
+                    | (asSet xs) /= xs = False
+                    | (asSet ys) /= ys = False
+                    | otherwise = isSubset xs ys && isSubset ys xs
+
+isSubset :: Eq a => [a] -> [a] -> Bool
+isSubset [] set = True
+isSubset (x:xs) set = elem x set && isSubset xs set
+
+asSet :: Eq a => [a] -> [a]
+asSet [] = []
+asSet (x:xs) | elem x xs = asSet xs
+             | otherwise = x : asSet xs
 
 -- Exercise 5
 exercise5 = print()
 
 -- Exercise 6
-exercise6 = print()
+-- property of ROT 13
+-- it maintains the case of the character
+-- when performed twice, it returns the same character
+-- the output is always different from the input
+-- non printable chars are not converted
+
+exercise6 = print $ maskString "This is the answer to exercise 6! :-)"
+
+maskString :: String -> String
+maskString input = [ rot13 a | a <- input]
+
+rot13 :: Char -> Char
+rot13 char | (isLowerCase char) && (char <= lowLowerHalf ) = chr $ (ord char) + 13
+           | (isLowerCase char) && (char > lowLowerHalf) = chr $ (ord char) - 13
+           | (isUpperCase char) && (char <= lowUpperHalf ) = chr $ (ord char) + 13
+           | (isUpperCase char) && (char > lowUpperHalf) = chr $ (ord char) - 13
+           | otherwise = char
+
+lowLowerHalf :: Char
+lowLowerHalf = chr $ (ord lowUpperHalf) + 0x20
+
+lowUpperHalf :: Char
+lowUpperHalf = chr $ (+) lowVal $ flip div 2 $ (ord 'Z') - lowVal
+               where lowVal = ord 'A'
+
+isLowerCase, isUpperCase :: Char -> Bool
+isLowerCase char = ('a' <= char) && ('z' >= char)
+isUpperCase char = ('A' <= char) && ('Z' >= char)
+
 
 -- Exercise 7
-exercise7 = print()
+exercise7 = undefined
+
+iban :: String -> Bool
+iban = undefined
 
 -- Bonus Exercises
 exercisebonus = print()
