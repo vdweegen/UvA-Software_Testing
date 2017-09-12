@@ -5,6 +5,7 @@ import Data.List
 
 import Lab2.Util.Random
 import Lab2.Util.Infix
+import Lab2.Util.Ibans
 
 -- Define Main --
 main = do
@@ -220,9 +221,7 @@ isUpperCase char = ('A' <= char) && ('Z' >= char)
 -- check number = 2 chars
 -- rest is max 30 chars
 
-exercise7 = do
-              putStr "My IBAN bank account number, NL62RABO0308713079 is valid: "
-              print $ iban "NL62RABO0308713079"
+exercise7 = print $ map iban validIbans
 
 iban :: String -> Bool
 iban account = calculatedNumber account == actualNumber account
