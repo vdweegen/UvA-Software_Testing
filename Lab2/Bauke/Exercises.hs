@@ -178,8 +178,24 @@ asSet (x:xs) | elem x xs = asSet xs
              | otherwise = x : asSet xs
 
 -- Exercise 5
-exercise5 = print()
+-- Implementation time: 10 minutes for the logic
+-- Simply reusing the code for checking a permutation and making it stronger
+-- by checking for the unique indexes
 
+exercise5 = print $ isDerangement [1,2,3,4,5] [2,3,4,5,1]
+
+isDerangement :: [Integer] -> [Integer] -> Bool
+isDerangement xs ys | invalidPermutation xs ys = False
+                    | otherwise = uniqueIndexes xs ys
+
+uniqueIndexes :: [Integer] -> [Integer] -> Bool
+uniqueIndexes [] [] = True
+uniqueIndexes (x:xs) (y:ys) | x == y = False
+                            | otherwise = uniqueIndexes xs ys
+
+invalidPermutation :: [Integer] -> [Integer] -> Bool
+invalidPermutation xs ys | xs == ys = True
+                         | otherwise = sort xs /= sort ys
 -- Exercise 6
 -- property of ROT 13
 -- it maintains the case of the character
