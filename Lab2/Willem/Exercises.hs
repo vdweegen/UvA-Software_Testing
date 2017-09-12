@@ -95,6 +95,11 @@ equilateral a b c = (a == b) && (a == c) && (b == c)
 isosceles a b c = (a == b) || (a == c) || (b == c)
 rectangular a b c = (a^2+b^2) == c^2 || (a^2+c^2) == b^2 || (b^2+c^2) == a^2
 
+equilateralProp, isoscelesProp, rectangularProp :: Int -> [(Int, Int, Int)]
+equilateralProp n = [(a,b,c)| a <- [1..n], b <- [1..n], c <- [1..n], a == b && b == c]
+isoscelesProp n   = [(a,b,c)| a <- [1..n], b <- [1..n], c <- [1..n], (a == b) && (a == c) && (b == c)]
+rectangularProp n = [(a,b,c)| a <- [1..n], b <- [1..n], c <- [1..n], (a^2+b^2) == c^2 || (a^2+c^2) == b^2 || (b^2+c^2) == a^2]
+
 -- Exercise 3a
 exercise3a = print()
 
