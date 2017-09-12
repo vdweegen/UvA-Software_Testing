@@ -1,4 +1,4 @@
-module Lab2 where
+module Lab2.Exercises where
 
 import Data.List
 import Data.Maybe
@@ -8,6 +8,7 @@ import System.Random
 import Control.Monad
 import Control.Applicative
 import Data.Char
+import Lab2.Util.Ibans
 
 -- Assignment 2 / Lab 2 :: Group 14 --
 
@@ -158,7 +159,22 @@ strip :: String -> String
 strip = filter(\x -> x `elem` (['a'..'z'] ++ ['A'..'Z']))
 
 -- Exercise 7
-exercise7 = print()
+iban :: String -> Bool
+iban s = mod (toNumbers $ first4 s) 97 == 1
+
+first4 :: String -> String
+first4 (a:b:c:d:s) = s ++ [a,b,c,d]
+
+toNum :: Char -> String
+toNum c | c `elem` ['0'..'9'] = [c]
+        | c `elem` ['A'..'Z'] = show $ maybe 0 (+10) (elemIndex c ['A'..'Z'])
+        | otherwise = []
+
+
+toNumbers :: String -> Integer
+toNumbers s = read(concat $ map toNum s)::Integer
+
+exercise7 = print(forall validIbans iban)
 
 -- Bonus Exercises
 exercisebonus = print()
