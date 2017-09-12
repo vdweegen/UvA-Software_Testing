@@ -3,6 +3,7 @@ import Data.List
 
 import Lab2.Util.Random
 import Lab2.Util.Infix
+import Lab2.Util.Perms
 
 -- Define Main --
 main = do
@@ -126,11 +127,6 @@ largerThan3 = filter (>3) domain
 evenList :: [Integer]
 evenList = filter even domain
 
-merge :: [Integer] -> [Integer] -> [Integer]
-merge xs [] = xs
-merge [] ys = ys
-merge (x:xs) (y:ys) = x : y : merge xs ys
-
 asSet :: [Integer] -> [Integer]
 asSet [] = []
 asSet (x:xs) | elem x xs = asSet xs
@@ -157,6 +153,14 @@ domain = [-10..10]
 
 -- Exercise 4
 exercise4 = print()
+
+isPermutation :: Eq a => [a] -> [a] -> Bool
+isPermutation xs ys = elem xs $ perms ys
+
+merge :: [Integer] -> [Integer] -> [Integer]
+merge xs [] = xs
+merge [] ys = ys
+merge (x:xs) (y:ys) = x : y : merge xs ys
 
 -- Exercise 5
 exercise5 = print()
