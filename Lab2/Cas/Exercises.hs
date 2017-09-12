@@ -149,7 +149,10 @@ solution3b = do
 
 
 -- Exercise 4
-exercise4 = print()
+exercise4 = solution4
+
+solution4 = do
+  print $ elem [3,2,1] (permutations [1,2,3])
 
 -- Exercise 5
 exercise5 = print()
