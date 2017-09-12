@@ -1,6 +1,5 @@
 module Exercises where
 import Data.List
-import Data.Set
 
 import Lab2.Util.Random
 import Lab2.Util.Infix
@@ -85,10 +84,74 @@ validTriangle :: Integer -> Integer -> Integer -> Bool
 validTriangle a b c = (a + b > c) && (a + c > b) && (b + c > a)
 
 -- Exercise 3a
-exercise3a = print()
+-- Implementation time: 15 minutes
+-- Writing the generic function took most time,
+-- Afterwards i noticed that haskell provides `isSubSet`
 
 -- Exercise 3b
-exercise3b = print()
+-- Implementation time: 20 minutes
+-- Checked on the usage custom sort algorithm. Haskell provides sortBy.
+-- Implemented the Ordering operator for the lists and passed this to the sort
+
+data PropertyStrength = Left_Stronger | Right_Stronger | Both_Stronger | Invalid_Comparison
+  deriving (Eq, Show)
+
+-- Implement the properties and show which one is stronger
+exercise3a = do
+              putStr "'(\\ x -> even x && x > 3)' compared to 'even': "
+              print $ compareProperties prop3aList evenList
+              putStr "'(\\ x -> even x || x > 3)' compared to 'even': "
+              print $ compareProperties prop3bList evenList
+              putStr "'(\\ x -> (even x && x > 3) || even x)' compared to 'even': "
+              print $ compareProperties prop3cList evenList
+              putStr "'even' compared to '(\\ x -> (even x && x > 3) || even x)': "
+              print $ compareProperties evenList prop3cList
+
+exercise3b = print $ sortBy compareSets [prop3aList, prop3bList, prop3cList, evenList]
+
+compareSets :: [Integer] -> [Integer] -> Ordering
+compareSets xs ys | isSubset xs ys = LT
+                   | isSubset ys xs = GT
+                   | otherwise = EQ
+
+prop3bList :: [Integer]
+prop3bList = sort $ asSet $ merge largerThan3 evenList
+
+prop3cList :: [Integer]
+prop3cList = sort $ asSet $ merge prop3aList evenList
+
+prop3aList :: [Integer]
+prop3aList = filter (>3) evenList
+
+largerThan3 :: [Integer]
+largerThan3 = filter (>3) domain
+
+evenList :: [Integer]
+evenList = filter even domain
+
+merge :: [Integer] -> [Integer] -> [Integer]
+merge xs [] = xs
+merge [] ys = ys
+merge (x:xs) (y:ys) = x : y : merge xs ys
+
+asSet :: [Integer] -> [Integer]
+asSet [] = []
+asSet (x:xs) | elem x xs = asSet xs
+             | otherwise = x : asSet xs
+
+compareProperties :: [Integer] -> [Integer] -> PropertyStrength
+compareProperties lhs rhs | isSubset lhs rhs && isSubset rhs lhs = Both_Stronger
+                          | isSubset lhs rhs = Left_Stronger
+                          | isSubset rhs lhs = Right_Stronger
+                          | otherwise = Invalid_Comparison
+
+isSubset :: [Integer] -> [Integer] -> Bool
+isSubset [] set = True
+isSubset [x] set = elem x set
+isSubset (x:xs) set = elem x set && isSubset xs set
+
+domain :: [Integer]
+domain = [-10..10]
 
 -- Exercise 4
 exercise4 = print()
