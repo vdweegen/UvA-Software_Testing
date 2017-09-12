@@ -112,6 +112,28 @@ compar xs p q
   | stronger xs q p = Weaker
   | otherwise = Incomparable
 
+permcompar x (y,z) = compar x y z
+
+instance Ord PropertyStrength where
+  compare Stronger Stronger = EQ
+  compare Stronger Weaker = GT
+  compare Stronger Equivalent = GT
+  compare Stronger Incomparable = GT
+  compare Equivalent Stronger = LT
+  compare Equivalent Equivalent = EQ
+  compare Equivalent Weaker = GT
+  compare Equivalent Incomparable = GT
+  compare Weaker Stronger = LT
+  compare Weaker Equivalent = LT
+  compare Weaker Weaker = EQ
+  compare Weaker Incomparable = GT
+  compare Incomparable Stronger = LT
+  compare Incomparable Equivalent = LT
+  compare Incomparable Weaker = LT
+  compare Incomparable Incomparable = EQ
+
+props = [(one,two),(one,three),(one,four),(two,three),(three,four)]
+
 solution3a = do
   print $ compar domain one two
   print $ compar domain one three
@@ -120,7 +142,11 @@ solution3a = do
   print $ compar domain three four
 
 -- Exercise 3b
-exercise3b = print()
+exercise3b = solution3b
+
+solution3b = do
+  print $ sort $ map (permcompar domain) props
+
 
 -- Exercise 4
 exercise4 = print()
