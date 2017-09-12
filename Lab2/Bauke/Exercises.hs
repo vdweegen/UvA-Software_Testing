@@ -92,6 +92,8 @@ validTriangle a b c = (a + b > c) && (a + c > b) && (b + c > a)
 -- Implementation time: 20 minutes
 -- Checked on the usage custom sort algorithm. Haskell provides sortBy.
 -- Implemented the Ordering operator for the lists and passed this to the sort
+-- Note that this ordering assumes that all sets are contained in the powerset.
+-- If neither set is stronger, the order will remain unchanged.
 
 data PropertyStrength = Left_Stronger | Right_Stronger | Both_Stronger | Invalid_Comparison
   deriving (Eq, Show)
@@ -109,19 +111,14 @@ exercise3a = do
 
 exercise3b = print $ sortBy compareSets [prop3aList, prop3bList, prop3cList, evenList]
 
-compareSets :: [Integer] -> [Integer] -> Ordering
-compareSets xs ys | isSubset xs ys = LT
-                   | isSubset ys xs = GT
-                   | otherwise = EQ
+prop3aList :: [Integer]
+prop3aList = filter (>3) evenList
 
 prop3bList :: [Integer]
 prop3bList = sort $ asSet $ merge largerThan3 evenList
 
 prop3cList :: [Integer]
 prop3cList = sort $ asSet $ merge prop3aList evenList
-
-prop3aList :: [Integer]
-prop3aList = filter (>3) evenList
 
 largerThan3 :: [Integer]
 largerThan3 = filter (>3) domain
@@ -144,6 +141,11 @@ compareProperties lhs rhs | isSubset lhs rhs && isSubset rhs lhs = Both_Stronger
                           | isSubset lhs rhs = Left_Stronger
                           | isSubset rhs lhs = Right_Stronger
                           | otherwise = Invalid_Comparison
+
+compareSets :: [Integer] -> [Integer] -> Ordering
+compareSets xs ys | isSubset xs ys = LT
+                  | isSubset ys xs = GT
+                  | otherwise = EQ
 
 isSubset :: [Integer] -> [Integer] -> Bool
 isSubset [] set = True
