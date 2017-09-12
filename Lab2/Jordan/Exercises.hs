@@ -4,7 +4,7 @@ import Data.List
 import Data.Char
 import System.Random
 import Test.QuickCheck
-
+import Lab2.Util.Random
 -- Assignment 2 / Lab 2 :: Group 14 --
 
 infix 1 -->
@@ -36,7 +36,20 @@ main = do
     exercisebonus
 
 -- Exercise 1
-exercise1 = print()
+-- Seems to be evenly distributed
+
+quintile :: [Float] -> [Float] -> [Integer]
+quintile xs [] = []
+quintile xs (q:qs) = [genericLength $ filter (<q) xs] ++ (quintile (filter (>=q) xs) qs)
+
+quintileIO xs q = do {
+    p <- probs xs;
+    print $ quintile p [x/q | x  <- [1..q]]
+}
+
+exercise1 = quintileIO 10000 4
+
+-- exercise1 = print $ foldl (\xs -> takeWhile (< (head [xs])) [0.1,0.2,0.5,0.6,0.9]
 
 -- Exercise 2
 exercise2 = print()
