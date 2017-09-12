@@ -34,39 +34,11 @@ main = do
     putStrLn $ "> BONUS"
     exercisebonus
 
--- Exercise 1
-exercise1 = print()
-
--- Exercise 2
-exercise2 = print()
-
--- Exercise 3a
-exercise3a = print()
-
--- Exercise 3b
-exercise3b = print()
-
--- Exercise 4
-exercise4 = print()
-
--- Exercise 5
-exercise5 = print()
-
--- Exercise 6
-exercise6 = print()
-
--- Exercise 7
-exercise7 = print()
-
--- Bonus Exercises
-exercisebonus = print()
-
+-- provided
 infix 1 -->
 (-->) :: Bool -> Bool -> Bool
 p --> q = (not p) || q
 
--- Exercise 1
--- About one hour also to think of chi test
 probs :: Int -> IO [Float]
 probs 0 = return []
 probs n = do
@@ -74,6 +46,8 @@ probs n = do
              ps <- probs (n-1)
              return (p:ps)
 
+-- Exercise 1
+-- About one hour also to think of chi test
 quartile :: Float -> Float -> Float -> Bool
 quartile min max n = n >= min && n < max
 
@@ -98,7 +72,10 @@ distribution n = do
                     let x = (chi a m) + (chi b m) + (chi c m) + (chi d m)
                     print (a,b,c,d,x)
 
+exercise1 = distribution 10000
+
 -- Exercise 2
+exercise2 = print()
 data Shape = NoTriangle | Equilateral
             | Isosceles  | Rectangular | Other deriving (Eq,Show)
 
@@ -112,3 +89,24 @@ equilateral a b c = True
 isosceles a b c = True
 rectangular a b c = True
 other a b c = True
+
+-- Exercise 3a
+exercise3a = print()
+
+-- Exercise 3b
+exercise3b = print()
+
+-- Exercise 4
+exercise4 = print()
+
+-- Exercise 5
+exercise5 = print()
+
+-- Exercise 6
+exercise6 = print()
+
+-- Exercise 7
+exercise7 = print()
+
+-- Bonus Exercises
+exercisebonus = print()
