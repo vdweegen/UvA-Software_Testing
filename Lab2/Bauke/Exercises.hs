@@ -180,16 +180,16 @@ asSet (x:xs) | elem x xs = asSet xs
 exercise5 = print()
 
 -- Exercise 6
-exercise6 = print()
-
--- Exercise 7
-exercise7 = undefined
-
 -- property of ROT 13
 -- it maintains the case of the character
 -- when performed twice, it returns the same character
 -- the output is always different from the input
 -- non printable chars are not converted
+
+exercise6 = print $ maskString "This is the answer to exercise 6! :-)"
+
+maskString :: String -> String
+maskString input = [ rot13 a | a <- input]
 
 rot13 :: Char -> Char
 rot13 char | (isLowerCase char) && (char <= lowLowerHalf ) = chr $ (ord char) + 13
@@ -208,6 +208,13 @@ lowUpperHalf = chr $ (+) lowVal $ flip div 2 $ (ord 'Z') - lowVal
 isLowerCase, isUpperCase :: Char -> Bool
 isLowerCase char = ('a' <= char) && ('z' >= char)
 isUpperCase char = ('A' <= char) && ('Z' >= char)
+
+
+-- Exercise 7
+exercise7 = undefined
+
+iban :: String -> Bool
+iban = undefined
 
 -- Bonus Exercises
 exercisebonus = print()
