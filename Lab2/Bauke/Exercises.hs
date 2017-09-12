@@ -1,4 +1,6 @@
 module Exercises where
+
+import Data.Char
 import Data.List
 
 import Lab2.Util.Random
@@ -153,6 +155,12 @@ exercise4 = print $ isPermutation [1,2,3,4] [4,2,3,1]
 -- If the dupes were important, one could simply count occurrences and compare this.
 -- if xs /= ys and sort xs == sort ys, then it's a permutation.
 -- For the testing procedure, it means you have to remove any duplicate from the input lists
+
+-- properties:
+-- non equal lists
+-- lists have the same length
+-- lists contain the same items
+
 isPermutation :: Eq a => [a] -> [a] -> Bool
 isPermutation xs ys | xs == ys = False
                     | (asSet xs) /= xs = False
@@ -175,7 +183,31 @@ exercise5 = print()
 exercise6 = print()
 
 -- Exercise 7
-exercise7 = print()
+exercise7 = undefined
+
+-- property of ROT 13
+-- it maintains the case of the character
+-- when performed twice, it returns the same character
+-- the output is always different from the input
+-- non printable chars are not converted
+
+rot13 :: Char -> Char
+rot13 char | (isLowerCase char) && (char <= lowLowerHalf ) = chr $ (ord char) + 13
+           | (isLowerCase char) && (char > lowLowerHalf) = chr $ (ord char) - 13
+           | (isUpperCase char) && (char <= lowUpperHalf ) = chr $ (ord char) + 13
+           | (isUpperCase char) && (char > lowUpperHalf) = chr $ (ord char) - 13
+           | otherwise = char
+
+lowLowerHalf :: Char
+lowLowerHalf = chr $ (ord lowUpperHalf) + 0x20
+
+lowUpperHalf :: Char
+lowUpperHalf = chr $ (+) lowVal $ flip div 2 $ (ord 'Z') - lowVal
+               where lowVal = ord 'A'
+
+isLowerCase, isUpperCase :: Char -> Bool
+isLowerCase char = ('a' <= char) && ('z' >= char)
+isUpperCase char = ('A' <= char) && ('Z' >= char)
 
 -- Bonus Exercises
 exercisebonus = print()
