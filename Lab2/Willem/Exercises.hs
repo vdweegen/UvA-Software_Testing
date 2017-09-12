@@ -118,10 +118,23 @@ exercise3b = print()
 -- Exercise 4
 exercise4 = print()
 isPermutation :: Eq a => [a] -> [a] -> Bool
-isPermutation xs ys = (length xs == length ys) && foldr (\x z-> elem x ys && z) True ys
+isPermutation [] [] = False
+isPermutation xs ys = (length xs == length ys)
+                      && forall xs (\x-> x `elem` ys)
+                      && forall ys (\y-> y `elem` xs)
 
 -- Exercise 5
+-- 10 min
+-- reuse isPermutation, we know the elements are there so we can call fromJust on elemIndex
+-- simply compare the index of the relevant element with the other list
+-- use permutations to generate a permutation, only add it to the list if it satisfies isDerangement
 exercise5 = print()
+isDerangement :: Eq a => [a] -> [a] -> Bool
+isDerangement xs ys = isPermutation xs ys
+                      && forall xs (\x -> (fromJust $ elemIndex x xs) /= (fromJust $ elemIndex x ys))
+
+deran :: Eq a => [a] -> [[a]]
+deran xs = [ys | ys <- permutations xs, isDerangement xs ys]
 
 -- Exercise 6
 -- simply fetch index in the array and get letter from the other array
