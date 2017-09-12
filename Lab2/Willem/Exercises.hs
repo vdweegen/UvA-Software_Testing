@@ -117,7 +117,7 @@ exercise3b = print()
 -- Exercise 4
 exercise4 = print()
 isPermutation :: Eq a => [a] -> [a] -> Bool
-isPermutation xs ys = (length xs == length ys) && (foldr (\x z-> elem x ys && z) True ys)
+isPermutation xs ys = (length xs == length ys) && foldr (\x z-> elem x ys && z) True ys
 
 -- Exercise 5
 exercise5 = print()
@@ -125,21 +125,37 @@ exercise5 = print()
 -- Exercise 6
 -- simply fetch index in the array and get letter from the other array
 -- 15 min
-exercise6 = print(rot13string "Exercise 6" ++ " --> " ++ rot13string "Rkrepvfr 6")
-upper, lower, upperRot13, lowerRot13 :: [Char]
+exercise6 = quickCheckResult rotSpec
+upper, lower, upperRot13, lowerRot13 :: String
 upper = ['A'..'Z']
 lower = ['a'..'z']
 upperRot13 = ['N'..'Z'] ++ ['A'..'M']
 lowerRot13 = ['n'..'z'] ++ ['a'..'m']
 
 rot13 :: Char -> Char
-rot13 c | elem c upper = upperRot13 !! (fromJust $ elemIndex c upper)
-        | elem c lower = lowerRot13 !! (fromJust $ elemIndex c lower)
+rot13 c | c `elem` upper = upperRot13 !! fromJust(elemIndex c upper)
+        | c `elem` lower = lowerRot13 !! fromJust(elemIndex c lower)
         | otherwise = c
 
 rot13string :: String -> String
-rot13string s = map rot13 s
+rot13string = map rot13
 
+rotSpecLength :: String -> Bool
+rotSpecLength s = length(rot13string s) == length s
+
+rotSpecNotEqual :: String -> Bool
+rotSpecNotEqual [] = True
+rotSpecNotEqual s = rot13string s /= s
+
+rotSpecEqual :: String -> Bool
+rotSpecEqual s = rot13string(rot13string s) == s
+
+rotSpec :: String -> Bool
+rotSpec s | null(strip s) = True
+          | otherwise = rotSpecLength s && rotSpecNotEqual s && rotSpecEqual s
+
+strip :: String -> String
+strip = filter(\x -> x `elem` (['a'..'z'] ++ ['A'..'Z']))
 
 -- Exercise 7
 exercise7 = print()
