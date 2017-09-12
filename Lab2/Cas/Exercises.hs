@@ -10,6 +10,8 @@ import Test.QuickCheck
 infix 1 -->
 (-->) :: Bool -> Bool -> Bool
 p --> q = (not p) || q
+forall :: [a] -> (a -> Bool) -> Bool
+forall = flip all
 
 -- Define Main --
 main = do
@@ -17,9 +19,9 @@ main = do
     putStrLn $ "Assignment 2 / Lab 2"
     putStrLn $ "===================="
     putStrLn $ "> Exercise 1"
-    exercise1
+    -- exercise1
     putStrLn $ "> Exercise 2"
-    exercise2
+    -- exercise2
     putStrLn $ "> Exercise 3a"
     exercise3a
     putStrLn $ "> Exercise 3b"
@@ -85,7 +87,37 @@ solution2 = do
   print(triangle 1 1 0)
 
 -- Exercise 3a
-exercise3a = print()
+exercise3a = solution3a
+
+stronger, weaker :: [a] -> (a -> Bool) -> (a -> Bool) -> Bool
+stronger xs p q = forall xs (\ x -> p x --> q x)
+weaker   xs p q = stronger xs q p
+
+one, two, three, four :: Int -> Bool
+one = (\x -> even x && x > 3)
+two = (\x -> even x || x > 3)
+three = (\x -> (even x && x > 3) || even x)
+four = (\x -> (even x && x > 3) || even x)
+
+domain :: [Int]
+domain = [-10..10]
+
+data PropertyStrength = Stronger | Weaker | Equivalent | Incomparable
+  deriving (Eq, Show)
+
+compar :: [a] -> (a -> Bool) -> (a -> Bool) -> PropertyStrength
+compar xs p q
+  | (stronger xs p q) && (stronger xs q p) = Equivalent
+  | stronger xs p q = Stronger
+  | stronger xs q p = Weaker
+  | otherwise = Incomparable
+
+solution3a = do
+  print $ compar domain one two
+  print $ compar domain one three
+  print $ compar domain one four
+  print $ compar domain two three
+  print $ compar domain three four
 
 -- Exercise 3b
 exercise3b = print()
