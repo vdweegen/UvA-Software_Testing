@@ -116,12 +116,12 @@ exercise3a = print()
 exercise3b = print()
 
 -- Exercise 4
-exercise4 = print()
+exercise4 = print(deran [0..3])
 isPermutation :: Eq a => [a] -> [a] -> Bool
 isPermutation [] [] = False
 isPermutation xs ys = (length xs == length ys)
-                      && forall xs (\x-> x `elem` ys)
-                      && forall ys (\y-> y `elem` xs)
+                      && forall xs (`elem` ys)
+                      && forall ys (`elem` xs)
 
 -- Exercise 5
 -- 10 min
@@ -131,7 +131,7 @@ isPermutation xs ys = (length xs == length ys)
 exercise5 = print()
 isDerangement :: Eq a => [a] -> [a] -> Bool
 isDerangement xs ys = isPermutation xs ys
-                      && forall xs (\x -> (fromJust $ elemIndex x xs) /= (fromJust $ elemIndex x ys))
+                      && forall xs (\x -> fromJust(elemIndex x xs) /= fromJust(elemIndex x ys))
 
 deran :: Eq a => [a] -> [[a]]
 deran xs = [ys | ys <- permutations xs, isDerangement xs ys]
@@ -185,7 +185,7 @@ toNum c | c `elem` ['0'..'9'] = [c]
 
 
 toNumbers :: String -> Integer
-toNumbers s = read(concat $ map toNum s)::Integer
+toNumbers s = read(concatMap toNum s)::Integer
 
 exercise7 = print(forall validIbans iban)
 
