@@ -36,23 +36,42 @@ main = do
     exercisebonus
 
 -- Exercise 1
--- Seems to be evenly distributed
+-- Seems to be evenly distributed  Time taken: about 1.5 to 2 hours
 
-quintile :: [Float] -> [Float] -> [Integer]
-quintile xs [] = []
-quintile xs (q:qs) = [genericLength $ filter (<q) xs] ++ (quintile (filter (>=q) xs) qs)
+quantiles :: [Float] -> [Float] -> [Integer]
+quantiles xs [] = []
+quantiles xs (q:qs) = [genericLength $ filter (<q) xs] ++ (quantiles (filter (>=q) xs) qs)
 
-quintileIO xs q = do {
+quantilesIO xs q = do {
     p <- probs xs;
-    print $ quintile p [x/q | x  <- [1..q]]
+    print $ quantiles p [x/q | x  <- [1..q]]
 }
 
-exercise1 = quintileIO 10000 4
-
--- exercise1 = print $ foldl (\xs -> takeWhile (< (head [xs])) [0.1,0.2,0.5,0.6,0.9]
+exercise1 = quantilesIO 10000 4
 
 -- Exercise 2
-exercise2 = print()
+-- Estimated time taken 2 hours
+-- Tried to think about the problem in an abstract way. Thus the most time was spent learning about triangles! XP
+isTriangle = (all ((\xs -> head xs <= sum (tail xs)) )) . permutations
+
+isRightTriangle abc = c == sum ab
+    where abc2 = map(^2) abc
+          c = maximum abc2
+          ab = filter (<c) abc2
+          
+equalSides = length.group.sort
+
+triangle x y z 
+    | (not.isTriangle) abc =  NoTriangle
+    | isRightTriangle abc = Rectangular
+    | 2 == equalSides abc = Isosceles
+    | 1 == equalSides abc = Equilateral
+    | otherwise = Other
+    where abc = [x,y,z]
+    
+data Shape = NoTriangle | Equilateral | Isosceles | Rectangular | Other deriving (Eq,Show)
+
+exercise2 = print $ triangle 1 1 9
 
 -- Exercise 3a
 exercise3a = print()
