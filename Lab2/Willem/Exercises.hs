@@ -1,4 +1,4 @@
-module Lab2 where
+module Lab2.Exercises where
 
 import Data.List
 import Data.Maybe
@@ -8,6 +8,7 @@ import System.Random
 import Control.Monad
 import Control.Applicative
 import Data.Char
+import Lab2.Util.Ibans
 
 -- Assignment 2 / Lab 2 :: Group 14 --
 
@@ -115,34 +116,78 @@ exercise3a = print()
 exercise3b = print()
 
 -- Exercise 4
-exercise4 = print()
+exercise4 = print(deran [0..3])
 isPermutation :: Eq a => [a] -> [a] -> Bool
-isPermutation xs ys = (length xs == length ys) && (foldr (\x z-> elem x ys && z) True ys)
+isPermutation [] [] = False
+isPermutation xs ys = (length xs == length ys)
+                      && forall xs (`elem` ys)
+                      && forall ys (`elem` xs)
 
 -- Exercise 5
+-- 10 min
+-- reuse isPermutation, we know the elements are there so we can call fromJust on elemIndex
+-- simply compare the index of the relevant element with the other list
+-- use permutations to generate a permutation, only add it to the list if it satisfies isDerangement
 exercise5 = print()
+isDerangement :: Eq a => [a] -> [a] -> Bool
+isDerangement xs ys = isPermutation xs ys
+                      && forall xs (\x -> fromJust(elemIndex x xs) /= fromJust(elemIndex x ys))
+
+deran :: Eq a => [a] -> [[a]]
+deran xs = [ys | ys <- permutations xs, isDerangement xs ys]
 
 -- Exercise 6
 -- simply fetch index in the array and get letter from the other array
 -- 15 min
-exercise6 = print(rot13string "Exercise 6" ++ " --> " ++ rot13string "Rkrepvfr 6")
-upper, lower, upperRot13, lowerRot13 :: [Char]
+exercise6 = quickCheckResult rotSpec
+upper, lower, upperRot13, lowerRot13 :: String
 upper = ['A'..'Z']
 lower = ['a'..'z']
 upperRot13 = ['N'..'Z'] ++ ['A'..'M']
 lowerRot13 = ['n'..'z'] ++ ['a'..'m']
 
 rot13 :: Char -> Char
-rot13 c | elem c upper = upperRot13 !! (fromJust $ elemIndex c upper)
-        | elem c lower = lowerRot13 !! (fromJust $ elemIndex c lower)
+rot13 c | c `elem` upper = upperRot13 !! fromJust(elemIndex c upper)
+        | c `elem` lower = lowerRot13 !! fromJust(elemIndex c lower)
         | otherwise = c
 
 rot13string :: String -> String
-rot13string s = map rot13 s
+rot13string = map rot13
 
+rotSpecLength :: String -> Bool
+rotSpecLength s = length(rot13string s) == length s
+
+rotSpecNotEqual :: String -> Bool
+rotSpecNotEqual [] = True
+rotSpecNotEqual s = rot13string s /= s
+
+rotSpecEqual :: String -> Bool
+rotSpecEqual s = rot13string(rot13string s) == s
+
+rotSpec :: String -> Bool
+rotSpec s | null(strip s) = True
+          | otherwise = rotSpecLength s && rotSpecNotEqual s && rotSpecEqual s
+
+strip :: String -> String
+strip = filter(\x -> x `elem` (['a'..'z'] ++ ['A'..'Z']))
 
 -- Exercise 7
-exercise7 = print()
+iban :: String -> Bool
+iban s = mod (toNumbers $ first4 s) 97 == 1
+
+first4 :: String -> String
+first4 (a:b:c:d:s) = s ++ [a,b,c,d]
+
+toNum :: Char -> String
+toNum c | c `elem` ['0'..'9'] = [c]
+        | c `elem` ['A'..'Z'] = show $ maybe 0 (+10) (elemIndex c ['A'..'Z'])
+        | otherwise = []
+
+
+toNumbers :: String -> Integer
+toNumbers s = read(concatMap toNum s)::Integer
+
+exercise7 = print(forall validIbans iban)
 
 -- Bonus Exercises
 exercisebonus = print()

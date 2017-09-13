@@ -3,8 +3,11 @@ module Exercises where
 import Data.Char
 import Data.List
 
-import Lab2.Util.Random
+
+import Lab2.Util.Ibans
 import Lab2.Util.Infix
+import Lab2.Util.Primes
+import Lab2.Util.Random
 
 -- Define Main --
 main = do
@@ -177,8 +180,24 @@ asSet (x:xs) | elem x xs = asSet xs
              | otherwise = x : asSet xs
 
 -- Exercise 5
-exercise5 = print()
+-- Implementation time: 10 minutes for the logic
+-- Simply reusing the code for checking a permutation and making it stronger
+-- by checking for the unique indexes
 
+exercise5 = print $ isDerangement [1,2,3,4,5] [2,3,4,5,1]
+
+isDerangement :: [Integer] -> [Integer] -> Bool
+isDerangement xs ys | invalidPermutation xs ys = False
+                    | otherwise = uniqueIndexes xs ys
+
+uniqueIndexes :: [Integer] -> [Integer] -> Bool
+uniqueIndexes [] [] = True
+uniqueIndexes (x:xs) (y:ys) | x == y = False
+                            | otherwise = uniqueIndexes xs ys
+
+invalidPermutation :: [Integer] -> [Integer] -> Bool
+invalidPermutation xs ys | xs == ys = True
+                         | otherwise = sort xs /= sort ys
 -- Exercise 6
 -- property of ROT 13
 -- it maintains the case of the character
@@ -220,9 +239,7 @@ isUpperCase char = ('A' <= char) && ('Z' >= char)
 -- check number = 2 chars
 -- rest is max 30 chars
 
-exercise7 = do
-              putStr "My IBAN bank account number, NL62RABO0308713079 is valid: "
-              print $ iban "NL62RABO0308713079"
+exercise7 = print $ map iban validIbans
 
 iban :: String -> Bool
 iban account = calculatedNumber account == actualNumber account
@@ -242,5 +259,37 @@ convertChars (x:xs) | ('A' <= x) && ('Z' >= x) = (show $ (+) 10 $ (ord x) - (ord
                     | otherwise = [x] ++ convertChars xs
 
 
+-- 83,59,21
+-- 29, 51
+
 -- Bonus Exercises
-exercisebonus = print()
+exercisebonus = do
+                  print $ euler29 [2..100]
+
+-- a ^ b => generates 15 distinct terms for a 2..5 and b 2..5
+-- how many terms does a^b generate for a 2 .. 100 and b 2..00
+eulerSample = euler29 [2..100]
+
+euler29 :: [Integer] -> Int
+euler29 domain = length $ asSet [ a^b | a <- domain, b <-domain ]
+
+
+-- euler 51 => 2-digt number with primes:
+
+euler51Sample = [ a | a <- euler51BaseCases [10..19] [1..10] 100, length a == 5]
+
+euler51BaseCases baseDomain stepDomain limit = sort $ asSet $ [findPrimes a b limit [] | a <- baseDomain, b <- stepDomain, prime a]
+
+findPrimes :: Integer -> Integer -> Integer -> [Integer] -> [Integer]
+findPrimes base step limit xs | base >= limit = xs
+                              | prime base = findPrimes (base+step) step limit (base:xs)
+                              | otherwise = findPrimes (base+step) step limit xs
+
+euler51Primes :: [Integer]
+euler51Primes = [ a | a <- possiblePrimes 2, prime a]
+
+possiblePrimes n = dropWhile(< 10^(n-1)) $ takeWhile (< 10^n ) primes
+
+
+
+
