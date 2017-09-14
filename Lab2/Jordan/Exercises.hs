@@ -63,6 +63,7 @@ isRightTriangle abc = c == sum ab
           
 equalSides = length.group.sort
 
+triangle :: Integer -> Integer -> Integer -> Shape
 triangle x y z 
     | (not.isTriangle) abc =  NoTriangle
     | isRightTriangle abc = Rectangular
@@ -73,7 +74,17 @@ triangle x y z
     
 data Shape = NoTriangle | Equilateral | Isosceles | Rectangular | Other deriving (Eq,Show)
 
-exercise2 = print $ triangle 4 5 5
+
+
+exercise2 = do 
+    print $ triangle 1 5 1 
+    print $ triangle 3 5 3
+    print $ triangle 4 4 4
+    print $ triangle 1 1 5 
+    print $ triangle 1 9 5 
+    print $ triangle 2 5 5 
+    print $ triangle 3 4 5  
+    print $ triangle 1 2 3   
 
 -- Exercise 3a
 
