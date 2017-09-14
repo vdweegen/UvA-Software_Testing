@@ -274,16 +274,19 @@ euler29 :: [Integer] -> Int
 euler29 domain = length $ asSet [ a^b | a <- domain, b <-domain ]
 
 
--- euler 51 => 2-digt number with primes:
+-- euler 51 => 2-digit number with primes, size 5:
 
-euler51Sample = [ a | a <- euler51BaseCases [10..19] [1..10] 100, length a == 5]
+euler51Sample1 = sort $ [ a | a <- euler51BaseCases [10..19] 10, length a == 5]
+euler51Sample2 = sort $ firstIndex $ [ a | a <- euler51BaseCases [50000..59999] 110, length a == 7]
 
-euler51BaseCases baseDomain stepDomain limit = sort $ asSet $ [findPrimes a b limit [] | a <- baseDomain, b <- stepDomain, prime a]
+euler51BaseCases baseDomain stepSize =  [findPrimes a stepSize | a <- baseDomain, prime a]
 
-findPrimes :: Integer -> Integer -> Integer -> [Integer] -> [Integer]
-findPrimes base step limit xs | base >= limit = xs
-                              | prime base = findPrimes (base+step) step limit (base:xs)
-                              | otherwise = findPrimes (base+step) step limit xs
+findPrimes :: Integer -> Integer -> [Integer]
+findPrimes base step = asSet $ sort $ doFindPrimes base step (base+(10*step)) []
+
+doFindPrimes base step limit xs | base >= limit = xs
+                                | prime base = doFindPrimes (base+step) step limit (base:xs)
+                                | otherwise = doFindPrimes (base+step) step limit xs
 
 euler51Primes :: [Integer]
 euler51Primes = [ a | a <- possiblePrimes 2, prime a]
