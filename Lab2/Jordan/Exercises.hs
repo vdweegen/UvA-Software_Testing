@@ -2,9 +2,11 @@ module Lab2 where
 
 import Data.List
 import Data.Char
+import Data.Maybe
 import System.Random
 import Test.QuickCheck
 import Lab2.Util.Random
+import Lab2.Util.Ibans
 -- Assignment 2 / Lab 2 :: Group 14 --
 
 infix 1 -->
@@ -133,4 +135,43 @@ ccd = map  (rot 23 subtract)
 exercise7 = print  $ (rot13d.rot13.rot13d) "GBB ZNAL FRPERGF"
 
 -- Bonus Exercises
-exercisebonus = print()
+
+
+movetoback n xs = (drop n xs) ++ (take n xs)
+
+--Utils
+numbers xs = foldr (++) "" xs 
+charcodes = (zip ['A'..'Z'] [10..35])
+readStringInt x = (read x :: Integer)
+
+translate = map (translateAlpha)       
+translateAlpha :: Char -> String
+translateAlpha n 
+               | isAlpha n = (show.snd.(findInTuples charcodes)) n
+               | otherwise = [n] 
+               
+findInTuples :: (Eq a) => [(a, b)] -> a -> (a, b)
+findInTuples ts n  = head $ filter ((== n).fst) ts
+
+isUpperAlphaNum :: Char -> Bool 
+isUpperAlphaNum c = isUpper c || isDigit c
+
+isValidCharacters :: String -> Bool
+isValidCharacters = all isUpperAlphaNum 
+
+transformIban = readStringInt.numbers.translate.movetoback 4 
+
+iban :: String -> Bool
+iban x =  34 > length x && isValidCharacters x &&  mod (transformIban x) 97 == 1
+
+ --- One function :D Bosslike
+ibanAlt x = 34 > length x && all (\p ->  isUpper p || isDigit p ) x && mod (read (concatMap ibancalc $ drop 4 x ++ take 4 x) :: Integer) 97 == 1
+                where
+                ibancalc c | isAlpha c = show.(+10).fromJust $ elemIndex c ['A'..'Z'] 
+                        | otherwise = [c]
+
+exercisebonus = do
+        putStrLn "Modular method"
+        print $ all iban validIbans
+        putStrLn "CodeGolf method"
+        print $ all ibanAlt validIbans
