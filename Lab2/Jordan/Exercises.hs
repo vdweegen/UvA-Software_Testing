@@ -71,13 +71,36 @@ triangle x y z
     
 data Shape = NoTriangle | Equilateral | Isosceles | Rectangular | Other deriving (Eq,Show)
 
-exercise2 = print $ triangle 1 1 9
+exercise2 = print $ triangle 4 5 5
 
 -- Exercise 3a
-exercise3a = print()
+
+forall :: [a] -> (a -> Bool) -> Bool
+forall = flip all
+
+stronger, weaker :: [a] -> (a -> Bool) -> (a -> Bool) -> Bool
+stronger xs p q = forall xs (\ x -> p x --> q x)
+weaker   xs p q = stronger xs q p 
+
+isEvenGT3  :: Integer -> Bool 
+isEvenGT3 x = even x && x > 3
+
+isEvenOrGT3 :: Integer -> Bool 
+isEvenOrGT3 x = even x || x > 3
+
+isEvenGT3OrEven :: Integer -> Bool 
+isEvenGT3OrEven x = isEvenGT3 x || even x
+
+-- Keep it simple stupid
+strength a b | stronger [-10..10] (snd a) (snd b) = LT
+    | otherwise = GT
+
+propertiesExercise3 = [("even", even),("isEvenGT3", isEvenGT3), ("isEvenOrGT3", isEvenOrGT3), ("isEvenGT3OrEven", isEvenGT3OrEven)]
+
+exercise3a = print $ map fst $ propertiesExercise3
 
 -- Exercise 3b
-exercise3b = print()
+exercise3b = print $ map fst $ sortBy strength propertiesExercise3
 
 -- Exercise 4
 exercise4 = print()
@@ -89,7 +112,25 @@ exercise5 = print()
 exercise6 = print()
 
 -- Exercise 7
-exercise7 = print()
+
+letters x | isLower x = ['a'..'z'] 
+    | otherwise =  ['A'..'Z']
+
+rot t direction x | isAlpha x = tletter
+   |otherwise = x
+   where 
+         searchSpace = zip (letters x) [0..25]
+         tindex  =  direction t $ (snd.head.filter((==x).fst)) searchSpace
+         tletter =  fst.head $ filter((==(mod tindex 26)).snd) searchSpace
+                    
+rot13  = map (rot 13 (+)) 
+rot13d = map  (rot 13 subtract) 
+
+cc  = map (rot 23 (+)) 
+ccd = map  (rot 23 subtract) 
+
+
+exercise7 = print  $ (rot13d.rot13.rot13d) "GBB ZNAL FRPERGF"
 
 -- Bonus Exercises
 exercisebonus = print()
