@@ -57,7 +57,34 @@ quantiles xs (q:qs) = [genericLength $ filter (<q) xs] ++ (quantiles (filter (>=
 
 
 -- Exercise 2
-exercise2 = print()
+
+
+data Shape = NoTriangle | Equilateral
+            | Isosceles  | Rectangular | Other deriving (Eq,Show)
+
+exercise2 = print "Hello"
+
+checkShape :: (Integer, Integer, Integer) -> Shape
+checkShape (a,b,c) = triangle a b c
+
+triangle :: Integer -> Integer -> Integer -> Shape
+triangle a b c | noTriangle a b c = NoTriangle
+               | equilateral a b c = Equilateral
+               | isosceles a b c = Isosceles
+               | rectangular a b c = Rectangular
+               | otherwise = Other
+
+isTriangle, noTriangle, equilateral, isosceles, rectangular :: Integer -> Integer -> Integer -> Bool
+isTriangle a b c = (a + b > c) || (a + c > b) || (b + c > a)
+noTriangle a b c = not $ isTriangle a b c
+equilateral a b c = (a == b) && (a == c) && (b == c)
+isosceles a b c = (a == b) || (a == c) || (b == c)
+rectangular a b c = (a^2+b^2) == c^2 || (a^2+c^2) == b^2 || (b^2+c^2) == a^2
+
+equilateralProp, isoscelesProp, rectangularProp :: Integer -> [(Integer, Integer, Integer)]
+equilateralProp n = [(a,b,c)| a <- [1..n], b <- [1..n], c <- [1..n], a == b && b == c]
+isoscelesProp n   = [(a,b,c)| a <- [1..n], b <- [1..n], c <- [1..n], (a == b) || (a == c) || (b == c)]
+rectangularProp n = [(a,b,c)| a <- [1..n], b <- [1..n], c <- [1..n], (a^2+b^2) == c^2 || (a^2+c^2) == b^2 || (b^2+c^2) == a^2]
 
 -- Exercise 3a
 exercise3a = print()
