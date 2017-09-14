@@ -62,10 +62,23 @@ quantiles xs (q:qs) = [genericLength $ filter (<q) xs] ++ (quantiles (filter (>=
 data Shape = NoTriangle | Equilateral
             | Isosceles  | Rectangular | Other deriving (Eq,Show)
 
-exercise2 = quickCheck prop_Equilateral
+exercise2 = do
+              quickCheck prop_Equilateral
+              quickCheck prop_Isosceles
 
 prop_Equilateral (Positive n) =
   Equilateral == triangle n n n
+
+prop_Isosceles (Positive n) =
+  True == ((Isosceles == (triangle n n (randBetween 1 (2*n))))
+          && (Isosceles == (triangle n (randBetween 1 (2*n)) n))
+          && (Isosceles == (triangle (randBetween 1 (2*n)) n n)))
+
+
+
+-- Not random, but just to fix quickCheck
+randBetween :: Integer -> Integer -> Integer
+randBetween a b = a + (div b 2)
 
 checkShape :: (Integer, Integer, Integer) -> Shape
 checkShape (a,b,c) = triangle a b c
