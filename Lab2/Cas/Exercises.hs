@@ -161,10 +161,14 @@ solution4 = do
 exercise5 = solution5
 
 isDerangement :: Eq a => [a] -> [a] -> Bool
-isDerangement x y = (length $ findIndices id $ zipWith (==) x y) == 0
+isDerangement x y = ((length $ findIndices id $ zipWith (==) x y) == 0) && isPermutation x y
+
+deran :: Eq a => [a] -> [[a]]
+deran x = filter (\ y -> isDerangement y x) (permutations x)
 
 solution5 = do
   print $ isDerangement [3,2,1] [1,2,3]
+  print $ deran [1,2,3]
 
 -- Exercise 6
 exercise6 = print()
