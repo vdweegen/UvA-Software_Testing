@@ -66,8 +66,9 @@ quartile2 = quartile 0.25 0.5
 quartile3 = quartile 0.5 0.75
 quartile4 = quartile 0.75 1
 
-chi :: Int -> Int -> Float
-chi x m = fromIntegral((x-m)^2) / fromIntegral m
+chi :: [Int] -> Int -> Float
+chi [] m = 0
+chi (x:xs) m = (fromIntegral((x-m)^2) / fromIntegral m) + chi xs m
 
 
 distribution :: Int -> IO ()
@@ -78,7 +79,7 @@ distribution n = do
                     let c = length $ filter quartile3 p
                     let d = length $ filter quartile4 p
                     let m = div n 4
-                    let x = chi a m + chi b m + chi c m + chi d m
+                    let x = chi [a,b,c,d] m
                     print (a,b,c,d,x)
 
 exercise1 = distribution 10000
