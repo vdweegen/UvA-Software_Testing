@@ -65,6 +65,7 @@ data Shape = NoTriangle | Equilateral
 exercise2 = do
               quickCheck prop_Equilateral
               quickCheck prop_Isosceles
+              quickCheck prop_Invalid
 
 prop_Equilateral (Positive n) =
   Equilateral == triangle n n n
@@ -74,11 +75,16 @@ prop_Isosceles (Positive n) =
           && (Isosceles == (triangle n (randBetween 1 (2*n)) n))
           && (Isosceles == (triangle (randBetween 1 (2*n)) n n)))
 
+prop_Invalid (Positive n) (Positive o) =
+  True == (NoTriangle == triangle n o (randAbove (n+o)))
 
 
 -- Not random, but just to fix quickCheck
 randBetween :: Integer -> Integer -> Integer
 randBetween a b = a + (div b 2)
+
+randAbove :: Integer -> Integer
+randAbove n = n + 10;
 
 checkShape :: (Integer, Integer, Integer) -> Shape
 checkShape (a,b,c) = triangle a b c
