@@ -19,9 +19,9 @@ main = do
     putStrLn $ "Assignment 2 / Lab 2"
     putStrLn $ "===================="
     putStrLn $ "> Exercise 1"
-    -- exercise1
+    exercise1
     putStrLn $ "> Exercise 2"
-    -- exercise2
+    exercise2
     putStrLn $ "> Exercise 3a"
     exercise3a
     putStrLn $ "> Exercise 3b"
@@ -191,7 +191,45 @@ solution6 = do
   print $ rot13 "Gurer ner 26 yrggref va gur nycunorg!"
 
 -- Exercise 7
-exercise7 = print()
+exercise7 = solution7
+
+-- validate length
+ibanValidLength :: String -> Bool
+ibanValidLength x = length x >= 4 && length x <= 38
+
+-- move first four characters to end of string
+ibanRearrange :: String -> String
+ibanRearrange (a:b:c:d:x) = x ++ [a,b,c,d]
+ibanRearrange _ = error "INVALID!"
+
+-- replace letters with digits (A = 10, .., Z = 35)
+ibanConvertToDecimal :: Int -> [Char]
+ibanConvertToDecimal x
+  | (x >= 65) && (x <= 90) = show(x - 55)
+  | (x >= 97) && (x <= 122) = show(x - 87)
+  | x == 32 = ""
+  | otherwise = [chr x]
+
+ibanTransform :: String -> String
+ibanTransform x = intercalate "" (map ibanConvertToDecimal (map ord (ibanRearrange (filter (/=' ') x))))
+
+-- calculate mod 97, remainder should be 1
+iban :: String -> Bool
+iban x = ((mod (read (ibanTransform x) :: Integer) 97) == 1) && ibanValidLength x
+
+solution7 = do
+  print $ iban "NL13ABNA2859176594"
+  print $ iban "NL51ABNA5993159871"
+  print $ iban "KW78FNGG8776167638766772197428"
+  print $ iban "DE78500105173914769993"
+  print $ iban "BG06RZBB91558151154695"
+  print $ iban "CY37164286132581834641882141"
+  print $ iban "IS591315989522712263483388"
+  print $ iban "MR5739674777488275245272698"
+  print $ iban "PL91109024023719463892436661"
+  print $ iban "MD9517694539799293438398"
+  print $ iban "LC03ZJWP277836622529389688132565"
+  print $ iban "AE260212564146133481178"
 
 -- Bonus Exercises
 exercisebonus = print()
