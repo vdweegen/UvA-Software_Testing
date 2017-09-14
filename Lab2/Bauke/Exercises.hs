@@ -160,15 +160,11 @@ exercise4 = print $ isPermutation [1,2,3,4] [4,2,3,1]
 -- For the testing procedure, it means you have to remove any duplicate from the input lists
 
 -- properties:
--- non equal lists
 -- lists have the same length
 -- lists contain the same items
 
 isPermutation :: Eq a => [a] -> [a] -> Bool
-isPermutation xs ys | xs == ys = False
-                    | (asSet xs) /= xs = False
-                    | (asSet ys) /= ys = False
-                    | otherwise = isSubset xs ys && isSubset ys xs
+isPermutation xs ys = (length xs) == (length ys) && isSubset xs ys && isSubset ys xs
 
 isSubset :: Eq a => [a] -> [a] -> Bool
 isSubset [] set = True
