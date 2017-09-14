@@ -151,14 +151,44 @@ solution3b = do
 -- Exercise 4
 exercise4 = solution4
 
+isPermutation :: Eq a => [a] -> [a] -> Bool
+isPermutation x y = elem x (permutations y)
+
 solution4 = do
-  print $ elem [3,2,1] (permutations [1,2,3])
+  print $ isPermutation [3,2,1] [1,2,3]
 
 -- Exercise 5
-exercise5 = print()
+exercise5 = solution5
+
+isDerangement :: Eq a => [a] -> [a] -> Bool
+isDerangement x y = ((length $ findIndices id $ zipWith (==) x y) == 0) && isPermutation x y
+
+deran :: Eq a => [a] -> [[a]]
+deran x = filter (\ y -> isDerangement y x) (permutations x)
+
+solution5 = do
+  print $ isDerangement [3,2,1] [1,2,3]
+  print $ deran [1,2,3]
 
 -- Exercise 6
-exercise6 = print()
+exercise6 = solution6
+
+rotify :: Int -> Int
+rotify x
+  | (x <= 77) && (x >= 65) = (x + 13)
+  | (x <= 90) && (x >= 78) = (x - 13)
+  | (x <= 109) && (x >= 97) = (x + 13)
+  | (x <= 122) && (x >= 110) = (x - 13)
+  | otherwise = x
+
+rot13 :: [Char] -> [Char]
+rot13 x = map chr (map rotify (map ord x))
+
+solution6 = do
+  print $ rot13 "Why is it we are here?"
+  print $ rot13 "There are 26 letters in the alphabet!"
+  print $ rot13 "Jul vf vg jr ner urer?"
+  print $ rot13 "Gurer ner 26 yrggref va gur nycunorg!"
 
 -- Exercise 7
 exercise7 = print()
