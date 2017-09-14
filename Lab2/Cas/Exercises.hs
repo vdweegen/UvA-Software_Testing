@@ -171,7 +171,24 @@ solution5 = do
   print $ deran [1,2,3]
 
 -- Exercise 6
-exercise6 = print()
+exercise6 = solution6
+
+rotify :: Int -> Int
+rotify x
+  | (x <= 77) && (x >= 65) = (x + 13)
+  | (x <= 90) && (x >= 78) = (x - 13)
+  | (x <= 109) && (x >= 97) = (x + 13)
+  | (x <= 122) && (x >= 110) = (x - 13)
+  | otherwise = x
+
+rot13 :: [Char] -> [Char]
+rot13 x = map chr (map rotify (map ord x))
+
+solution6 = do
+  print $ rot13 "Why is it we are here?"
+  print $ rot13 "There are 26 letters in the alphabet!"
+  print $ rot13 "Jul vf vg jr ner urer?"
+  print $ rot13 "Gurer ner 26 yrggref va gur nycunorg!"
 
 -- Exercise 7
 exercise7 = print()
