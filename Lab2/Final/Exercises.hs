@@ -62,7 +62,10 @@ quantiles xs (q:qs) = [genericLength $ filter (<q) xs] ++ (quantiles (filter (>=
 data Shape = NoTriangle | Equilateral
             | Isosceles  | Rectangular | Other deriving (Eq,Show)
 
-exercise2 = print "Hello"
+exercise2 = quickCheck prop_Equilateral
+
+prop_Equilateral (Positive n) =
+  Equilateral == triangle n n n
 
 checkShape :: (Integer, Integer, Integer) -> Shape
 checkShape (a,b,c) = triangle a b c
