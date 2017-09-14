@@ -158,7 +158,13 @@ solution4 = do
   print $ isPermutation [3,2,1] [1,2,3]
 
 -- Exercise 5
-exercise5 = print()
+exercise5 = solution5
+
+isDerangement :: Eq a => [a] -> [a] -> Bool
+isDerangement x y = (length $ findIndices id $ zipWith (==) x y) == 0
+
+solution5 = do
+  print $ isDerangement [3,2,1] [1,2,3]
 
 -- Exercise 6
 exercise6 = print()
