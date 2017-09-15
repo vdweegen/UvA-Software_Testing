@@ -80,7 +80,7 @@ triangle x y z
   | x == y || x == z || y == z = Isosceles
   | otherwise = Other
 
-triangle_lengths = [1..20]
+triangle_lengths = [1..3]
 
 combtriangle x = triangle (x !! 0) (x !! 1) (x !! 2)
 
