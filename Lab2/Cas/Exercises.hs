@@ -4,6 +4,7 @@ import Data.List
 import Data.Char
 import System.Random
 import Test.QuickCheck
+import Control.Monad (replicateM)
 
 -- Assignment 2 / Lab 2 :: Group 14 --
 
@@ -79,12 +80,12 @@ triangle x y z
   | x == y || x == z || y == z = Isosceles
   | otherwise = Other
 
+triangle_lengths = [1..20]
+
+combtriangle x = triangle (x !! 0) (x !! 1) (x !! 2)
+
 solution2 = do
-  print(triangle 1 1 1)
-  print(triangle 1 2 2)
-  print(triangle 3 4 5)
-  print(triangle 1 3 3)
-  print(triangle 1 1 0)
+  print $ map combtriangle (replicateM 3 triangle_lengths)
 
 -- Exercise 3a :: Spent Time: +-60 minutes
 exercise3a = solution3a
