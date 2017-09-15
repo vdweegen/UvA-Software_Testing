@@ -112,7 +112,9 @@ compar xs p q
   | stronger xs q p = Weaker
   | otherwise = Incomparable
 
-permcompar x (y,z) = compar x y z
+-- permcompar x (y,z) = compar x y z
+
+combcompar x y = compar x (y !! 0) (y !! 1)
 
 instance Ord PropertyStrength where
   compare Stronger Stronger = EQ
@@ -132,7 +134,7 @@ instance Ord PropertyStrength where
   compare Incomparable Weaker = LT
   compare Incomparable Incomparable = EQ
 
-props = [(one,two),(one,three),(one,four),(two,three),(three,four)]
+-- props = [(one,two),(one,three),(one,four),(two,three),(three,four)]
 
 solution3a = do
   print $ compar domain one two
@@ -144,8 +146,14 @@ solution3a = do
 -- Exercise 3b :: Spent Time: +-60 minutes
 exercise3b = solution3b
 
+combinations :: Int -> [a] -> [[a]]
+combinations 0 _  = [ [] ]
+combinations n xs = [ y:ys | y:xs' <- tails xs
+                           , ys <- combinations (n-1) xs']
+
 solution3b = do
-  print $ sort $ map (permcompar domain) props
+  -- print $ sort $ map (permcompar domain) props
+  print $ sort $ map (combcompar domain) (combinations 2 [one,two,three,four])
 
 
 -- Exercise 4 :: Spent Time: +-30 minutes
