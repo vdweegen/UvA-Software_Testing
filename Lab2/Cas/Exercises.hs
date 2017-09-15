@@ -37,7 +37,7 @@ main = do
     putStrLn $ "> BONUS"
     exercisebonus
 
--- Exercise 1
+-- Exercise 1 :: Spent Time: +-30min
 exercise1 = solution1
 
 probs :: Int -> IO [Float]
@@ -64,7 +64,7 @@ solution1 = do
   print (length q4)
 
 
--- Exercise 2
+-- Exercise 2 :: Spent Time: +-90 minutes
 exercise2 = solution2
 
 data Shape = NoTriangle | Equilateral
@@ -86,7 +86,7 @@ solution2 = do
   print(triangle 1 3 3)
   print(triangle 1 1 0)
 
--- Exercise 3a
+-- Exercise 3a :: Spent Time: +-60 minutes
 exercise3a = solution3a
 
 stronger, weaker :: [a] -> (a -> Bool) -> (a -> Bool) -> Bool
@@ -141,14 +141,14 @@ solution3a = do
   print $ compar domain two three
   print $ compar domain three four
 
--- Exercise 3b
+-- Exercise 3b :: Spent Time: +-60 minutes
 exercise3b = solution3b
 
 solution3b = do
   print $ sort $ map (permcompar domain) props
 
 
--- Exercise 4
+-- Exercise 4 :: Spent Time: +-30 minutes
 exercise4 = solution4
 
 isPermutation :: Eq a => [a] -> [a] -> Bool
@@ -157,7 +157,7 @@ isPermutation x y = elem x (permutations y)
 solution4 = do
   print $ isPermutation [3,2,1] [1,2,3]
 
--- Exercise 5
+-- Exercise 5 :: Spent Time: +-30 minutes
 exercise5 = solution5
 
 isDerangement :: Eq a => [a] -> [a] -> Bool
@@ -170,7 +170,7 @@ solution5 = do
   print $ isDerangement [3,2,1] [1,2,3]
   print $ deran [1,2,3]
 
--- Exercise 6
+-- Exercise 6 :: Spent Time: +-30 minutes
 exercise6 = solution6
 
 rotify :: Int -> Int
@@ -190,7 +190,7 @@ solution6 = do
   print $ rot13 "Jul vf vg jr ner urer?"
   print $ rot13 "Gurer ner 26 yrggref va gur nycunorg!"
 
--- Exercise 7
+-- Exercise 7 :: Spent Time: +-120 minutes
 exercise7 = solution7
 
 -- validate length
