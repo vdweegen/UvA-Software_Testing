@@ -65,7 +65,7 @@ solution1 = do
   print (length q4)
 
 
--- Exercise 2 :: Spent Time: +-90 minutes
+-- Exercise 2 :: Spent Time: +-90 minutes (plus an additional 120 minutes for testing)
 exercise2 = solution2
 
 data Shape = NoTriangle | Equilateral
