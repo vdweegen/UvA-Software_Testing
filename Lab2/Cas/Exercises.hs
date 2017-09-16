@@ -3,7 +3,9 @@ module Lab2 where
 import Data.List
 import Data.Char
 import System.Random
+import System.IO.Unsafe
 import Test.QuickCheck
+import Control.Monad (replicateM)
 
 -- Assignment 2 / Lab 2 :: Group 14 --
 
@@ -37,7 +39,7 @@ main = do
     putStrLn $ "> BONUS"
     exercisebonus
 
--- Exercise 1
+-- Exercise 1 :: Spent Time: +-30min
 exercise1 = solution1
 
 probs :: Int -> IO [Float]
@@ -64,29 +66,90 @@ solution1 = do
   print (length q4)
 
 
--- Exercise 2
+-- Exercise 2 :: Spent Time: +-90 minutes (plus an additional 120 minutes for testing)
 exercise2 = solution2
 
 data Shape = NoTriangle | Equilateral
   | Isosceles  | Rectangular | Other deriving (Eq,Show)
 
 triangle :: Integer -> Integer -> Integer -> Shape
-
 triangle x y z
-  | x + y <= z || x + z <= y || y + z <= x = NoTriangle
-  | x == y && y == z && z == y = Equilateral
+  | x == 0 && y == 0 || z == 0 = NoTriangle
   | x^2 + y^2 == z^2 || x^2 + z^2 == y^2 || y^2 + z^2 == x^2 = Rectangular
+  | x == y && y == z && z == y = Equilateral
   | x == y || x == z || y == z = Isosceles
   | otherwise = Other
 
-solution2 = do
-  print(triangle 1 1 1)
-  print(triangle 1 2 2)
-  print(triangle 3 4 5)
-  print(triangle 1 3 3)
-  print(triangle 1 1 0)
+combtriangle :: [Integer] -> Shape
+combtriangle x = triangle (x !! 0) (x !! 1) (x !! 2)
 
--- Exercise 3a
+randomNoTriangle :: Integer -> IO [Integer]
+randomNoTriangle n = do
+  a <- drawInt 1 n
+  b <- drawInt 1 n
+  return [a,b,0]
+
+randomEquilateral :: Integer -> IO [Integer]
+randomEquilateral n = do
+  a <- drawInt 1 n
+  return [a,a,a]
+
+randomIsosceles :: Integer -> IO [Integer]
+randomIsosceles n = do
+  a <- drawInt 1 n
+  b <- drawInt 1 n
+  if a == b then do
+    randomIsosceles n
+  else do
+    return [a,b,a]
+
+randomRectangular :: Integer -> IO [Integer]
+randomRectangular n = do
+  a <- drawInt 1 n
+  return [3*a,4*a,5*a]
+
+-- In this case we should ignore n
+randomOther :: Integer -> IO [Integer]
+randomOther n = do
+  a <- drawInt 1 25
+  b <- drawInt 26 40
+  c <- drawInt 41 88
+  return [a,b,c]
+
+drawInt :: Integer -> Integer -> IO Integer
+drawInt x y = getStdRandom (randomR (x,y))
+
+testTriangle :: Integer -> ([Integer] -> Shape) -> IO [Integer]
+    -> (Shape -> Bool) -> IO ()
+testTriangle n f i p = test 1 n f i (\_ -> p)
+
+test :: Integer -> Integer -> ([Integer] -> Shape) -> IO [Integer]
+    -> ([Integer] -> Shape -> Bool) -> IO ()
+test k n f i r =
+  if k == n then
+    print (show n ++ " tests passed")
+  else do
+    xs <- i
+    if r xs (f xs) then
+      do test (k+1) n f i r
+    else error (show xs ++ " failed after " ++ (show k) ++ " attempts")
+
+prop :: Shape -> Shape -> Bool
+prop shape target | shape == target = True | otherwise = False
+
+solution2 = do
+  putStrLn "NoTriangle:"
+  testTriangle 500 combtriangle (randomNoTriangle 100) (prop NoTriangle)
+  putStrLn "Equilateral:"
+  testTriangle 500 combtriangle (randomEquilateral 100) (prop Equilateral)
+  putStrLn "Isosceles:"
+  testTriangle 500 combtriangle (randomIsosceles 100) (prop Isosceles)
+  putStrLn "Rectangular:"
+  testTriangle 500 combtriangle (randomRectangular 100) (prop Rectangular)
+  putStrLn "Other:"
+  testTriangle 500 combtriangle (randomOther 100) (prop Other)
+
+-- Exercise 3a :: Spent Time: +-60 minutes
 exercise3a = solution3a
 
 stronger, weaker :: [a] -> (a -> Bool) -> (a -> Bool) -> Bool
@@ -112,7 +175,9 @@ compar xs p q
   | stronger xs q p = Weaker
   | otherwise = Incomparable
 
-permcompar x (y,z) = compar x y z
+-- permcompar x (y,z) = compar x y z
+
+combcompar x y = compar x (y !! 0) (y !! 1)
 
 instance Ord PropertyStrength where
   compare Stronger Stronger = EQ
@@ -132,7 +197,7 @@ instance Ord PropertyStrength where
   compare Incomparable Weaker = LT
   compare Incomparable Incomparable = EQ
 
-props = [(one,two),(one,three),(one,four),(two,three),(three,four)]
+-- props = [(one,two),(one,three),(one,four),(two,three),(three,four)]
 
 solution3a = do
   print $ compar domain one two
@@ -141,14 +206,20 @@ solution3a = do
   print $ compar domain two three
   print $ compar domain three four
 
--- Exercise 3b
+-- Exercise 3b :: Spent Time: +-60 minutes
 exercise3b = solution3b
 
+combinations :: Int -> [a] -> [[a]]
+combinations 0 _  = [ [] ]
+combinations n xs = [ y:ys | y:xs' <- tails xs
+                           , ys <- combinations (n-1) xs']
+
 solution3b = do
-  print $ sort $ map (permcompar domain) props
+  -- print $ sort $ map (permcompar domain) props
+  print $ sort $ map (combcompar domain) (combinations 2 [one,two,three,four])
 
 
--- Exercise 4
+-- Exercise 4 :: Spent Time: +-30 minutes
 exercise4 = solution4
 
 isPermutation :: Eq a => [a] -> [a] -> Bool
@@ -157,7 +228,7 @@ isPermutation x y = elem x (permutations y)
 solution4 = do
   print $ isPermutation [3,2,1] [1,2,3]
 
--- Exercise 5
+-- Exercise 5 :: Spent Time: +-30 minutes
 exercise5 = solution5
 
 isDerangement :: Eq a => [a] -> [a] -> Bool
@@ -170,7 +241,7 @@ solution5 = do
   print $ isDerangement [3,2,1] [1,2,3]
   print $ deran [1,2,3]
 
--- Exercise 6
+-- Exercise 6 :: Spent Time: +-30 minutes
 exercise6 = solution6
 
 rotify :: Int -> Int
@@ -184,13 +255,23 @@ rotify x
 rot13 :: [Char] -> [Char]
 rot13 x = map chr (map rotify (map ord x))
 
-solution6 = do
-  print $ rot13 "Why is it we are here?"
-  print $ rot13 "There are 26 letters in the alphabet!"
-  print $ rot13 "Jul vf vg jr ner urer?"
-  print $ rot13 "Gurer ner 26 yrggref va gur nycunorg!"
+randomStr :: Int -> String
+randomStr n = take n $ randomRs ('a','z') $ unsafePerformIO newStdGen
 
--- Exercise 7
+prop_rot13 :: String -> Bool
+prop_rot13 s | s == rot13 (rot13 s) = True | otherwise = False
+
+result_prop_rot13 = do
+  quickCheckResult(\n -> n >= 1 --> (prop_rot13 (rot13 (randomStr n))) == True)
+
+solution6 = do
+  result_prop_rot13
+  -- print $ rot13 "Why is it we are here?"
+  -- print $ rot13 "There are 26 letters in the alphabet!"
+  -- print $ rot13 "Jul vf vg jr ner urer?"
+  -- print $ rot13 "Gurer ner 26 yrggref va gur nycunorg!"
+
+-- Exercise 7 :: Spent Time: +-120 minutes
 exercise7 = solution7
 
 -- validate length
