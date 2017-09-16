@@ -197,6 +197,9 @@ invalidPermutation xs ys | xs == ys = True
                          | otherwise = sort xs /= sort ys
 -- Exercise 6
 -- property of ROT 13
+-- implementation time: 30 minutes
+-- implementation time for tests: 60 minutes.
+-- Thinking on how to
 -- it maintains the case of the character
 -- when performed twice, it returns the same character
 -- the output is always different from the input
@@ -214,9 +217,14 @@ exercise6 = do
               quickCheck prop_IgnoresAllNonAlphaCharacters
 
 -- Requires generators
+-- one could argue that using a random a .. z generator.
+-- but even with inifinite tests, 100% coverage is never guaranteed
+-- simply mapping the conversion over all available chars will yield guaranteed coverage
 prop_ChangesAllAlphaCharacters =
   map id alphaCharacters /= map rot13 alphaCharacters
 
+-- Same for the nonAlpha chars. Simply mapping it to all characters known to be ignored
+-- yields 100% coverage.
 prop_IgnoresAllNonAlphaCharacters =
   map id nonAlphaCharacters == map rot13 nonAlphaCharacters
 
