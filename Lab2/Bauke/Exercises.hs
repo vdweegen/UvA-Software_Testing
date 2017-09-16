@@ -69,7 +69,14 @@ doSum ((a1,a2,a3,a4):xs) (b1,b2,b3,b4) = doSum xs (a1+b1, a2+b2, a3+b3, a4+b4)
 data Shape = NoTriangle | EquiLateral | Isosceles | Rectangular | Other
              deriving (Eq, Show)
 
-exercise2 = sampleTriangles
+exercise2 = quickCheck prop_noTriangle
+
+prop_noTriangle (Positive a) (Positive b) (Positive c) =
+  [NoTriangle, NoTriangle,
+   NoTriangle, NoTriangle,
+   NoTriangle, NoTriangle] == [triangle a b (a+b+c), triangle a (a+b+c) b,
+                               triangle b a (a+b+c), triangle b (a+b+c) a,
+                               triangle (a+b+c) a b, triangle (a+b+c) b a]
 
 sampleTriangles = do
               print $ triangle 60 80 100 -- default Rectangular used in construction
