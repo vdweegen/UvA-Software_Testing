@@ -82,7 +82,16 @@ triangle x y z
 
 triangle_lengths = [1..3]
 
+combtriangle :: [Integer] -> Shape
 combtriangle x = triangle (x !! 0) (x !! 1) (x !! 2)
+
+randomEquilateral :: Integer -> IO [Integer]
+randomEquilateral n = do
+  a <- drawInt 1 n
+  return [a,a,a]
+
+drawInt :: Integer -> Integer -> IO Integer
+drawInt x y = getStdRandom (randomR (x,y))
 
 solution2 = do
   print $ map combtriangle (replicateM 3 triangle_lengths)
