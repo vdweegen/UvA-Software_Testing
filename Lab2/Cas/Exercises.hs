@@ -3,6 +3,7 @@ module Lab2 where
 import Data.List
 import Data.Char
 import System.Random
+import System.IO.Unsafe
 import Test.QuickCheck
 import Control.Monad (replicateM)
 
@@ -254,11 +255,21 @@ rotify x
 rot13 :: [Char] -> [Char]
 rot13 x = map chr (map rotify (map ord x))
 
+randomStr :: Int -> String
+randomStr n = take n $ randomRs ('a','z') $ unsafePerformIO newStdGen
+
+prop_rot13 :: String -> Bool
+prop_rot13 s | s == rot13 (rot13 s) = True | otherwise = False
+
+result_prop_rot13 = do
+  quickCheckResult(\n -> n >= 1 --> (prop_rot13 (rot13 (randomStr n))) == True)
+
 solution6 = do
-  print $ rot13 "Why is it we are here?"
-  print $ rot13 "There are 26 letters in the alphabet!"
-  print $ rot13 "Jul vf vg jr ner urer?"
-  print $ rot13 "Gurer ner 26 yrggref va gur nycunorg!"
+  result_prop_rot13
+  -- print $ rot13 "Why is it we are here?"
+  -- print $ rot13 "There are 26 letters in the alphabet!"
+  -- print $ rot13 "Jul vf vg jr ner urer?"
+  -- print $ rot13 "Gurer ner 26 yrggref va gur nycunorg!"
 
 -- Exercise 7 :: Spent Time: +-120 minutes
 exercise7 = solution7
