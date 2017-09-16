@@ -3,11 +3,12 @@ module Exercises where
 import Data.Char
 import Data.List
 
-
 import Lab2.Util.Ibans
 import Lab2.Util.Infix
 import Lab2.Util.Primes
 import Lab2.Util.Random
+
+import Test.QuickCheck
 
 -- Define Main --
 main = do
@@ -200,8 +201,46 @@ invalidPermutation xs ys | xs == ys = True
 -- when performed twice, it returns the same character
 -- the output is always different from the input
 -- non printable chars are not converted
+-- Since there is a finite set of characters and the function is mapped Char -> Char
+-- Simply generating a set of all printable characters would suffice.
+-- However, for random data's sake, some length & case properties are tested using random Strings
 
-exercise6 = print $ maskString "This is the answer to exercise 6! :-)"
+exercise6 = do
+              quickCheck prop_GeneratesSameOutputForSameInput
+              quickCheck prop_ReversibleWhenAppliedTwice
+              quickCheck prop_MaintainsCase
+              quickCheck prop_MaintainsLength
+              quickCheck prop_ChangesAllAlphaCharacters
+              quickCheck prop_IgnoresAllNonAlphaCharacters
+
+-- Requires generators
+prop_ChangesAllAlphaCharacters =
+  map id alphaCharacters /= map rot13 alphaCharacters
+
+prop_IgnoresAllNonAlphaCharacters =
+  map id nonAlphaCharacters == map rot13 nonAlphaCharacters
+
+nonAlphaCharacters :: [Char]
+nonAlphaCharacters = ([(chr 0x20) .. (chr 0x7E)] \\ alphaCharacters)
+
+alphaCharacters :: [Char]
+alphaCharacters = ['A'..'Z'] ++ ['a'..'z'] ;
+
+prop_ReversibleWhenAppliedTwice :: String -> Bool
+prop_ReversibleWhenAppliedTwice text =
+  text == (maskString $ maskString text)
+
+prop_MaintainsCase text =
+ (map isLowerCase (maskString text) == map isLowerCase text)
+ && (map isUpperCase (maskString text) == map isUpperCase text)
+
+prop_MaintainsLength :: String -> Bool
+prop_MaintainsLength text =
+  length text == length (maskString text)
+
+prop_GeneratesSameOutputForSameInput :: String -> Bool
+prop_GeneratesSameOutputForSameInput text =
+  maskString text == maskString text
 
 maskString :: String -> String
 maskString input = [ rot13 a | a <- input]
@@ -223,7 +262,6 @@ lowUpperHalf = chr $ (+) lowVal $ flip div 2 $ (ord 'Z') - lowVal
 isLowerCase, isUpperCase :: Char -> Bool
 isLowerCase char = ('a' <= char) && ('z' >= char)
 isUpperCase char = ('A' <= char) && ('Z' >= char)
-
 
 -- Exercise 7
 -- Implementation time: 45 minutes
@@ -264,31 +302,5 @@ exercisebonus = do
 
 -- a ^ b => generates 15 distinct terms for a 2..5 and b 2..5
 -- how many terms does a^b generate for a 2 .. 100 and b 2..00
-eulerSample = euler29 [2..100]
-
 euler29 :: [Integer] -> Int
 euler29 domain = length $ asSet [ a^b | a <- domain, b <-domain ]
-
-
--- euler 51 => 2-digit number with primes, size 5:
-
-euler51Sample1 = sort $ [ a | a <- euler51BaseCases [10..19] 10, length a == 5]
-euler51Sample2 = sort $ firstIndex $ [ a | a <- euler51BaseCases [50000..59999] 110, length a == 7]
-
-euler51BaseCases baseDomain stepSize =  [findPrimes a stepSize | a <- baseDomain, prime a]
-
-findPrimes :: Integer -> Integer -> [Integer]
-findPrimes base step = asSet $ sort $ doFindPrimes base step (base+(10*step)) []
-
-doFindPrimes base step limit xs | base >= limit = xs
-                                | prime base = doFindPrimes (base+step) step limit (base:xs)
-                                | otherwise = doFindPrimes (base+step) step limit xs
-
-euler51Primes :: [Integer]
-euler51Primes = [ a | a <- possiblePrimes 2, prime a]
-
-possiblePrimes n = dropWhile(< 10^(n-1)) $ takeWhile (< 10^n ) primes
-
-
-
-
