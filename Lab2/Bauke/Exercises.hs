@@ -79,15 +79,18 @@ sampleTriangles = do
               print $ triangle 10 9 8 -- Something else
 
 triangle :: Integer -> Integer -> Integer -> Shape
-triangle a b c | not $ validTriangle a b c = NoTriangle
-               | (a == b) && (a == c) = EquiLateral
-               | (maximum [a,b,c])^2 == (c^2) + (a^2) + (b^2) - (maximum [a,b,c])^2 = Rectangular
-               | (a == b ) || (a == c) || (b == c) = Isosceles -- "Understandable" implementation
-     --          | 2 == (length $ fromList [a,b,c]) = Isosceles -- "Smart" implementation
-               | otherwise = Other
+triangle a b c = evaluateShape $ sort [a,b,c]
 
-validTriangle :: Integer -> Integer -> Integer -> Bool
-validTriangle a b c = (a + b > c) && (a + c > b) && (b + c > a)
+evaluateShape :: [Integer] -> Shape
+evaluateShape (a:b:c:[]) | invalidTriangle a b c = NoTriangle
+                         | (a == b) && (a == c) = EquiLateral
+                         | (a^2) + (b^2) == (c^2) = Rectangular
+                         | (a == b ) || (a == c) || (b == c) = Isosceles
+                         | otherwise = Other
+evaluateShape _ = NoTriangle
+
+invalidTriangle :: Integer -> Integer -> Integer -> Bool
+invalidTriangle a b c = (a + b < c);
 
 -- Exercise 3a
 -- Implementation time: 15 minutes
