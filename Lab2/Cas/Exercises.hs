@@ -72,29 +72,81 @@ data Shape = NoTriangle | Equilateral
   | Isosceles  | Rectangular | Other deriving (Eq,Show)
 
 triangle :: Integer -> Integer -> Integer -> Shape
-
 triangle x y z
-  | x + y <= z || x + z <= y || y + z <= x = NoTriangle
-  | x == y && y == z && z == y = Equilateral
+  | x == 0 && y == 0 || z == 0 = NoTriangle
   | x^2 + y^2 == z^2 || x^2 + z^2 == y^2 || y^2 + z^2 == x^2 = Rectangular
+  | x == y && y == z && z == y = Equilateral
   | x == y || x == z || y == z = Isosceles
   | otherwise = Other
 
-triangle_lengths = [1..3]
-
 combtriangle :: [Integer] -> Shape
 combtriangle x = triangle (x !! 0) (x !! 1) (x !! 2)
+
+randomNoTriangle :: Integer -> IO [Integer]
+randomNoTriangle n = do
+  a <- drawInt 1 n
+  b <- drawInt 1 n
+  return [a,b,0]
 
 randomEquilateral :: Integer -> IO [Integer]
 randomEquilateral n = do
   a <- drawInt 1 n
   return [a,a,a]
 
+randomIsosceles :: Integer -> IO [Integer]
+randomIsosceles n = do
+  a <- drawInt 1 n
+  b <- drawInt 1 n
+  if a == b then do
+    randomIsosceles n
+  else do
+    return [a,b,a]
+
+randomRectangular :: Integer -> IO [Integer]
+randomRectangular n = do
+  a <- drawInt 1 n
+  return [3*a,4*a,5*a]
+
+-- In this case we should ignore n
+randomOther :: Integer -> IO [Integer]
+randomOther n = do
+  a <- drawInt 1 25
+  b <- drawInt 26 40
+  c <- drawInt 41 88
+  return [a,b,c]
+
 drawInt :: Integer -> Integer -> IO Integer
 drawInt x y = getStdRandom (randomR (x,y))
 
+testTriangle :: Integer -> ([Integer] -> Shape) -> IO [Integer]
+    -> (Shape -> Bool) -> IO ()
+testTriangle n f i p = test 1 n f i (\_ -> p)
+
+test :: Integer -> Integer -> ([Integer] -> Shape) -> IO [Integer]
+    -> ([Integer] -> Shape -> Bool) -> IO ()
+test k n f i r =
+  if k == n then
+    print (show n ++ " tests passed")
+  else do
+    xs <- i
+    if r xs (f xs) then
+      do test (k+1) n f i r
+    else error (show xs ++ " failed after " ++ (show k) ++ " attempts")
+
+prop :: Shape -> Shape -> Bool
+prop shape target | shape == target = True | otherwise = False
+
 solution2 = do
-  print $ map combtriangle (replicateM 3 triangle_lengths)
+  putStrLn "NoTriangle:"
+  testTriangle 500 combtriangle (randomNoTriangle 100) (prop NoTriangle)
+  putStrLn "Equilateral:"
+  testTriangle 500 combtriangle (randomEquilateral 100) (prop Equilateral)
+  putStrLn "Isosceles:"
+  testTriangle 500 combtriangle (randomIsosceles 100) (prop Isosceles)
+  putStrLn "Rectangular:"
+  testTriangle 500 combtriangle (randomRectangular 100) (prop Rectangular)
+  putStrLn "Other:"
+  testTriangle 500 combtriangle (randomOther 100) (prop Other)
 
 -- Exercise 3a :: Spent Time: +-60 minutes
 exercise3a = solution3a
