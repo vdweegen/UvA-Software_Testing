@@ -66,17 +66,31 @@ doSum ((a1,a2,a3,a4):xs) (b1,b2,b3,b4) = doSum xs (a1+b1, a2+b2, a3+b3, a4+b4)
 -- Simply keying in the definitions for the triangles
 -- The pythagorean algorithm can probably be refactored by sorting a b c and then taking 2 and comparing against last
 -- @ todo => add the properties to be tested
-data Shape = NoTriangle | EquiLateral | Isosceles | Rectangular | Other
+data Shape = NoTriangle | Equilateral | Isosceles | Rectangular | Other
              deriving (Eq, Show)
 
-exercise2 = quickCheck prop_noTriangle
+exercise2 = do
+              quickCheck prop_noTriangle
+              quickCheck prop_equilateral
+              quickCheck prop_isosceles
+              quickCheck prop_rectangular
+              quickCheck prop_other
 
-prop_noTriangle (Positive a) (Positive b) (Positive c) =
-  [NoTriangle, NoTriangle,
-   NoTriangle, NoTriangle,
-   NoTriangle, NoTriangle] == [triangle a b (a+b+c), triangle a (a+b+c) b,
-                               triangle b a (a+b+c), triangle b (a+b+c) a,
-                               triangle (a+b+c) a b, triangle (a+b+c) b a]
+prop_noTriangle (Positive a) (Positive b) (Positive c) = triangleCombinations a b (a+b+c) NoTriangle
+prop_equilateral (Positive a) = triangleCombinations a a a Equilateral
+prop_isosceles (Positive a) (Positive b) = triangleCombinations a a b Isosceles
+prop_rectangular (Positive a) (Positive b) = triangleCombinations a b (a+b) Rectangular
+prop_other (Positive a) (Positive b) (Positive c) = triangleCombinations a b c Other
+
+triangleCombinations :: Integer -> Integer -> Integer -> Shape -> Bool
+triangleCombinations a b c expectedType = allOf expectedType $ [triangle a b (a+b+c), triangle a (a+b+c) b,
+                                          triangle b a (a+b+c), triangle b (a+b+c) a,
+                                          triangle (a+b+c) a b, triangle (a+b+c) b a]
+
+allOf :: Shape -> [Shape] -> Bool
+allOf _ [] = True
+allOf shape (x:xs) = shape == x && allOf shape xs
+
 
 sampleTriangles = do
               print $ triangle 60 80 100 -- default Rectangular used in construction
@@ -90,7 +104,7 @@ triangle a b c = evaluateShape $ sort [a,b,c]
 
 evaluateShape :: [Integer] -> Shape
 evaluateShape (a:b:c:[]) | invalidTriangle a b c = NoTriangle
-                         | (a == b) && (a == c) = EquiLateral
+                         | (a == b) && (a == c) = Equilateral
                          | (a^2) + (b^2) == (c^2) = Rectangular
                          | (a == b ) || (a == c) || (b == c) = Isosceles
                          | otherwise = Other
