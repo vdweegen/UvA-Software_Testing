@@ -74,7 +74,7 @@ data Shape = NoTriangle | Equilateral
 
 triangle :: Integer -> Integer -> Integer -> Shape
 triangle x y z
-  | x == 0 && y == 0 || z == 0 = NoTriangle
+  | x == 0 || y == 0 || z == 0 = NoTriangle
   | x^2 + y^2 == z^2 || x^2 + z^2 == y^2 || y^2 + z^2 == x^2 = Rectangular
   | x == y && y == z && z == y = Equilateral
   | x == y || x == z || y == z = Isosceles
