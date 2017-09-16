@@ -120,55 +120,7 @@ exercise4 = print()
 exercise5 = print()
 
 -- Exercise 6
-exercise6 = do
-              quickCheck prop_GeneratesSameOutputForSameInput
-              quickCheck prop_ReversibleWhenAppliedTwice
-              quickCheck prop_MaintainsCase
-              quickCheck prop_MaintainsLength
-
-
--- Requires generators
-prop_ChangesAllNormalCharacters = undefined
-
-prop_ReversibleWhenAppliedTwice :: String -> Bool
-prop_ReversibleWhenAppliedTwice text =
-  text == (maskString $ maskString text)
-
-prop_MaintainsCase text =
- (map isLowerCase (maskString text) == map isLowerCase text)
- && (map isUpperCase (maskString text) == map isUpperCase text)
-
-prop_MaintainsLength :: String -> Bool
-prop_MaintainsLength text =
-  length text == length (maskString text)
-
-
-prop_MaintainsOtherCharacters = undefined
-
-prop_GeneratesSameOutputForSameInput :: String -> Bool
-prop_GeneratesSameOutputForSameInput text =
-  maskString text == maskString text
-
-maskString :: String -> String
-maskString input = [ rot13 a | a <- input]
-
-rot13 :: Char -> Char
-rot13 char | (isLowerCase char) && (char <= lowLowerHalf ) = chr $ (ord char) + 13
-           | (isLowerCase char) && (char > lowLowerHalf) = chr $ (ord char) - 13
-           | (isUpperCase char) && (char <= lowUpperHalf ) = chr $ (ord char) + 13
-           | (isUpperCase char) && (char > lowUpperHalf) = chr $ (ord char) - 13
-           | otherwise = char
-
-lowLowerHalf :: Char
-lowLowerHalf = chr $ (ord lowUpperHalf) + 0x20
-
-lowUpperHalf :: Char
-lowUpperHalf = chr $ (+) lowVal $ flip div 2 $ (ord 'Z') - lowVal
-               where lowVal = ord 'A'
-
-isLowerCase, isUpperCase :: Char -> Bool
-isLowerCase char = ('a' <= char) && ('z' >= char)
-isUpperCase char = ('A' <= char) && ('Z' >= char)
+exercise6 = print()
 
 -- Exercise 7
 exercise7 = print()
