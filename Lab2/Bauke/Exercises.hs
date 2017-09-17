@@ -91,14 +91,9 @@ validateRectangular :: [Integer] -> Bool
 validateRectangular (a:b:c:[]) = triangleCombinations a b c Rectangular
 
 triangleCombinations :: Integer -> Integer -> Integer -> Shape -> Bool
-triangleCombinations a b c expectedType = allOf expectedType $ [triangle a b c, triangle a c b,
+triangleCombinations a b c expectedType = allAre expectedType $ [triangle a b c, triangle a c b,
                                           triangle b a c, triangle b c a,
                                           triangle c a b, triangle c b a]
-
-allOf :: Shape -> [Shape] -> Bool
-allOf _ [] = True
-allOf shape (x:xs) = shape == x && allOf shape xs
-
 
 sampleTriangles = do
               print $ triangle 60 80 100 -- default Rectangular used in construction
@@ -111,12 +106,11 @@ triangle :: Integer -> Integer -> Integer -> Shape
 triangle a b c = evaluateShape $ sort [a,b,c]
 
 evaluateShape :: [Integer] -> Shape
-evaluateShape (a:b:c:[]) | invalidTriangle a b c = NoTriangle
-                         | (a == b) && (a == c) = Equilateral
-                         | (a^2) + (b^2) == (c^2) = Rectangular
-                         | (a == b ) || (a == c) || (b == c) = Isosceles
-                         | otherwise = Other
-evaluateShape _ = NoTriangle
+evaluateShape (a:b:c:_) | invalidTriangle a b c = NoTriangle
+                        | (a == b) && (a == c) = Equilateral
+                        | (a^2) + (b^2) == (c^2) = Rectangular
+                        | (a == b ) || (a == c) || (b == c) = Isosceles
+                        | otherwise = Other
 
 invalidTriangle :: Integer -> Integer -> Integer -> Bool
 invalidTriangle a b c = (a + b < c);
@@ -250,7 +244,7 @@ exercise6 = do
 
 -- Requires generators
 -- one could argue that using a random a .. z generator.
--- but even with inifinite tests, 100% coverage is never guaranteed
+-- but even with infinite tests, 100% coverage is never guaranteed
 -- simply mapping the conversion over all available chars will yield guaranteed coverage
 prop_ChangesAllAlphaCharacters =
   map id alphaCharacters /= map rot13 alphaCharacters
@@ -316,7 +310,13 @@ isUpperCase char = ('A' <= char) && ('Z' >= char)
 -- randomize the checksum
 --
 
-exercise7 = print $ map iban validIbans
+exercise7 = quickCheck prop_checkValidExamples
+
+prop_checkValidExamples = allAre True (map iban validIbans)
+
+allAre :: Eq a => a -> [a] -> Bool
+allAre _ [] = True
+allAre a (x:xs) = a == x && allAre a xs
 
 iban :: String -> Bool
 iban account | not $ validAccount account = False
