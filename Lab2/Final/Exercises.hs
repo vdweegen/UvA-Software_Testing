@@ -196,7 +196,7 @@ combinations n xs = [ y:ys | y:xs' <- tails xs, ys <- combinations (n-1) xs']
 solution3b = do
   print $ sort $ map (combcompar domain) (combinations 2 [one,two,three,four])
 
--- Exercise 4
+-- Exercise 4 :: Joint effort (decided to redo the whole thing)
 -- In order to validate the implementation, run it against the library implementation provided
 exercise4 = do
   quickCheck prop_permutation_validate_length
