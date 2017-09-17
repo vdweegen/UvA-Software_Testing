@@ -189,7 +189,17 @@ solution3b = do
   print $ sort $ map (combcompar domain) (combinations 2 [one,two,three,four])
 
 -- Exercise 4
-exercise4 = print()
+exercise4 = solution4
+
+isPermutation :: Eq a => [a] -> [a] -> Bool
+isPermutation xs ys = (length xs) == (length ys) && isSubset xs ys && isSubset ys xs
+
+isSubset :: Eq a => [a] -> [a] -> Bool
+isSubset [] set = True
+isSubset (x:xs) set = elem x set && isSubset xs set
+
+solution4 = do
+  print $ isPermutation [1,2,3,4] [4,2,3,1]
 
 -- Exercise 5
 exercise5 = print()
@@ -284,8 +294,11 @@ convertChars [] = "00"
 convertChars (x:xs) | ('A' <= x) && ('Z' >= x) = (show $ (+) 10 $ (ord x) - (ord 'A')) ++ convertChars xs
                     | otherwise = [x] ++ convertChars xs
 
+prop_checkValidExamples = allAre True (map iban validIbans)
+
 solution7 = do
-  print $ map iban validIbans
+  quickCheck prop_checkValidExamples
+
 
 -- Bonus Exercises
 exercisebonus = solutionbonus
