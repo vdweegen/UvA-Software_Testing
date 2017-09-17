@@ -47,6 +47,13 @@ quantilesIO xs q = do {
     print $ flip chi (div xs q) $ quantiles p [ fromIntegral x / (fromIntegral q) | x  <- [1..q]]
 }
 
+-- Using a chi squared test to verify if the bins are evenly distributed
+-- https://en.wikipedia.org/wiki/Chi-squared_test
+-- https://www.medcalc.org/manual/chi-square-table.php
+-- Using (n-1) = (4-1) = 3 degrees a freedom and a P value of 0.05
+-- The result of the chi should not exceed 7.815
+-- In this case it doesn't exceed that value, so we can say the random generator is good,
+-- based on the fact of dividing them into 4 bins, however we cannot see anything about the distribution within a bin.
 chi :: [Int] -> Int -> Float
 chi [] m = 0
 chi (x:xs) m = (fromIntegral((x-m)^2) / fromIntegral m) + chi xs m
@@ -54,7 +61,6 @@ chi (x:xs) m = (fromIntegral((x-m)^2) / fromIntegral m) + chi xs m
 quantiles :: [Float] -> [Float] -> [Int]
 quantiles xs [] = []
 quantiles xs (q:qs) = [genericLength $ filter (<q) xs] ++ (quantiles (filter (>=q) xs) qs)
-
 
 -- Exercise 2
 

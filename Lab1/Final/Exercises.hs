@@ -212,7 +212,7 @@ exercise8 = do
   putStrLn $ show honest
 
 honest, guilty :: [Boy]
-honest = accusers $ head guilty
+honest = concat [accusers x | x <- guilty]
 guilty = [x | x <- boys, length (accusers x) == 3]
 
 boys :: [Boy]
