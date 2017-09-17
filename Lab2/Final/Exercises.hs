@@ -222,7 +222,13 @@ solution4 = do
   quickCheckWith stdArgs {maxSize=10} prop_permutation_validate_against_lib
 
 -- Exercise 5
-exercise5 = solution5
+exercise5 = do
+  quickCheck prop_derangement_validate_length
+  quickCheck prop_derangement_validate_content
+  quickCheckWith stdArgs {maxSize=10} prop_derangement_validate_against_lib
+  quickCheckWith stdArgs {maxSize=10} prop_derangement_empty_lists
+  quickCheckWith stdArgs {maxSize=10} prop_derangement_half_equal_lists
+
 
 -- Weakest property => validate the length property holds, filtering by this property yields any list of n items
 prop_derangement_validate_length :: Positive Integer -> Bool
@@ -236,16 +242,15 @@ prop_derangement_validate_content (Positive n) = not $ isDerangement [1..n] [2*n
 prop_derangement_validate_against_lib :: [Integer] -> Bool
 prop_derangement_validate_against_lib xs = allOf True (map (isDerangement xs) (deran xs))
 
+prop_derangement_empty_lists :: Positive Integer -> Bool
+prop_derangement_empty_lists (Positive n) =
+  [] == deran [ n | a <- [0..n]]
+
 isDerangement :: Eq a => [a] -> [a] -> Bool
 isDerangement x y = ((length $ findIndices id $ zipWith (==) x y) == 0) && isPermutation x y
 
 deran :: Eq a => [a] -> [[a]]
 deran x = filter (\ y -> isDerangement y x) (permutations x)
-
-solution5 = do
-  quickCheck prop_derangement_validate_length
-  quickCheck prop_derangement_validate_content
-  quickCheckWith stdArgs {maxSize=10} prop_derangement_validate_against_lib
 
 -- Exercise 6 :: Merged Version of Bauke and Willem-Jan
 exercise6 = solution6
