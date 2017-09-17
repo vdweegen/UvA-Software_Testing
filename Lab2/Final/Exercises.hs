@@ -86,12 +86,14 @@ exercise2 = do
   quickCheck prop_equilateral
   quickCheck prop_isosceles
   quickCheck prop_rectangular
+  quickCheck prop_rectangular2
   quickCheck prop_other
 
 prop_noTriangle (Positive a) (Positive b) (Positive c) = triangleCombinations a b (a+b+c) NoTriangle
 prop_equilateral (Positive a) = triangleCombinations a a a Equilateral
 prop_isosceles (Positive a) = triangleCombinations a a (a+1) Isosceles
 prop_rectangular (Positive a) = validateRectangular $ pythagoreanTriplets !! a
+prop_rectangular2 (Positive a) = triangleCombinations (a*3) (a*4) (a*5) Rectangular
 prop_other (Positive a) = triangleCombinations (a*51) (a*55) (a*5) Other
 
 pythagoreanTriplets :: [[Integer]]
