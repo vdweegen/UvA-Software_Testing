@@ -39,6 +39,9 @@ main = do
 
 -- Exercise 1
 -- Seems to be evenly distributed  Time taken: about 1.5 to 2 hours
+-- Willem suggested the Chi Squared test to check for uniform distribution. 
+-- This test uses your expected values and observed values and gives you a number this number must be lower then a specific critical value for
+-- a test to be accepted.
 
 quantiles :: [Float] -> [Float] -> [Integer]
 quantiles xs [] = []
@@ -46,10 +49,18 @@ quantiles xs (q:qs) = [genericLength $ filter (<q) xs] ++ (quantiles (filter (>=
 
 quantilesIO xs q = do {
     p <- probs xs;
-    print $ quantiles p [x/q | x  <- [1..q]]
+    let r = quantiles p [x/q | x  <- [1..q]]
+    in print $  (chi r) 
 }
 
+
+chi' n m x= div ((x - e) ^ 2) e
+    where e = div n m
+
+chi = sum.map(chi' 10000 4) 
+
 exercise1 = quantilesIO 10000 4
+
 
 -- Exercise 2
 -- Estimated time taken 2 hours
@@ -116,7 +127,14 @@ exercise3a = print $ map fst $ propertiesExercise3
 exercise3b = print $ map fst $ sortBy strength propertiesExercise3
 
 -- Exercise 4
-exercise4 = print()
+exercise4 = print $ isPermutation [3,2,1] [1,2,3]
+-- Same length
+-- Sorted same
+
+isPermutation :: Eq a => [a] -> [a] -> Bool
+isPermutation xs ys = null $ (\\) xs ys
+
+prop_samelength xs ys = length xs == length ys
 
 -- Exercise 5
 exercise5 = print()
@@ -143,7 +161,7 @@ cc  = map (rot 23 (+))
 ccd = map  (rot 23 subtract) 
 
 
-exercise7 = print  $ (rot13d.rot13.rot13d) "GBB ZNAL FRPERGF"
+exercise7 = print  $ (rot13d.rot13.rot13d) "GBB ZNAL FRPERGF!?"
 
 -- Bonus Exercises
 
