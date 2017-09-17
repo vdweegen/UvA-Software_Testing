@@ -294,6 +294,7 @@ convertChars (x:xs) | ('A' <= x) && ('Z' >= x) = (show $ (+) 10 $ (ord x) - (ord
 
 solution7 = do
   print $ forall validIbans iban
+  print $ forall (map invalidateIban validIbans) iban
 
 -- Bonus Exercises
 exercisebonus = solutionbonus
@@ -310,6 +311,15 @@ asSet :: Eq a => [a] -> [a]
 asSet [] = []
 asSet (x:xs) | elem x xs = asSet xs
              | otherwise = x : asSet xs
+
+shuffleNums :: Int -> Int
+shuffleNums x
+  | (x < 57) && (x >= 48) = (x + 1)
+  | x == 57 = (x - 9)
+  | otherwise = x
+
+invalidateIban :: String -> String
+invalidateIban x = map chr (map shuffleNums (map ord x))
 
 -- IBANS
 validIbans :: [String]
