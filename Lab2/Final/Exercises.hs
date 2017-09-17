@@ -60,8 +60,7 @@ quantilesIO xs q = do {
 -- In this case it doesn't exceed that value, so we can say the random generator is good,
 -- based on the fact of dividing them into 4 bins, however we cannot see anything about the distribution within a bin.
 chi :: [Int] -> Int -> Float
-chi [] m = 0
-chi (x:xs) m = (fromIntegral((x-m)^2) / fromIntegral m) + chi xs m
+chi (x:xs) m = foldr (\ x -> (+) (fromIntegral ((x - m) ^ 2) / fromIntegral m)) 0 xs
 
 quantiles :: [Float] -> [Float] -> [Int]
 quantiles xs [] = []
