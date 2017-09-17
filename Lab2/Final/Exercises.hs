@@ -124,9 +124,7 @@ evaluateShape (a:b:c:[]) | invalidTriangle a b c = NoTriangle
 evaluateShape _ = NoTriangle
 
 invalidTriangle :: Integer -> Integer -> Integer -> Bool
-invalidTriangle a b c = (a + b < c);
-
-solution2 =
+invalidTriangle a b c = (a + b < c)
 
 -- Exercise 3a :: Cas' Version
 --             :: Time spent: 60 minutes (+ 30 minutes discussion)
