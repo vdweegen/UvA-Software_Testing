@@ -260,12 +260,16 @@ deran x = filter (\ y -> isDerangement y x) (permutations x)
 -- Exercise 6 :: Merged Version of Bauke and Willem-Jan
 --            :: Time spent: 45 minutes (sum of its parts) + 15 minutes refactoring
 exercise6 = do
+  print $ simpleImplementation
   quickCheck prop_GeneratesSameOutputForSameInput
   quickCheck prop_ReversibleWhenAppliedTwice
   quickCheck prop_MaintainsCase
   quickCheck prop_MaintainsLength
   quickCheck prop_ChangesAllAlphaCharacters
   quickCheck prop_IgnoresAllNonAlphaCharacters
+
+simpleImplementation :: String
+simpleImplementation = map rot13 "a simple implementation"
 
 -- Requires generators
 -- one could argue that using a random a .. z generator.
