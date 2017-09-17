@@ -293,7 +293,7 @@ convertChars (x:xs) | ('A' <= x) && ('Z' >= x) = (show $ (+) 10 $ (ord x) - (ord
                     | otherwise = [x] ++ convertChars xs
 
 solution7 = do
-  print $ map iban validIbans
+  print $ forall validIbans iban
 
 -- Bonus Exercises
 exercisebonus = solutionbonus
