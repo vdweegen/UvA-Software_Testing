@@ -21,23 +21,23 @@ main = do
     putStrLn $ "Assignment 2 / Lab 2"
     putStrLn $ "===================="
     putStrLn $ "> Exercise 1"
-    -- exercise1
+    exercise1
     putStrLn $ "> Exercise 2"
-    -- exercise2
+    exercise2
     putStrLn $ "> Exercise 3a"
-    -- exercise3a
+    exercise3a
     putStrLn $ "> Exercise 3b"
-    -- exercise3b
+    exercise3b
     putStrLn $ "> Exercise 4"
-    -- exercise4
+    exercise4
     putStrLn $ "> Exercise 5"
     exercise5
     putStrLn $ "> Exercise 6"
-    -- exercise6
+    exercise6
     putStrLn $ "> Exercise 7"
-    -- exercise7
+    exercise7
     putStrLn $ "> BONUS"
-    -- exercisebonus
+    exercisebonus
 
 -- Exercise 1 :: Merged version of Jordan and Willem-Jan
 -- QuickCheck for generating a number of random values and checking that the value is maintained
