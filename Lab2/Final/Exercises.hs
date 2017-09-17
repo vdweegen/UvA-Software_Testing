@@ -65,7 +65,8 @@ quantilesIO xs q = do {
 -- In this case it doesn't exceed that value, so we can say the random generator is good,
 -- based on the fact of dividing them into 4 bins, however we cannot see anything about the distribution within a bin.
 chi :: [Int] -> Int -> Float
-chi (x:xs) m = foldr (\ x -> (+) (fromIntegral ((x - m) ^ 2) / fromIntegral m)) 0 xs
+chi [] m = 0
+chi (x:xs) m = (fromIntegral((x-m)^2) / fromIntegral m) + chi xs m
 
 quantiles :: [Float] -> [Float] -> [Int]
 quantiles xs [] = []
@@ -96,14 +97,9 @@ validateRectangular :: [Integer] -> Bool
 validateRectangular (a:b:c:[]) = triangleCombinations a b c Rectangular
 
 triangleCombinations :: Integer -> Integer -> Integer -> Shape -> Bool
-triangleCombinations a b c expectedType = allOf expectedType $ [triangle a b c, triangle a c b,
+triangleCombinations a b c expectedType = allAre expectedType $ [triangle a b c, triangle a c b,
                                           triangle b a c, triangle b c a,
                                           triangle c a b, triangle c b a]
-
-allOf :: Shape -> [Shape] -> Bool
-allOf _ [] = True
-allOf shape (x:xs) = shape == x && allOf shape xs
-
 
 sampleTriangles = do
               print $ triangle 60 80 100 -- default Rectangular used in construction
@@ -116,12 +112,15 @@ triangle :: Integer -> Integer -> Integer -> Shape
 triangle a b c = evaluateShape $ sort [a,b,c]
 
 evaluateShape :: [Integer] -> Shape
-evaluateShape (a:b:c:[]) | invalidTriangle a b c = NoTriangle
+evaluateShape (a:b:c:_) | invalidTriangle a b c = NoTriangle
                          | (a == b) && (a == c) = Equilateral
                          | (a^2) + (b^2) == (c^2) = Rectangular
                          | (a == b ) || (a == c) || (b == c) = Isosceles
                          | otherwise = Other
-evaluateShape _ = NoTriangle
+
+allAre :: Eq a => a -> [a] -> Bool
+allAre _ [] = True
+allAre a (x:xs) = a == x && allAre a xs
 
 invalidTriangle :: Integer -> Integer -> Integer -> Bool
 invalidTriangle a b c = (a + b < c);
