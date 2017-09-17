@@ -106,14 +106,6 @@ allOf :: Eq a => a -> [a] -> Bool
 allOf _ [] = True
 allOf a (x:xs) = a == x && allOf a xs
 
-
-sampleTriangles = do
-              print $ triangle 60 80 100 -- default Rectangular used in construction
-              print $ triangle 10 10 10  -- Equilateral
-              print $ triangle 1 1 100 -- Nothing
-              print $ triangle 10 10 9 -- IsoSceles
-              print $ triangle 10 9 8 -- Something else
-
 triangle :: Integer -> Integer -> Integer -> Shape
 triangle a b c = evaluateShape $ sort [a,b,c]
 
