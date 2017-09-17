@@ -275,7 +275,7 @@ exercise7 = solution7
 
 -- validate length
 ibanValidLength :: String -> Bool
-ibanValidLength x = length x >= 4 && length x <= 34
+ibanValidLength x = length x >= 4 && length x <= 38
 
 -- move first four characters to end of string
 ibanRearrange :: String -> String
@@ -297,19 +297,40 @@ ibanTransform x = intercalate "" (map ibanConvertToDecimal (map ord (ibanRearran
 iban :: String -> Bool
 iban x = ((mod (read (ibanTransform x) :: Integer) 97) == 1) && ibanValidLength x
 
+shuffleNums :: Int -> Int
+shuffleNums x
+  | (x < 57) && (x >= 48) = (x + 1)
+  | x == 57 = (x - 9)
+  | otherwise = x
+
+invalidateIban :: String -> String
+invalidateIban x = map chr (map shuffleNums (map ord x))
+
 solution7 = do
   print $ iban "NL13ABNA2859176594"
+  print $ iban (invalidateIban "NL13ABNA2859176594")
   print $ iban "NL51ABNA5993159871"
+  print $ iban (invalidateIban "NL51ABNA5993159871")
   print $ iban "KW78FNGG8776167638766772197428"
+  print $ iban (invalidateIban "KW78FNGG8776167638766772197428")
   print $ iban "DE78500105173914769993"
+  print $ iban (invalidateIban "DE78500105173914769993")
   print $ iban "BG06RZBB91558151154695"
+  print $ iban (invalidateIban "BG06RZBB91558151154695")
   print $ iban "CY37164286132581834641882141"
+  print $ iban (invalidateIban "CY37164286132581834641882141")
   print $ iban "IS591315989522712263483388"
+  print $ iban (invalidateIban "IS591315989522712263483388")
   print $ iban "MR5739674777488275245272698"
+  print $ iban (invalidateIban "MR5739674777488275245272698")
   print $ iban "PL91109024023719463892436661"
+  print $ iban (invalidateIban "PL91109024023719463892436661")
   print $ iban "MD9517694539799293438398"
+  print $ iban (invalidateIban "MD9517694539799293438398")
   print $ iban "LC03ZJWP277836622529389688132565"
+  print $ iban (invalidateIban "LC03ZJWP277836622529389688132565")
   print $ iban "AE260212564146133481178"
+  print $ iban (invalidateIban "AE260212564146133481178")
 
 -- Bonus Exercises
 exercisebonus = print()
