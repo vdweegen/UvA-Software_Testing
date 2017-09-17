@@ -2,6 +2,7 @@ module Lab2 where
 
 import Data.List
 import Data.Char
+import Data.Maybe
 import System.Random
 import Test.QuickCheck
 
@@ -191,7 +192,67 @@ exercise4 = print()
 exercise5 = print()
 
 -- Exercise 6
-exercise6 = print()
+exercise6 = solution6
+
+-- Requires generators
+-- one could argue that using a random a .. z generator.
+-- but even with inifinite tests, 100% coverage is never guaranteed
+-- simply mapping the conversion over all available chars will yield guaranteed coverage
+prop_ChangesAllAlphaCharacters =
+  map id alphaCharacters /= map rot13 alphaCharacters
+
+-- Same for the nonAlpha chars. Simply mapping it to all characters known to be ignored
+-- yields 100% coverage.
+prop_IgnoresAllNonAlphaCharacters =
+  map id nonAlphaCharacters == map rot13 nonAlphaCharacters
+
+nonAlphaCharacters :: [Char]
+nonAlphaCharacters = ([(chr 0x20) .. (chr 0x7E)] \\ alphaCharacters)
+
+alphaCharacters :: [Char]
+alphaCharacters = ['A'..'Z'] ++ ['a'..'z'] ;
+
+prop_ReversibleWhenAppliedTwice :: String -> Bool
+prop_ReversibleWhenAppliedTwice text =
+  text == (maskString $ maskString text)
+
+prop_MaintainsCase text =
+ (map isLowerCase (maskString text) == map isLowerCase text)
+ && (map isUpperCase (maskString text) == map isUpperCase text)
+
+prop_MaintainsLength :: String -> Bool
+prop_MaintainsLength text =
+  length text == length (maskString text)
+
+prop_GeneratesSameOutputForSameInput :: String -> Bool
+prop_GeneratesSameOutputForSameInput text =
+  maskString text == maskString text
+
+maskString :: String -> String
+maskString input = [ rot13 a | a <- input]
+
+rot13 :: Char -> Char
+rot13 c | c `elem` upper = upperRot13 !! fromJust(elemIndex c upper)
+        | c `elem` lower = lowerRot13 !! fromJust(elemIndex c lower)
+        | otherwise = c
+
+upper, lower, upperRot13, lowerRot13 :: String
+upper = ['A'..'Z']
+lower = ['a'..'z']
+upperRot13 = ['N'..'Z'] ++ ['A'..'M']
+lowerRot13 = ['n'..'z'] ++ ['a'..'m']
+
+isLowerCase, isUpperCase :: Char -> Bool
+isLowerCase char = ('a' <= char) && ('z' >= char)
+isUpperCase char = ('A' <= char) && ('Z' >= char)
+
+solution6 = do
+  quickCheck prop_GeneratesSameOutputForSameInput
+  quickCheck prop_ReversibleWhenAppliedTwice
+  quickCheck prop_MaintainsCase
+  quickCheck prop_MaintainsLength
+  quickCheck prop_ChangesAllAlphaCharacters
+  quickCheck prop_IgnoresAllNonAlphaCharacters
 
 -- Exercise 7
 exercise7 = print()
