@@ -66,8 +66,15 @@ exercise1 = quantilesIO 10000 4
 -- Exercise 2
 -- Estimated time taken 2 hours
 -- Tried to think about the problem in an abstract way. Thus the most time was spent learning about triangles! XP
+-- I used triangle inequality to see if the it is a triangle
+-- After that I try to check for the properties of a rectangular
+-- And for the other to Look for the number of different lengths
+
+
+-- This method is overkill
 isTriangle' = (all ((\xs -> head xs <= sum (tail xs)) )) . permutations
 
+-- An improvement for the above function
 isTriangle abc = sum ab <= c
             where 
             c = maximum abc
@@ -141,7 +148,14 @@ isPermutation xs ys = null $ (\\) xs ys
 
 
 -- Exercise 5
-exercise5 = print()
+exercise5 = print $ isDerangement [1,2,3] [2,3,1]
+
+isDerangement :: [Integer] -> [Integer] -> Bool
+isDerangement xs ys = (isPermutation xs ys)  && (and $ zipWith (/=) xs ys)
+
+-- prop_isDeran_samelength :: [Integer] -> Bool
+-- prop_isDeran_samelength xs = genericLength xs  == genericLength ys
+
 
 -- Exercise 6
 exercise6 = print()
@@ -165,7 +179,7 @@ cc  = map (rot 23 (+))
 ccd = map  (rot 23 subtract) 
 
 prop_samelength xs = length xs == length (rot13 xs)
-prop_notEqual xs = xs /= rot13 xs
+
 
 
 exercise7 = do
@@ -184,7 +198,8 @@ numbers xs = foldr (++) "" xs
 charcodes = (zip ['A'..'Z'] [10..35])
 readStringInt x = (read x :: Integer)
 
-translate = map (translateAlpha)       
+translate = map (translateAlpha)
+
 translateAlpha :: Char -> String
 translateAlpha n 
                | isAlpha n = (show.snd.(findInTuples charcodes)) n
@@ -214,18 +229,18 @@ hasCheckDigits :: String -> Bool
 hasCheckDigits x =  isCharType isDigit $ (sublist 2 2 x)
 
 iban :: String -> Bool
-iban x =  34 > length x && hasCountryCode x && hasCheckDigits x && isValidCharacters x &&  mod (transformIban x) 97 == 1
+iban x =  34 >= length x && hasCountryCode x && hasCheckDigits x && isValidCharacters x &&  mod (transformIban x) 97 == 1
 
  --- One function :D Bosslike
-ibanAlt x = 34 > length x && hasCountryCode x && hasCheckDigits x && all (\p ->  isUpper p || isDigit p ) x && mod (read (concatMap ibancalc $ drop 4 x ++ take 4 x) :: Integer) 97 == 1
+ibanAlt x = 34 >= length x && hasCountryCode x && hasCheckDigits x && all (\p ->  isUpper p || isDigit p ) x && mod (read (concatMap ibancalc $ drop 4 x ++ take 4 x) :: Integer) 97 == 1
                 where
                 ibancalc c | isAlpha c = show.(+10).fromJust $ elemIndex c ['A'..'Z'] 
                         | otherwise = [c]
 
-exercise8 = do
+exercisebonus = do
     putStrLn "Modular method"
     print $ all iban validIbans
     putStrLn "CodeGolf method"
     print $ all ibanAlt validIbans               
 
-exercisebonus = print ()
+-- exercisebonus = print ()
