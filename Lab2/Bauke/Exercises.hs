@@ -212,6 +212,11 @@ asSet (x:xs) | elem x xs = asSet xs
 -- Simply reusing the code for checking a permutation and making it stronger
 -- by checking for the unique indexes
 
+-- Properties from weak to strong:
+-- property_length_maintained => allows for all lists with equal size, but different content
+-- property_content_maintained => allows for all lists with equal size, and same content
+-- property_indexes_unique => allows for all lists with equal size, same content, but at different index
+
 exercise5 = print $ isDerangement [1,2,3,4,5] [2,3,4,5,1]
 
 deran :: Integer -> [[Integer]]
@@ -225,7 +230,6 @@ uniqueIndexes :: [Integer] -> [Integer] -> Bool
 uniqueIndexes [] [] = True
 uniqueIndexes (x:xs) (y:ys) | x == y = False
                             | otherwise = uniqueIndexes xs ys
-
 invalidPermutation :: [Integer] -> [Integer] -> Bool
 invalidPermutation xs ys | xs == ys = True
                          | otherwise = sort xs /= sort ys
