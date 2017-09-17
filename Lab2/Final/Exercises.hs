@@ -325,6 +325,12 @@ isUpperCase char = ('A' <= char) && ('Z' >= char)
 
 -- Exercise 7 :: Merged version of Bauke, Willem-Jan, and Cas
 --            :: Time spent: 120 minutes + 60 minutes (discussion/merging)
+-- Checking the iban algorithm was fairly easy to implement.
+-- For testing, the first idea was to simply shift permutations of the account
+-- and make sure those were invalidated. However, this quickly results in valid
+-- accounts, since there are a lot of account numbers and only 100 checksums.
+-- Therefore, a simple 'invalidator' was used to flip some values and invalidate
+-- the ibans provided
 
 exercise7 = do
   print $ forall validIbans iban
