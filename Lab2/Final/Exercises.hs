@@ -366,11 +366,31 @@ exercisebonus = solutionbonus
 
 solutionbonus = do
   print $ euler29 [2..100]
+  print $ pandigitalPrime 9
 
 -- a ^ b => generates 15 distinct terms for a 2..5 and b 2..5
 -- how many terms does a^b generate for a 2 .. 100 and b 2..00
 euler29 :: [Integer] -> Int
 euler29 domain = length $ asSet [ a^b | a <- domain, b <-domain ]
+
+
+pandigitalPrime :: Integer -> Integer
+pandigitalPrime x
+        | null candidates =  - 1
+        | otherwise = maximum candidates
+        where
+           candidates = [ read x  :: Integer| x <- permutations $ numbers $ map(show) [1..x], prime $ (read x)]
+--Utils
+numbers xs = foldr (++) "" xs
+charcodes = (zip ['A'..'Z'] [10..35])
+readStringInt x = (read x :: Integer)
+
+prime :: Integer -> Bool
+prime n = n > 1 && all (\ x -> rem n x /= 0) xs
+  where xs = takeWhile (\ y -> y^2 <= n) primes
+
+primes :: [Integer]
+primes = 2 : filter prime [3..]
 
 asSet :: Eq a => [a] -> [a]
 asSet [] = []
