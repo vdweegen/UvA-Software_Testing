@@ -9,6 +9,9 @@ import Test.QuickCheck
 infix 1 -->
 (-->) :: Bool -> Bool -> Bool
 p --> q = (not p) || q
+forall :: [a] -> (a -> Bool) -> Bool
+forall = flip all
+
 
 -- Define Main --
 main = do
@@ -119,10 +122,67 @@ isoscelesProp n   = [(a,b,c)| a <- [1..n], b <- [1..n], c <- [1..n], (a == b) ||
 rectangularProp n = [(a,b,c)| a <- [1..n], b <- [1..n], c <- [1..n], (a^2+b^2) == c^2 || (a^2+c^2) == b^2 || (b^2+c^2) == a^2]
 
 -- Exercise 3a
-exercise3a = print()
+exercise3a = solution3a
+
+stronger, weaker :: [a] -> (a -> Bool) -> (a -> Bool) -> Bool
+stronger xs p q = forall xs (\ x -> p x --> q x)
+weaker   xs p q = stronger xs q p
+
+one, two, three, four :: Int -> Bool
+one = (\x -> even x && x > 3)
+two = (\x -> even x || x > 3)
+three = (\x -> (even x && x > 3) || even x)
+four = (\x -> (even x && x > 3) || even x)
+
+domain :: [Int]
+domain = [-10..10]
+
+data PropertyStrength = Stronger | Weaker | Equivalent | Incomparable
+  deriving (Eq, Show)
+
+compar :: [a] -> (a -> Bool) -> (a -> Bool) -> PropertyStrength
+compar xs p q
+  | (stronger xs p q) && (stronger xs q p) = Equivalent
+  | stronger xs p q = Stronger
+  | stronger xs q p = Weaker
+  | otherwise = Incomparable
+
+combcompar x y = compar x (y !! 0) (y !! 1)
+
+instance Ord PropertyStrength where
+  compare Stronger Stronger = EQ
+  compare Stronger Weaker = GT
+  compare Stronger Equivalent = GT
+  compare Stronger Incomparable = GT
+  compare Equivalent Stronger = LT
+  compare Equivalent Equivalent = EQ
+  compare Equivalent Weaker = GT
+  compare Equivalent Incomparable = GT
+  compare Weaker Stronger = LT
+  compare Weaker Equivalent = LT
+  compare Weaker Weaker = EQ
+  compare Weaker Incomparable = GT
+  compare Incomparable Stronger = LT
+  compare Incomparable Equivalent = LT
+  compare Incomparable Weaker = LT
+  compare Incomparable Incomparable = EQ
+
+solution3a = do
+  print $ compar domain one two
+  print $ compar domain one three
+  print $ compar domain one four
+  print $ compar domain two three
+  print $ compar domain three four
 
 -- Exercise 3b
-exercise3b = print()
+exercise3b = solution3b
+
+combinations :: Int -> [a] -> [[a]]
+combinations 0 _  = [ [] ]
+combinations n xs = [ y:ys | y:xs' <- tails xs, ys <- combinations (n-1) xs']
+
+solution3b = do
+  print $ sort $ map (combcompar domain) (combinations 2 [one,two,three,four])
 
 -- Exercise 4
 exercise4 = print()
