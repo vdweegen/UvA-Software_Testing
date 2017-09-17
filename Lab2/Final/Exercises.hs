@@ -190,7 +190,8 @@ combinations n xs = [ y:ys | y:xs' <- tails xs, ys <- combinations (n-1) xs']
 
 -- Exercise 4 :: Joint effort (decided to redo the whole thing)
 --            :: Time spent: 90 minutes (redo the whole thing + writing tests)
-
+-- We generate lists we know to be no-permutations.
+-- Then, we generate arbitrary lists and validate it against the Haskell library.
 -- In order to validate the implementation, run it against the library implementation provided
 exercise4 = do
   quickCheck prop_permutation_validate_length
@@ -215,13 +216,17 @@ isPermutation xs ys | length xs /= length ys = False
 
 -- Exercise 5 :: Bauke and Cas' merged versions
 --            :: Time spent: 60 minutes (sum of its parts and refactoring/merging)
+-- Simply reusing the code for checking a permutation and making it stronger
+-- by checking for the unique indexes
+-- For the property checking, the same approach as in Exercise 4 is used.
+-- First, check some weak properties by generating lists which are known to be invalid.
+-- Then, use the permutations generator to verify the implementation using arbitrary lists.
 
 exercise5 = do
   quickCheck prop_derangement_validate_length
   quickCheck prop_derangement_validate_content
   quickCheckWith stdArgs {maxSize=10} prop_derangement_validate_against_lib
   quickCheckWith stdArgs {maxSize=10} prop_derangement_empty_lists
---  quickCheckWith stdArgs {maxSize=10} prop_derangement_half_equal_lists
 
 -- Weakest property => validate the length property holds, filtering by this property yields any list of n items
 prop_derangement_validate_length :: Positive Integer -> Bool
