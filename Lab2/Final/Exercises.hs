@@ -75,9 +75,16 @@ quantiles xs (q:qs) = [genericLength $ filter (<q) xs] ++ (quantiles (filter (>=
 
 -- Exercise 2 :: Modified Version (group effort) of Bauke
 --            :: Time spent: 75 minutes (implementation/tests/discussion)
+-- Implementation was simply keying in the definitions for the triangles
+-- However, testing this proved to be more difficult. Main reason for this difficulty was due to the ambiguity
+-- between Isosceles and Equilateral and the issue of generating Rectangular triangles
+-- For the ambiguity we simply added 1 to the length of the sides
+-- For testing the Rectangular data, we use a list of predefined rectangular triangles.
+-- We use the the random index from QuickCheck to validate it.
+-- This generates a wider variety than simply multiplying 1 random value with for instance 3,4,5.
+-- When inspecting the list of triangles generated, it also displays rectangular triangles with other ratio's
+-- than the standard 3,4,5 or 60,80,100 triangles
 
--- Simply keying in the definitions for the triangles
--- The pythagorean algorithm can probably be refactored by sorting a b c and then taking 2 and comparing against last
 data Shape = NoTriangle | Equilateral | Isosceles | Rectangular | Other
              deriving (Eq, Show)
 
@@ -86,14 +93,12 @@ exercise2 = do
   quickCheck prop_equilateral
   quickCheck prop_isosceles
   quickCheck prop_rectangular
-  quickCheck prop_rectangular2
   quickCheck prop_other
 
 prop_noTriangle (Positive a) (Positive b) (Positive c) = triangleCombinations a b (a+b+c) NoTriangle
 prop_equilateral (Positive a) = triangleCombinations a a a Equilateral
 prop_isosceles (Positive a) = triangleCombinations a a (a+1) Isosceles
 prop_rectangular (Positive a) = validateRectangular $ pythagoreanTriplets !! a
-prop_rectangular2 (Positive a) = triangleCombinations (a*3) (a*4) (a*5) Rectangular
 prop_other (Positive a) = triangleCombinations (a*51) (a*55) (a*5) Other
 
 pythagoreanTriplets :: [[Integer]]
