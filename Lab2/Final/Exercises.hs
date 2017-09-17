@@ -221,7 +221,7 @@ solution4 = do
   quickCheck prop_permutation_validate_content
   quickCheckWith stdArgs {maxSize=10} prop_permutation_validate_against_lib
 
--- Exercise 5
+-- Exercise 5 :: Merged version of Bauke and Cas
 exercise5 = solution5
 
 -- Weakest property => validate the length property holds, filtering by this property yields any list of n items
