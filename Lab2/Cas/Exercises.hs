@@ -275,7 +275,7 @@ exercise7 = solution7
 
 -- validate length
 ibanValidLength :: String -> Bool
-ibanValidLength x = length x >= 4 && length x <= 38
+ibanValidLength x = length x >= 4 && length x <= 34
 
 -- move first four characters to end of string
 ibanRearrange :: String -> String
