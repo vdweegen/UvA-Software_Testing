@@ -2,7 +2,7 @@ import Test.QuickCheck
 import Data.List
 import Prelude
 
--- 
+-- Not as easy as I first thought.
 
 -- Given in lab
 prime :: Integer -> Bool

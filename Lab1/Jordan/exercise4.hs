@@ -2,9 +2,9 @@ import Test.QuickCheck
 import Data.List
 import Prelude
 
+-- 40 minutes 
+-- Writing a reverse function for the digits function was interesting. 
 
-reversal :: Integer -> Integer
-reversal = read . reverse . show
 
 digits :: Integral x  => x -> [x]
 digits 0 = []

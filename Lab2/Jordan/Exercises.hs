@@ -71,7 +71,6 @@ exercise1 = quantilesIO 10000 4
 -- After that I try to check for the properties of a rectangular
 -- And for the other to Look for the number of different lengths
 
-
 -- This method is overkill
 isTriangle' = (all ((\xs -> head xs <= sum (tail xs)) )) . permutations
 
@@ -111,7 +110,8 @@ exercise2 = do
     print $ triangle 1 2 3
 
 -- Exercise 3a
-
+-- I implemented each property of the workshop in haskell then created a custom sort function to work with the 
+-- sortBy function which sorts the list from the strogest property to the weakest
 forall :: [a] -> (a -> Bool) -> Bool
 forall = flip all
 
@@ -148,6 +148,7 @@ exercise3b = print $ map fst $ sortBy strength propertiesExercise3
 --      [] == []
 --      [x] == [x]
 --      xs == f(xs)
+
 exercise4 = print $ isPermutation [3,2,1] [1,2,3]
 -- Same length
 -- Sorted same
@@ -159,6 +160,8 @@ isPermutation xs ys = (null $ (\\) xs ys) && (length xs == length ys)
 
 
 -- Exercise 5
+-- This function is pretty straight forward. It first checks if its a permutation. 
+-- Then it checks to see if any index contains the same content for the two lists.
 exercise5 = print $ isDerangement [1,2,3] [2,3,1]
 
 isDerangement :: [Integer] -> [Integer] -> Bool
@@ -169,9 +172,9 @@ isDerangement xs ys = (isPermutation xs ys)  && (and $ zipWith (/=) xs ys)
 
 
 -- Exercise 6
-exercise6 = print()
-
--- Exercise 7
+-- I created a rotation cipher function. Which takes the number of rotations and the direction of the rotations
+-- This function is generic in the sense that you can create any ROT function eg (ROT n)
+-- For ROT13 has the extra property of being a "involutory function"  this means it is reversable by applying the function twice. 
 
 letters x | isLower x = ['a'..'z']
     | otherwise =  ['A'..'Z']
@@ -191,17 +194,20 @@ ccd = map  (rot 23 subtract)
 
 prop_samelength xs = length xs == length (rot13 xs)
 
-
-
-exercise7 = do
+exercise6 = do
         print $ (rot13d.rot13.rot13d) "GBB ZNAL FRPERGF!?"
         print $ rot13 ""
         quickCheck prop_samelength
         -- quickCheck prop_notEqual
 
--- Bonus Exercises
 
 
+-- Exercise 7
+-- I broke down the specs and implemented the different checks. 
+-- I later combined them all to a single function to check for the iban validity
+-- I also implemented a very short version of the function which is less readable
+-- Testing this function with valid numbers is easy. But testing it with invalid numbers is a little harder. Adding a number at the end might change 
+-- the modules rendering the number invalid. But adding a number anywhere else might still produce a valid number.        
 movetoback n xs = (drop n xs) ++ (take n xs)
 
 --Utils
@@ -248,12 +254,14 @@ ibanAlt x = 34 >= length x && hasCountryCode x && hasCheckDigits x && all (\p ->
                 ibancalc c | isAlpha c = show.(+10).fromJust $ elemIndex c ['A'..'Z']
                         | otherwise = [c]
 
-exercise8 = do
+exercise7 = do
     putStrLn "Modular method"
     print $ all iban validIbans
     putStrLn "CodeGolf method"
     print $ all ibanAlt validIbans
 
+-- Bonus Exercises
+-- Project Euler 49
 exercisebonus = print $ pandigitalPrime 4
 
 pandigitalPrime :: Integer -> Integer

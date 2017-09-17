@@ -10,7 +10,8 @@ data Boy = Matthew | Peter | Jack | Arnold | Carl
 boys = [Matthew, Peter, Jack, Arnold, Carl]
 
 accuses :: Boy -> Boy -> Bool
-accuses x y = False
+accuses Peter Mathew = True
+accuses Peter Jack = True
 
 main = do 
     print boys
