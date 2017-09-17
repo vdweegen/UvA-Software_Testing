@@ -9,6 +9,7 @@ import Control.Monad
 import Control.Applicative
 import Data.Char
 import Lab2.Util.Ibans
+import Text.Regex.Posix
 
 -- Assignment 2 / Lab 2 :: Group 14 --
 
@@ -188,7 +189,10 @@ toNum c | c `elem` ['0'..'9'] = [c]
 toNumbers :: String -> Integer
 toNumbers s = read(concatMap toNum s)::Integer
 
-exercise7 = print(forall validIbans iban)
+preCheck :: String -> Bool
+preCheck s = s =~ "^[A-Z]{2}[0-9]{2}[A-Z0-9]{0,30}"
+
+exercise7 = print(forall validIbans preCheck)
 
 -- Bonus Exercises
 exercisebonus = print()
