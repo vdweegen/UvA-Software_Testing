@@ -316,7 +316,11 @@ isUpperCase char = ('A' <= char) && ('Z' >= char)
 exercise7 = print $ map iban validIbans
 
 iban :: String -> Bool
-iban account = calculatedNumber account == actualNumber account
+iban account | not $ validAccount account = False
+             | otherwise = calculatedNumber account == actualNumber account
+
+validAccount :: String -> Bool
+validAccount (a:b:c1:c2:xs) = isAlpha a && isAlpha b && isNumber c1 && isNumber c2 && 0 < (length xs)
 
 calculatedNumber :: String -> Integer
 calculatedNumber account = (-) 98 $ flip mod 97 $ read (convertChars $ preProcess account) :: Integer
@@ -331,7 +335,6 @@ convertChars :: String -> String
 convertChars [] = "00"
 convertChars (x:xs) | ('A' <= x) && ('Z' >= x) = (show $ (+) 10 $ (ord x) - (ord 'A')) ++ convertChars xs
                     | otherwise = [x] ++ convertChars xs
-
 
 -- 83,59,21
 -- 29, 51
