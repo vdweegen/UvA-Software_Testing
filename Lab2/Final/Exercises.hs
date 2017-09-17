@@ -362,24 +362,29 @@ solution7 = do
   -- quickCheckResult(\n -> n >= 1 --> (iban (invalidateIban n "AL47212110090000000235698741")) == True)
 
 -- Bonus Exercises
-exercisebonus = solutionbonus
-
-solutionbonus = do
-  print $ euler29 [2..100]
-  print $ pandigitalPrime 9
+exercisebonus = do
+  putStr "Euler 29, number of terms: "
+  print $ euler29
+  putStr "Euler 41, number of terms: "
+  print $ euler41
 
 -- a ^ b => generates 15 distinct terms for a 2..5 and b 2..5
 -- how many terms does a^b generate for a 2 .. 100 and b 2..00
-euler29 :: [Integer] -> Int
-euler29 domain = length $ asSet [ a^b | a <- domain, b <-domain ]
+euler29 :: Integer
+euler29 = genericLength $ distinctTerms [2..100]
 
+distinctTerms :: [Integer] -> [Integer]
+distinctTerms domain = asSet [ a^b | a <- domain, b <-domain ]
+
+euler41 :: Integer
+euler41 = pandigitalPrime 9
 
 pandigitalPrime :: Integer -> Integer
-pandigitalPrime x
-        | null candidates =  - 1
+pandigitalPrime n
+        | null candidates = pandigitalPrime (n - 1)
         | otherwise = maximum candidates
         where
-           candidates = [ read x  :: Integer| x <- permutations $ numbers $ map(show) [1..x], prime $ (read x)]
+           candidates = [ read n  :: Integer| n <- permutations $ numbers $ map(show) [1..n], prime $ (read n)]
 --Utils
 numbers xs = foldr (++) "" xs
 charcodes = (zip ['A'..'Z'] [10..35])
