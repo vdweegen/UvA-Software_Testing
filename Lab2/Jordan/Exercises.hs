@@ -7,6 +7,7 @@ import System.Random
 import Test.QuickCheck
 import Lab2.Util.Random
 import Lab2.Util.Ibans
+
 -- Assignment 2 / Lab 2 :: Group 14 --
 
 infix 1 -->
@@ -65,7 +66,12 @@ exercise1 = quantilesIO 10000 4
 -- Exercise 2
 -- Estimated time taken 2 hours
 -- Tried to think about the problem in an abstract way. Thus the most time was spent learning about triangles! XP
-isTriangle = (all ((\xs -> head xs <= sum (tail xs)) )) . permutations
+isTriangle' = (all ((\xs -> head xs <= sum (tail xs)) )) . permutations
+
+isTriangle abc = sum ab <= c
+            where 
+            c = maximum abc
+            ab = filter (<c) abc
 
 isRightTriangle abc = c == sum ab
     where abc2 = map(^2) abc
@@ -73,6 +79,7 @@ isRightTriangle abc = c == sum ab
           ab = filter (<c) abc2
           
 equalSides = length.group.sort
+
 
 triangle :: Integer -> Integer -> Integer -> Shape
 triangle x y z 
@@ -84,8 +91,6 @@ triangle x y z
     where abc = [x,y,z]
     
 data Shape = NoTriangle | Equilateral | Isosceles | Rectangular | Other deriving (Eq,Show)
-
-
 
 exercise2 = do 
     print $ triangle 1 5 1 
@@ -134,7 +139,6 @@ exercise4 = print $ isPermutation [3,2,1] [1,2,3]
 isPermutation :: Eq a => [a] -> [a] -> Bool
 isPermutation xs ys = null $ (\\) xs ys
 
-prop_samelength xs ys = length xs == length ys
 
 -- Exercise 5
 exercise5 = print()
@@ -160,8 +164,15 @@ rot13d = map  (rot 13 subtract)
 cc  = map (rot 23 (+)) 
 ccd = map  (rot 23 subtract) 
 
+prop_samelength xs = length xs == length (rot13 xs)
+prop_notEqual xs = xs /= rot13 xs
 
-exercise7 = print  $ (rot13d.rot13.rot13d) "GBB ZNAL FRPERGF!?"
+
+exercise7 = do
+        print $ (rot13d.rot13.rot13d) "GBB ZNAL FRPERGF!?"
+        -- print $ rot13 ""
+        quickCheck prop_samelength
+        quickCheck prop_notEqual
 
 -- Bonus Exercises
 
@@ -190,17 +201,31 @@ isValidCharacters = all isUpperAlphaNum
 
 transformIban = readStringInt.numbers.translate.movetoback 4 
 
+isCharType :: (Char -> Bool) -> String -> Bool
+isCharType y x = all y  x
+
+sublist :: Int -> Int -> [a] -> [a]
+sublist n m l = take m $ drop n l
+
+hasCountryCode :: String -> Bool
+hasCountryCode x = isCharType isAlpha $ (sublist 0 2 x)
+
+hasCheckDigits :: String -> Bool
+hasCheckDigits x =  isCharType isDigit $ (sublist 2 2 x)
+
 iban :: String -> Bool
 iban x =  34 > length x && isValidCharacters x &&  mod (transformIban x) 97 == 1
 
  --- One function :D Bosslike
-ibanAlt x = 34 > length x && all (\p ->  isUpper p || isDigit p ) x && mod (read (concatMap ibancalc $ drop 4 x ++ take 4 x) :: Integer) 97 == 1
+ibanAlt x = 34 > length x && hasCountryCode x && hasCheckDigits x && all (\p ->  isUpper p || isDigit p ) x && mod (read (concatMap ibancalc $ drop 4 x ++ take 4 x) :: Integer) 97 == 1
                 where
                 ibancalc c | isAlpha c = show.(+10).fromJust $ elemIndex c ['A'..'Z'] 
                         | otherwise = [c]
 
-exercisebonus = do
-        putStrLn "Modular method"
-        print $ all iban validIbans
-        putStrLn "CodeGolf method"
-        print $ all ibanAlt validIbans
+exercise8 = do
+    putStrLn "Modular method"
+    print $ all iban validIbans
+    putStrLn "CodeGolf method"
+    print $ all ibanAlt validIbans               
+
+exercisebonus = print ()
