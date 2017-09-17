@@ -40,6 +40,8 @@ main = do
     exercisebonus
 
 -- Exercise 1 :: Merged version of Jordan and Willem-Jan
+--            :: Time spent: 180 minutes (really...) + 60 minutes merging/discussion
+
 -- QuickCheck for generating a number of random values and checking that the value is maintained
 
 probs :: Int -> IO [Float]
@@ -74,7 +76,8 @@ quantiles xs (q:qs) = [genericLength $ filter (<q) xs] ++ (quantiles (filter (>=
 solution1 = quantilesIO 10000 4
 
 -- Exercise 2 :: Modified Version (group effort) of Bauke
--- Implementation finished in 10 minutes, without the tests
+--            :: Time spent: 75 minutes (implementation/tests/discussion)
+
 -- Simply keying in the definitions for the triangles
 -- The pythagorean algorithm can probably be refactored by sorting a b c and then taking 2 and comparing against last
 data Shape = NoTriangle | Equilateral | Isosceles | Rectangular | Other
@@ -128,6 +131,8 @@ solution2 = do
   quickCheck prop_other
 
 -- Exercise 3a :: Cas' Version
+--            :: Time spent: 60 minutes
+
 exercise3a = solution3a
 
 stronger, weaker :: [a] -> (a -> Bool) -> (a -> Bool) -> Bool
@@ -181,6 +186,7 @@ solution3a = do
   print $ compar domain three four
 
 -- Exercise 3b :: Cas' Version
+--            :: Time spent: 60 minutes
 exercise3b = solution3b
 
 combinations :: Int -> [a] -> [[a]]
@@ -191,6 +197,8 @@ solution3b = do
   print $ sort $ map (combcompar domain) (combinations 2 [one,two,three,four])
 
 -- Exercise 4 :: Joint effort (decided to redo the whole thing)
+--            :: Time spent: 90 minutes (redo the whole thing + writing tests)
+
 -- In order to validate the implementation, run it against the library implementation provided
 exercise4 = solution4
 
@@ -226,6 +234,7 @@ exercise5 = do
 
 =======
 -- Exercise 5 :: Merged version of Bauke and Cas
+--            :: Time spent: 60 minutes (sum of its parts and refactoring/merging)
 exercise5 = solution5
 >>>>>>> bb333eff4237f1773813857f2b3143e6d149b898
 
@@ -252,6 +261,7 @@ deran :: Eq a => [a] -> [[a]]
 deran x = filter (\ y -> isDerangement y x) (permutations x)
 
 -- Exercise 6 :: Merged Version of Bauke and Willem-Jan
+--            :: Time spent: 45 minutes (sum of its parts) + 15 minutes refactoring
 exercise6 = solution6
 
 -- Requires generators
@@ -315,6 +325,8 @@ solution6 = do
   quickCheck prop_IgnoresAllNonAlphaCharacters
 
 -- Exercise 7 :: Merged version of Bauke, Willem-Jan, and Cas
+--            :: Time spent: 120 minutes + 60 minutes (discussion/merging)
+
 exercise7 = solution7
 
 iban :: String -> Bool
