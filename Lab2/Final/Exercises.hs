@@ -39,7 +39,7 @@ main = do
     putStrLn $ "> BONUS"
     exercisebonus
 
--- Exercise 1
+-- Exercise 1 :: Merged version of Jordan and Willem-Jan
 -- QuickCheck for generating a number of random values and checking that the value is maintained
 
 probs :: Int -> IO [Float]
@@ -71,58 +71,69 @@ quantiles :: [Float] -> [Float] -> [Int]
 quantiles xs [] = []
 quantiles xs (q:qs) = [genericLength $ filter (<q) xs] ++ (quantiles (filter (>=q) xs) qs)
 
--- Exercise 2
+-- Exercise 2 :: Modified Version (group effort) of Bauke
+-- Implementation finished in 10 minutes, without the tests
+-- Simply keying in the definitions for the triangles
+-- The pythagorean algorithm can probably be refactored by sorting a b c and then taking 2 and comparing against last
+data Shape = NoTriangle | Equilateral | Isosceles | Rectangular | Other
+             deriving (Eq, Show)
+
+exercise2 = solution2
+
+prop_noTriangle (Positive a) (Positive b) (Positive c) = triangleCombinations a b (a+b+c) NoTriangle
+prop_equilateral (Positive a) = triangleCombinations a a a Equilateral
+prop_isosceles (Positive a) = triangleCombinations a a (a+1) Isosceles
+prop_rectangular (Positive a) = validateRectangular $ pythagoreanTriplets !! a
+prop_other (Positive a) = triangleCombinations (a*51) (a*55) (a*5) Other
+
+pythagoreanTriplets :: [[Integer]]
+pythagoreanTriplets = generateTriplets 250
+
+generateTriplets :: Integer -> [[Integer]]
+generateTriplets n = [ [a,b,c] | a <- [1..n], b <- [1..n], c <- [1..n], (a^2) + (b^2) == (c^2)]
+
+validateRectangular :: [Integer] -> Bool
+validateRectangular (a:b:c:[]) = triangleCombinations a b c Rectangular
+
+triangleCombinations :: Integer -> Integer -> Integer -> Shape -> Bool
+triangleCombinations a b c expectedType = allOf expectedType $ [triangle a b c, triangle a c b,
+                                          triangle b a c, triangle b c a,
+                                          triangle c a b, triangle c b a]
+
+allOf :: Shape -> [Shape] -> Bool
+allOf _ [] = True
+allOf shape (x:xs) = shape == x && allOf shape xs
 
 
-data Shape = NoTriangle | Equilateral
-            | Isosceles  | Rectangular | Other deriving (Eq,Show)
-
-exercise2 = do
-              quickCheck prop_Equilateral
-              quickCheck prop_Isosceles
-              quickCheck prop_Invalid
-
-prop_Equilateral (Positive n) =
-  Equilateral == triangle n n n
-
-prop_Isosceles (Positive n) =
-  True == ((Isosceles == (triangle n n (randBetween 1 (2*n))))
-          && (Isosceles == (triangle n (randBetween 1 (2*n)) n))
-          && (Isosceles == (triangle (randBetween 1 (2*n)) n n)))
-
-prop_Invalid (Positive n) (Positive o) =
-  True == (NoTriangle == triangle n o (randAbove (n+o)))
-
--- Not random, but just to fix quickCheck
-randBetween :: Integer -> Integer -> Integer
-randBetween a b = a + (div b 2)
-
-randAbove :: Integer -> Integer
-randAbove n = n + 10;
-
-checkShape :: (Integer, Integer, Integer) -> Shape
-checkShape (a,b,c) = triangle a b c
+sampleTriangles = do
+              print $ triangle 60 80 100 -- default Rectangular used in construction
+              print $ triangle 10 10 10  -- Equilateral
+              print $ triangle 1 1 100 -- Nothing
+              print $ triangle 10 10 9 -- IsoSceles
+              print $ triangle 10 9 8 -- Something else
 
 triangle :: Integer -> Integer -> Integer -> Shape
-triangle a b c | noTriangle a b c = NoTriangle
-               | equilateral a b c = Equilateral
-               | isosceles a b c = Isosceles
-               | rectangular a b c = Rectangular
-               | otherwise = Other
+triangle a b c = evaluateShape $ sort [a,b,c]
 
-isTriangle, noTriangle, equilateral, isosceles, rectangular :: Integer -> Integer -> Integer -> Bool
-isTriangle a b c = (a + b > c) || (a + c > b) || (b + c > a)
-noTriangle a b c = not $ isTriangle a b c
-equilateral a b c = (a == b) && (a == c) && (b == c)
-isosceles a b c = (a == b) || (a == c) || (b == c)
-rectangular a b c = (a^2+b^2) == c^2 || (a^2+c^2) == b^2 || (b^2+c^2) == a^2
+evaluateShape :: [Integer] -> Shape
+evaluateShape (a:b:c:[]) | invalidTriangle a b c = NoTriangle
+                         | (a == b) && (a == c) = Equilateral
+                         | (a^2) + (b^2) == (c^2) = Rectangular
+                         | (a == b ) || (a == c) || (b == c) = Isosceles
+                         | otherwise = Other
+evaluateShape _ = NoTriangle
 
-equilateralProp, isoscelesProp, rectangularProp :: Integer -> [(Integer, Integer, Integer)]
-equilateralProp n = [(a,b,c)| a <- [1..n], b <- [1..n], c <- [1..n], a == b && b == c]
-isoscelesProp n   = [(a,b,c)| a <- [1..n], b <- [1..n], c <- [1..n], (a == b) || (a == c) || (b == c)]
-rectangularProp n = [(a,b,c)| a <- [1..n], b <- [1..n], c <- [1..n], (a^2+b^2) == c^2 || (a^2+c^2) == b^2 || (b^2+c^2) == a^2]
+invalidTriangle :: Integer -> Integer -> Integer -> Bool
+invalidTriangle a b c = (a + b < c);
 
--- Exercise 3a
+solution2 = do
+  quickCheck prop_noTriangle
+  quickCheck prop_equilateral
+  quickCheck prop_isosceles
+  quickCheck prop_rectangular
+  quickCheck prop_other
+
+-- Exercise 3a :: Cas' Version
 exercise3a = solution3a
 
 stronger, weaker :: [a] -> (a -> Bool) -> (a -> Bool) -> Bool
@@ -175,7 +186,7 @@ solution3a = do
   print $ compar domain two three
   print $ compar domain three four
 
--- Exercise 3b
+-- Exercise 3b :: Cas' Version
 exercise3b = solution3b
 
 combinations :: Int -> [a] -> [[a]]
@@ -191,7 +202,7 @@ exercise4 = print()
 -- Exercise 5
 exercise5 = print()
 
--- Exercise 6
+-- Exercise 6 :: Merged Version of Bauke and Willem-Jan
 exercise6 = solution6
 
 -- Requires generators
@@ -254,7 +265,7 @@ solution6 = do
   quickCheck prop_ChangesAllAlphaCharacters
   quickCheck prop_IgnoresAllNonAlphaCharacters
 
--- Exercise 7
+-- Exercise 7 :: Merged version of Bauke and Willem-Jan
 exercise7 = solution7
 
 iban :: String -> Bool
