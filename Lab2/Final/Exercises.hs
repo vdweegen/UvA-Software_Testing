@@ -21,23 +21,23 @@ main = do
     putStrLn $ "Assignment 2 / Lab 2"
     putStrLn $ "===================="
     putStrLn $ "> Exercise 1"
-    exercise1
+    -- exercise1
     putStrLn $ "> Exercise 2"
-    exercise2
+    -- exercise2
     putStrLn $ "> Exercise 3a"
-    exercise3a
+    -- exercise3a
     putStrLn $ "> Exercise 3b"
-    exercise3b
+    -- exercise3b
     putStrLn $ "> Exercise 4"
-    exercise4
+    -- exercise4
     putStrLn $ "> Exercise 5"
-    exercise5
+    -- exercise5
     putStrLn $ "> Exercise 6"
-    exercise6
+    -- exercise6
     putStrLn $ "> Exercise 7"
     exercise7
     putStrLn $ "> BONUS"
-    exercisebonus
+    -- exercisebonus
 
 -- Exercise 1 :: Merged version of Jordan and Willem-Jan
 -- QuickCheck for generating a number of random values and checking that the value is maintained
@@ -265,7 +265,7 @@ solution6 = do
   quickCheck prop_ChangesAllAlphaCharacters
   quickCheck prop_IgnoresAllNonAlphaCharacters
 
--- Exercise 7 :: Merged version of Bauke and Willem-Jan
+-- Exercise 7 :: Merged version of Bauke, Willem-Jan, and Cas
 exercise7 = solution7
 
 iban :: String -> Bool
@@ -295,6 +295,7 @@ convertChars (x:xs) | ('A' <= x) && ('Z' >= x) = (show $ (+) 10 $ (ord x) - (ord
 solution7 = do
   print $ forall validIbans iban
   print $ forall (map invalidateIban validIbans) iban
+  print $ prop "AL47212110090000000235698741" 8
 
 -- Bonus Exercises
 exercisebonus = solutionbonus
@@ -312,14 +313,23 @@ asSet [] = []
 asSet (x:xs) | elem x xs = asSet xs
              | otherwise = x : asSet xs
 
-shuffleNums :: Int -> Int
-shuffleNums x
-  | (x < 57) && (x >= 48) = (x + 1)
-  | x == 57 = (x - 9)
+prop :: String -> Int -> String
+prop account n = (accountPermutations account) !! n
+
+accountPermutations :: [Char] -> [[Char]]
+accountPermutations account = permutations account
+
+-- testShuffle :: Int -> Int -> Int
+-- testShuffle x c = shuffleNums x (c mod 9)
+
+shuffleNums :: Int -> Int -> Int
+shuffleNums x c
+  | (x < 57) && (x >= 48) = (x + c)
+  | x == 57 = (x - (10 - c))
   | otherwise = x
 
 invalidateIban :: String -> String
-invalidateIban x = map chr (map shuffleNums (map ord x))
+invalidateIban x = map chr (map (shuffleNums 1) (map ord x))
 
 -- IBANS
 validIbans :: [String]
