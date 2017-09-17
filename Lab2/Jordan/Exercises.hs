@@ -170,9 +170,9 @@ prop_notEqual xs = xs /= rot13 xs
 
 exercise7 = do
         print $ (rot13d.rot13.rot13d) "GBB ZNAL FRPERGF!?"
-        -- print $ rot13 ""
+        print $ rot13 ""
         quickCheck prop_samelength
-        quickCheck prop_notEqual
+        -- quickCheck prop_notEqual
 
 -- Bonus Exercises
 
@@ -214,7 +214,7 @@ hasCheckDigits :: String -> Bool
 hasCheckDigits x =  isCharType isDigit $ (sublist 2 2 x)
 
 iban :: String -> Bool
-iban x =  34 > length x && isValidCharacters x &&  mod (transformIban x) 97 == 1
+iban x =  34 > length x && hasCountryCode x && hasCheckDigits x && isValidCharacters x &&  mod (transformIban x) 97 == 1
 
  --- One function :D Bosslike
 ibanAlt x = 34 > length x && hasCountryCode x && hasCheckDigits x && all (\p ->  isUpper p || isDigit p ) x && mod (read (concatMap ibancalc $ drop 4 x ++ take 4 x) :: Integer) 97 == 1
