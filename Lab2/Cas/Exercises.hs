@@ -211,8 +211,7 @@ exercise3b = solution3b
 
 combinations :: Int -> [a] -> [[a]]
 combinations 0 _  = [ [] ]
-combinations n xs = [ y:ys | y:xs' <- tails xs
-                           , ys <- combinations (n-1) xs']
+combinations n xs = [ y:ys | y:xs' <- tails xs, ys <- combinations (n-1) xs']
 
 solution3b = do
   -- print $ sort $ map (permcompar domain) props
