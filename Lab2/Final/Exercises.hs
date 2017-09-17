@@ -21,23 +21,23 @@ main = do
     putStrLn $ "Assignment 2 / Lab 2"
     putStrLn $ "===================="
     putStrLn $ "> Exercise 1"
-    -- exercise1
+    exercise1
     putStrLn $ "> Exercise 2"
-    -- exercise2
+    exercise2
     putStrLn $ "> Exercise 3a"
-    -- exercise3a
+    exercise3a
     putStrLn $ "> Exercise 3b"
-    -- exercise3b
+    exercise3b
     putStrLn $ "> Exercise 4"
-    -- exercise4
+    exercise4
     putStrLn $ "> Exercise 5"
     exercise5
     putStrLn $ "> Exercise 6"
-    -- exercise6
+    exercise6
     putStrLn $ "> Exercise 7"
-    -- exercise7
+    exercise7
     putStrLn $ "> BONUS"
-    -- exercisebonus
+    exercisebonus
 
 -- Exercise 1 :: Merged version of Jordan and Willem-Jan
 -- QuickCheck for generating a number of random values and checking that the value is maintained
@@ -49,7 +49,7 @@ probs n = do
   ps <- probs (n-1)
   return (p:ps)
 
-exercise1 = quantilesIO 10000 4
+exercise1 = solution1
 
 quantilesIO :: Int -> Int -> IO()
 quantilesIO xs q = do {
@@ -70,6 +70,8 @@ chi (x:xs) m = foldr (\ x -> (+) (fromIntegral ((x - m) ^ 2) / fromIntegral m)) 
 quantiles :: [Float] -> [Float] -> [Int]
 quantiles xs [] = []
 quantiles xs (q:qs) = [genericLength $ filter (<q) xs] ++ (quantiles (filter (>=q) xs) qs)
+
+solution1 = quantilesIO 10000 4
 
 -- Exercise 2 :: Modified Version (group effort) of Bauke
 -- Implementation finished in 10 minutes, without the tests
@@ -103,14 +105,6 @@ triangleCombinations a b c expectedType = allOf expectedType $ [triangle a b c, 
 allOf :: Eq a => a -> [a] -> Bool
 allOf _ [] = True
 allOf a (x:xs) = a == x && allOf a xs
-
-
-sampleTriangles = do
-              print $ triangle 60 80 100 -- default Rectangular used in construction
-              print $ triangle 10 10 10  -- Equilateral
-              print $ triangle 1 1 100 -- Nothing
-              print $ triangle 10 10 9 -- IsoSceles
-              print $ triangle 10 9 8 -- Something else
 
 triangle :: Integer -> Integer -> Integer -> Shape
 triangle a b c = evaluateShape $ sort [a,b,c]
@@ -221,7 +215,7 @@ solution4 = do
   quickCheck prop_permutation_validate_content
   quickCheckWith stdArgs {maxSize=10} prop_permutation_validate_against_lib
 
--- Exercise 5
+-- Exercise 5 :: Merged version of Bauke and Cas
 exercise5 = solution5
 
 -- Weakest property => validate the length property holds, filtering by this property yields any list of n items
