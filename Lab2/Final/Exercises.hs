@@ -201,9 +201,7 @@ solution3b = do
 exercise4 = do
   quickCheck prop_permutation_validate_length
   quickCheck prop_permutation_validate_content
-
-
--- checkWeakest = quickCheck prop_permutation_validate_length
+  quickCheckWith stdArgs {maxSize=10} prop_permutation_validate_against_lib
 
 -- Weakest property => validate the length property holds, filtering by this property yields any list of n items
 prop_permutation_validate_length :: Positive Integer -> Bool
