@@ -29,13 +29,13 @@ main = do
     putStrLn $ "> Exercise 3b"
     -- exercise3b
     putStrLn $ "> Exercise 4"
-    -- exercise4
+    exercise4
     putStrLn $ "> Exercise 5"
     -- exercise5
     putStrLn $ "> Exercise 6"
     -- exercise6
     putStrLn $ "> Exercise 7"
-    exercise7
+    -- exercise7
     putStrLn $ "> BONUS"
     -- exercisebonus
 
@@ -198,19 +198,20 @@ solution3b = do
 
 -- Exercise 4
 -- In order to validate the implementation, run it against the library implementation provided
-exercise4 = undefined -- do
-      --          quickCheck prop_permutation_validate_length
-          --      quickCheck prop_permutation_validate_content
+exercise4 = do
+  quickCheck prop_permutation_validate_length
+  quickCheck prop_permutation_validate_content
 
 
---checkWeakest = quickCheck prop_permutation_validate_length
+-- checkWeakest = quickCheck prop_permutation_validate_length
 
 -- Weakest property => validate the length property holds, filtering by this property yields any list of n items
---prop_permutation_validate_length :: Positive Integer -> Bool
+prop_permutation_validate_length :: Positive Integer -> Bool
 prop_permutation_validate_length (Positive n) = not $ isPermutation [1..n] [1..n+1]
 
 -- Stronger property => validate content of lists, filtering by this property yields a list
---prop_permutation_validate_content (Positive n) = not $ isPermutation [1..n] [2*n..3*n]
+prop_permutation_validate_content :: Positive Integer -> Bool
+prop_permutation_validate_content (Positive n) = not $ isPermutation [1..n] [2*n..3*n]
 
 -- Strongest => 1 : 1 comparison against the library.
 prop_permutation_validate_against_lib :: [Integer] -> Bool
