@@ -20,9 +20,9 @@ main = do
     putStrLn $ "Assignment 2 / Lab 2"
     putStrLn $ "===================="
     putStrLn $ "> Exercise 1"
-    -- exercise1
+    exercise1
     putStrLn $ "> Exercise 2"
-    -- exercise2
+    exercise2
     putStrLn $ "> Exercise 3a"
     exercise3a
     putStrLn $ "> Exercise 3b"
