@@ -236,11 +236,11 @@ prop_derangement_validate_content (Positive n) = not $ isDerangement [1..n] [2*n
 prop_derangement_validate_against_lib :: [Integer] -> Bool
 prop_derangement_validate_against_lib xs = allOf True (map (isDerangement xs) (deran xs))
 
-deran :: Integer -> [[Integer]]
-deran n = [ xs | xs <- permutations [0..n], isDerangement [0..n] xs ]
-
 isDerangement :: Eq a => [a] -> [a] -> Bool
-isDerangement xs ys = (isPermutation xs ys)  && (and $ zipWith (/=) xs ys)
+isDerangement x y = ((length $ findIndices id $ zipWith (==) x y) == 0) && isPermutation x y
+
+deran :: Eq a => [a] -> [[a]]
+deran x = filter (\ y -> isDerangement y x) (permutations x)
 
 solution5 = do
   quickCheck prop_derangement_validate_length
