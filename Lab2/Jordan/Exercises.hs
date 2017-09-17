@@ -256,7 +256,7 @@ exercise8 = do
 
 exercisebonus = print $ pandigitalPrime 4
 
-
+pandigitalPrime :: Integer -> Integer
 pandigitalPrime x 
         | null candidates =  - 1
         | otherwise = maximum candidates
