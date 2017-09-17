@@ -295,7 +295,8 @@ convertChars (x:xs) | ('A' <= x) && ('Z' >= x) = (show $ (+) 10 $ (ord x) - (ord
 solution7 = do
   print $ forall validIbans iban
   print $ forall (map invalidateIban validIbans) iban
-  print $ prop "AL47212110090000000235698741" 8
+  -- The below fails, since there are permutations that generate a valid account number
+  -- quickCheckResult(\n -> n >= 1 --> iban (prop (invalidateIban "AL47212110090000000235698741") n) == True)
 
 -- Bonus Exercises
 exercisebonus = solutionbonus
