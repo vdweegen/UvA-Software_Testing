@@ -204,6 +204,7 @@ exercise4 = do
   quickCheckWith stdArgs {maxSize=10} prop_permutation_validate_against_lib
 
 -- Weakest property => validate the length property holds, filtering by this property yields any list of n items
+-- Therefore, different lengths can never be a permutation
 prop_permutation_validate_length :: Positive Integer -> Bool
 prop_permutation_validate_length (Positive n) = not $ isPermutation [1..n] [1..n+1]
 
@@ -220,7 +221,14 @@ isPermutation xs ys | length xs /= length ys = False
                     | otherwise = null $ (\\) xs ys
 
 -- Exercise 5
-exercise5 = print()
+exercise5 = do
+              deran 5
+
+deran :: Integer -> [[Integer]]
+deran n = [ xs | xs <- permutations [0..n], isDerangement [0..n] xs ]
+
+isDerangement :: Eq a => [a] -> [a] -> Bool
+isDerangement xs ys = (isPermutation xs ys)  && (and $ zipWith (/=) xs ys)
 
 -- Exercise 6 :: Merged Version of Bauke and Willem-Jan
 exercise6 = solution6
