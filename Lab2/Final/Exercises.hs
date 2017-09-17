@@ -51,7 +51,7 @@ probs n = do
   ps <- probs (n-1)
   return (p:ps)
 
-exercise1 = solution1
+exercise1 = quantilesIO 10000 4
 
 quantilesIO :: Int -> Int -> IO()
 quantilesIO xs q = do {
@@ -364,15 +364,10 @@ accountPermutations account = permutations account
 
 -- Bonus Exercises
 exercisebonus = do
-<<<<<<< HEAD
   putStr "Euler 29, number of terms: "
   print $ euler29
   putStr "Euler 41, number of terms: "
   print $ euler41
-=======
-  print $ euler29 [2..100]
-  print $ pandigitalPrime 9
->>>>>>> 9bb9b0a51d964cbfa3ee1a2e9ce4f430f6e6ce0d
 
 -- a ^ b => generates 15 distinct terms for a 2..5 and b 2..5
 -- how many terms does a^b generate for a 2 .. 100 and b 2..00
@@ -382,25 +377,16 @@ euler29 = genericLength $ distinctTerms [2..100]
 distinctTerms :: [Integer] -> [Integer]
 distinctTerms domain = asSet [ a^b | a <- domain, b <-domain ]
 
-<<<<<<< HEAD
 euler41 :: Integer
 euler41 = pandigitalPrime 9
 
-=======
->>>>>>> 9bb9b0a51d964cbfa3ee1a2e9ce4f430f6e6ce0d
 pandigitalPrime :: Integer -> Integer
 pandigitalPrime n
         | null candidates = pandigitalPrime (n - 1)
         | otherwise = maximum candidates
         where
-<<<<<<< HEAD
            candidates = [ read n  :: Integer| n <- permutations $ numbers $ map(show) [1..n], prime $ (read n)]
---Utils
-=======
-           candidates = [ read x  :: Integer| x <- permutations $ numbers $ map(show) [1..x], prime $ (read x)]
-
 -- Utils
->>>>>>> 9bb9b0a51d964cbfa3ee1a2e9ce4f430f6e6ce0d
 numbers xs = foldr (++) "" xs
 charcodes = (zip ['A'..'Z'] [10..35])
 readStringInt x = (read x :: Integer)
