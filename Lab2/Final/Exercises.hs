@@ -29,13 +29,13 @@ main = do
     putStrLn $ "> Exercise 3b"
     -- exercise3b
     putStrLn $ "> Exercise 4"
-    -- exercise4
+    exercise4
     putStrLn $ "> Exercise 5"
     -- exercise5
     putStrLn $ "> Exercise 6"
     -- exercise6
     putStrLn $ "> Exercise 7"
-    exercise7
+    -- exercise7
     putStrLn $ "> BONUS"
     -- exercisebonus
 
@@ -197,7 +197,13 @@ solution3b = do
   print $ sort $ map (combcompar domain) (combinations 2 [one,two,three,four])
 
 -- Exercise 4
-exercise4 = print()
+exercise4 = solution4
+
+isPermutation :: Eq a => [a] -> [a] -> Bool
+isPermutation xs ys = (null $ (\\) xs ys) && (length xs == length ys)
+
+solution4 = do
+  print $ forall (permutations [0..5]) (isPermutation [0..5])
 
 -- Exercise 5
 exercise5 = print()
