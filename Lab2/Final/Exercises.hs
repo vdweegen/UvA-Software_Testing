@@ -29,9 +29,9 @@ main = do
     putStrLn $ "> Exercise 3b"
     -- exercise3b
     putStrLn $ "> Exercise 4"
-    exercise4
+    -- exercise4
     putStrLn $ "> Exercise 5"
-    -- exercise5
+    exercise5
     putStrLn $ "> Exercise 6"
     -- exercise6
     putStrLn $ "> Exercise 7"
@@ -196,15 +196,11 @@ combinations n xs = [ y:ys | y:xs' <- tails xs, ys <- combinations (n-1) xs']
 solution3b = do
   print $ sort $ map (combcompar domain) (combinations 2 [one,two,three,four])
 
--- Exercise 4
+-- Exercise 4 :: Joint effort (decided to redo the whole thing)
 -- In order to validate the implementation, run it against the library implementation provided
-exercise4 = do
-  quickCheck prop_permutation_validate_length
-  quickCheck prop_permutation_validate_content
-  quickCheckWith stdArgs {maxSize=10} prop_permutation_validate_against_lib
+exercise4 = solution4
 
 -- Weakest property => validate the length property holds, filtering by this property yields any list of n items
--- Therefore, different lengths can never be a permutation
 prop_permutation_validate_length :: Positive Integer -> Bool
 prop_permutation_validate_length (Positive n) = not $ isPermutation [1..n] [1..n+1]
 
@@ -220,15 +216,36 @@ isPermutation :: Eq a => [a] -> [a] -> Bool
 isPermutation xs ys | length xs /= length ys = False
                     | otherwise = null $ (\\) xs ys
 
+solution4 = do
+  quickCheck prop_permutation_validate_length
+  quickCheck prop_permutation_validate_content
+  quickCheckWith stdArgs {maxSize=10} prop_permutation_validate_against_lib
+
 -- Exercise 5
-exercise5 = do
-              deran 5
+exercise5 = solution5
+
+-- Weakest property => validate the length property holds, filtering by this property yields any list of n items
+prop_derangement_validate_length :: Positive Integer -> Bool
+prop_derangement_validate_length (Positive n) = not $ isDerangement [1..n] [1..n+1]
+
+-- Stronger property => validate content of lists, filtering by this property yields a list
+prop_derangement_validate_content :: Positive Integer -> Bool
+prop_derangement_validate_content (Positive n) = not $ isDerangement [1..n] [2*n..3*n]
+
+-- Strongest => 1 : 1 comparison against the library.
+prop_derangement_validate_against_lib :: [Integer] -> Bool
+prop_derangement_validate_against_lib xs = allOf True (map (isDerangement xs) (deran xs))
 
 deran :: Integer -> [[Integer]]
 deran n = [ xs | xs <- permutations [0..n], isDerangement [0..n] xs ]
 
 isDerangement :: Eq a => [a] -> [a] -> Bool
 isDerangement xs ys = (isPermutation xs ys)  && (and $ zipWith (/=) xs ys)
+
+solution5 = do
+  quickCheck prop_derangement_validate_length
+  quickCheck prop_derangement_validate_content
+  quickCheckWith stdArgs {maxSize=10} prop_derangement_validate_against_lib
 
 -- Exercise 6 :: Merged Version of Bauke and Willem-Jan
 exercise6 = solution6
