@@ -364,10 +364,14 @@ accountPermutations account = permutations account
 
 -- Bonus Exercises
 exercisebonus = do
+  putStr "Euler 01, sum of nubmer to 1000, dividable by 3 or 5"
+  print $ euler1
   putStr "Euler 29, number of terms: "
   print $ euler29
-  putStr "Euler 41, number of terms: "
+  putStr "Euler 41, largest pandigital n-digit prime: "
   print $ euler41
+
+euler1 = sum $ [a | a <- [1..999], mod a 3 == 0 || mod a 5 == 0]
 
 -- a ^ b => generates 15 distinct terms for a 2..5 and b 2..5
 -- how many terms does a^b generate for a 2 .. 100 and b 2..00
