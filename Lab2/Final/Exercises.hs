@@ -5,10 +5,7 @@ import Data.Char
 import System.Random
 import Test.QuickCheck
 
-import Lab2.Util.Random
-
 -- Assignment 2 / Lab 2 :: Group 14 --
-
 infix 1 -->
 (-->) :: Bool -> Bool -> Bool
 p --> q = (not p) || q
@@ -19,9 +16,9 @@ main = do
     putStrLn $ "Assignment 2 / Lab 2"
     putStrLn $ "===================="
     putStrLn $ "> Exercise 1"
-    exercise1
+    -- exercise1
     putStrLn $ "> Exercise 2"
-    exercise2
+    -- exercise2
     putStrLn $ "> Exercise 3a"
     exercise3a
     putStrLn $ "> Exercise 3b"
@@ -39,6 +36,14 @@ main = do
 
 -- Exercise 1
 -- QuickCheck for generating a number of random values and checking that the value is maintained
+
+probs :: Int -> IO [Float]
+probs 0 = return []
+probs n = do
+  p <- getStdRandom random
+  ps <- probs (n-1)
+  return (p:ps)
+
 exercise1 = quantilesIO 10000 4
 
 quantilesIO :: Int -> Int -> IO()
