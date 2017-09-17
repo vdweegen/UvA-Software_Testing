@@ -313,6 +313,9 @@ isUpperCase char = ('A' <= char) && ('Z' >= char)
 -- check number = 2 chars
 -- rest is max 30 chars
 
+-- randomize the checksum
+--
+
 exercise7 = print $ map iban validIbans
 
 iban :: String -> Bool
@@ -320,7 +323,10 @@ iban account | not $ validAccount account = False
              | otherwise = calculatedNumber account == actualNumber account
 
 validAccount :: String -> Bool
-validAccount (a:b:c1:c2:xs) = isAlpha a && isAlpha b && isNumber c1 && isNumber c2 && 0 < (length xs)
+validAccount (a:b:c1:c2:xs) = isAlpha a && isAlpha b && isNumber c1 && isNumber c2 && (inLimits (genericLength xs) (0,30))
+
+inLimits :: Integer -> (Integer, Integer) -> Bool
+inLimits act (min,max) = min <= act && max >= act
 
 calculatedNumber :: String -> Integer
 calculatedNumber account = (-) 98 $ flip mod 97 $ read (convertChars $ preProcess account) :: Integer
