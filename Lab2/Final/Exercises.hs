@@ -376,7 +376,7 @@ accountPermutations account = permutations account
 
 -- Bonus Exercises
 exercisebonus = do
-  putStr "Euler 01, sum of nubmer to 1000, dividable by 3 or 5"
+  putStr "Euler 01, sum all natural numbers up to 1000, dividable by 3 or 5: "
   print $ euler1
   putStr "Euler 29, number of terms: "
   print $ euler29
