@@ -7,6 +7,7 @@ import System.Random
 import Test.QuickCheck
 import Lab2.Util.Random
 import Lab2.Util.Ibans
+import Lab2.Util.Primes
 
 -- Assignment 2 / Lab 2 :: Group 14 --
 
@@ -139,12 +140,22 @@ exercise3a = print $ map fst $ propertiesExercise3
 exercise3b = print $ map fst $ sortBy strength propertiesExercise3
 
 -- Exercise 4
+-- Writing this function was simple. Yet I did make a small mistake assuming that the two lists would always be of the 
+-- same length. My group pointed out my mistake in the final submission. This is a property that I had to check for within my function.
+-- Properties of this functions are:
+--      length f(xs)) == length xs
+--      sort xs == sort(f(xs))
+--      [] == []
+--      [x] == [x]
+--      xs == f(xs)
 exercise4 = print $ isPermutation [3,2,1] [1,2,3]
 -- Same length
 -- Sorted same
 
 isPermutation :: Eq a => [a] -> [a] -> Bool
 isPermutation xs ys = (null $ (\\) xs ys) && (length xs == length ys)
+
+
 
 
 -- Exercise 5
@@ -237,10 +248,18 @@ ibanAlt x = 34 >= length x && hasCountryCode x && hasCheckDigits x && all (\p ->
                 ibancalc c | isAlpha c = show.(+10).fromJust $ elemIndex c ['A'..'Z']
                         | otherwise = [c]
 
-exercisebonus = do
+exercise8 = do
     putStrLn "Modular method"
     print $ all iban validIbans
     putStrLn "CodeGolf method"
     print $ all ibanAlt validIbans
 
--- exercisebonus = print ()
+exercisebonus = print $ pandigitalPrime 4
+
+
+pandigitalPrime x 
+        | null candidates =  - 1
+        | otherwise = maximum candidates
+        where 
+           candidates =   [ read x  :: Integer| x <- permutations $ numbers $ map(show) [1..x], prime $ (read x)]
+   
