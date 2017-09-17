@@ -294,9 +294,16 @@ convertChars (x:xs) | ('A' <= x) && ('Z' >= x) = (show $ (+) 10 $ (ord x) - (ord
 
 solution7 = do
   print $ forall validIbans iban
-  print $ forall (map invalidateIban validIbans) iban
+  print $ forall (map (invalidateIban 1) validIbans) iban
+
+  -- ===========================================================================
+  -- The below two quicktest implementations fail, but they also prove a point
+  -- ===========================================================================
+
   -- The below fails, since there are permutations that generate a valid account number
-  -- quickCheckResult(\n -> n >= 1 --> iban (prop (invalidateIban "AL47212110090000000235698741") n) == True)
+  -- quickCheckResult(\n -> n >= 1 --> iban (prop (invalidateIban 1 "AL47212110090000000235698741") n) == True)
+  -- The below ALSO fails, since there are shuffles that generate a valid account number
+  -- quickCheckResult(\n -> n >= 1 --> (iban (invalidateIban n "AL47212110090000000235698741")) == True)
 
 -- Bonus Exercises
 exercisebonus = solutionbonus
@@ -329,8 +336,8 @@ shuffleNums x c
   | x == 57 = (x - (10 - c))
   | otherwise = x
 
-invalidateIban :: String -> String
-invalidateIban x = map chr (map (shuffleNums 1) (map ord x))
+invalidateIban :: Int -> String -> String
+invalidateIban c x = map chr (map (shuffleNums c) (map ord x))
 
 -- IBANS
 validIbans :: [String]
