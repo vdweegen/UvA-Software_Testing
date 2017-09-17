@@ -73,8 +73,6 @@ quantiles :: [Float] -> [Float] -> [Int]
 quantiles xs [] = []
 quantiles xs (q:qs) = [genericLength $ filter (<q) xs] ++ (quantiles (filter (>=q) xs) qs)
 
-solution1 = quantilesIO 10000 4
-
 -- Exercise 2 :: Modified Version (group effort) of Bauke
 --            :: Time spent: 75 minutes (implementation/tests/discussion)
 
@@ -83,7 +81,12 @@ solution1 = quantilesIO 10000 4
 data Shape = NoTriangle | Equilateral | Isosceles | Rectangular | Other
              deriving (Eq, Show)
 
-exercise2 = solution2
+exercise2 = do
+  quickCheck prop_noTriangle
+  quickCheck prop_equilateral
+  quickCheck prop_isosceles
+  quickCheck prop_rectangular
+  quickCheck prop_other
 
 prop_noTriangle (Positive a) (Positive b) (Positive c) = triangleCombinations a b (a+b+c) NoTriangle
 prop_equilateral (Positive a) = triangleCombinations a a a Equilateral
@@ -121,19 +124,17 @@ evaluateShape (a:b:c:[]) | invalidTriangle a b c = NoTriangle
 evaluateShape _ = NoTriangle
 
 invalidTriangle :: Integer -> Integer -> Integer -> Bool
-invalidTriangle a b c = (a + b < c);
-
-solution2 = do
-  quickCheck prop_noTriangle
-  quickCheck prop_equilateral
-  quickCheck prop_isosceles
-  quickCheck prop_rectangular
-  quickCheck prop_other
+invalidTriangle a b c = (a + b < c)
 
 -- Exercise 3a :: Cas' Version
---            :: Time spent: 60 minutes
+--             :: Time spent: 60 minutes (+ 30 minutes discussion)
 
-exercise3a = solution3a
+exercise3a = do
+  print $ compar domain one two
+  print $ compar domain one three
+  print $ compar domain one four
+  print $ compar domain two three
+  print $ compar domain three four
 
 stronger, weaker :: [a] -> (a -> Bool) -> (a -> Bool) -> Bool
 stronger xs p q = forall xs (\ x -> p x --> q x)
@@ -178,29 +179,23 @@ instance Ord PropertyStrength where
   compare Incomparable Weaker = LT
   compare Incomparable Incomparable = EQ
 
-solution3a = do
-  print $ compar domain one two
-  print $ compar domain one three
-  print $ compar domain one four
-  print $ compar domain two three
-  print $ compar domain three four
-
 -- Exercise 3b :: Cas' Version
---            :: Time spent: 60 minutes
-exercise3b = solution3b
+--             :: Time spent: 60 minutes (+ 30 minutes discussion)
+exercise3b = do
+  print $ sort $ map (combcompar domain) (combinations 2 [one,two,three,four])
 
 combinations :: Int -> [a] -> [[a]]
 combinations 0 _  = [ [] ]
 combinations n xs = [ y:ys | y:xs' <- tails xs, ys <- combinations (n-1) xs']
 
-solution3b = do
-  print $ sort $ map (combcompar domain) (combinations 2 [one,two,three,four])
-
 -- Exercise 4 :: Joint effort (decided to redo the whole thing)
 --            :: Time spent: 90 minutes (redo the whole thing + writing tests)
 
 -- In order to validate the implementation, run it against the library implementation provided
-exercise4 = solution4
+exercise4 = do
+  quickCheck prop_permutation_validate_length
+  quickCheck prop_permutation_validate_content
+  quickCheckWith stdArgs {maxSize=10} prop_permutation_validate_against_lib
 
 -- Weakest property => validate the length property holds, filtering by this property yields any list of n items
 prop_permutation_validate_length :: Positive Integer -> Bool
@@ -218,12 +213,7 @@ isPermutation :: Eq a => [a] -> [a] -> Bool
 isPermutation xs ys | length xs /= length ys = False
                     | otherwise = null $ (\\) xs ys
 
-solution4 = do
-  quickCheck prop_permutation_validate_length
-  quickCheck prop_permutation_validate_content
-  quickCheckWith stdArgs {maxSize=10} prop_permutation_validate_against_lib
-
--- Exercise 5
+-- Exercise 5 :: Bauke and Cas' merged versions
 --            :: Time spent: 60 minutes (sum of its parts and refactoring/merging)
 
 exercise5 = do
@@ -257,7 +247,13 @@ deran x = filter (\ y -> isDerangement y x) (permutations x)
 
 -- Exercise 6 :: Merged Version of Bauke and Willem-Jan
 --            :: Time spent: 45 minutes (sum of its parts) + 15 minutes refactoring
-exercise6 = solution6
+exercise6 = do
+  quickCheck prop_GeneratesSameOutputForSameInput
+  quickCheck prop_ReversibleWhenAppliedTwice
+  quickCheck prop_MaintainsCase
+  quickCheck prop_MaintainsLength
+  quickCheck prop_ChangesAllAlphaCharacters
+  quickCheck prop_IgnoresAllNonAlphaCharacters
 
 -- Requires generators
 -- one could argue that using a random a .. z generator.
@@ -311,18 +307,12 @@ isLowerCase, isUpperCase :: Char -> Bool
 isLowerCase char = ('a' <= char) && ('z' >= char)
 isUpperCase char = ('A' <= char) && ('Z' >= char)
 
-solution6 = do
-  quickCheck prop_GeneratesSameOutputForSameInput
-  quickCheck prop_ReversibleWhenAppliedTwice
-  quickCheck prop_MaintainsCase
-  quickCheck prop_MaintainsLength
-  quickCheck prop_ChangesAllAlphaCharacters
-  quickCheck prop_IgnoresAllNonAlphaCharacters
-
 -- Exercise 7 :: Merged version of Bauke, Willem-Jan, and Cas
 --            :: Time spent: 120 minutes + 60 minutes (discussion/merging)
 
-exercise7 = solution7
+exercise7 = do
+  print $ forall validIbans iban
+  print $ forall (map (invalidateIban 1) validIbans) iban
 
 iban :: String -> Bool
 iban account | not $ preCheck account = False
@@ -348,9 +338,20 @@ convertChars [] = "00"
 convertChars (x:xs) | ('A' <= x) && ('Z' >= x) = (show $ (+) 10 $ (ord x) - (ord 'A')) ++ convertChars xs
                     | otherwise = [x] ++ convertChars xs
 
-solution7 = do
-  print $ forall validIbans iban
-  print $ forall (map (invalidateIban 1) validIbans) iban
+shuffleNums :: Int -> Int -> Int
+shuffleNums x c
+  | (x < 57) && (x >= 48) = (x + c)
+  | x == 57 = (x - (10 - c))
+  | otherwise = x
+
+invalidateIban :: Int -> String -> String
+invalidateIban c x = map chr (map (shuffleNums c) (map ord x))
+
+prop :: String -> Int -> String
+prop account n = (accountPermutations account) !! n
+
+accountPermutations :: [Char] -> [[Char]]
+accountPermutations account = permutations account
 
   -- ===========================================================================
   -- The below two quicktest implementations fail, but they also prove a point
@@ -363,10 +364,15 @@ solution7 = do
 
 -- Bonus Exercises
 exercisebonus = do
+<<<<<<< HEAD
   putStr "Euler 29, number of terms: "
   print $ euler29
   putStr "Euler 41, number of terms: "
   print $ euler41
+=======
+  print $ euler29 [2..100]
+  print $ pandigitalPrime 9
+>>>>>>> 9bb9b0a51d964cbfa3ee1a2e9ce4f430f6e6ce0d
 
 -- a ^ b => generates 15 distinct terms for a 2..5 and b 2..5
 -- how many terms does a^b generate for a 2 .. 100 and b 2..00
@@ -376,16 +382,25 @@ euler29 = genericLength $ distinctTerms [2..100]
 distinctTerms :: [Integer] -> [Integer]
 distinctTerms domain = asSet [ a^b | a <- domain, b <-domain ]
 
+<<<<<<< HEAD
 euler41 :: Integer
 euler41 = pandigitalPrime 9
 
+=======
+>>>>>>> 9bb9b0a51d964cbfa3ee1a2e9ce4f430f6e6ce0d
 pandigitalPrime :: Integer -> Integer
 pandigitalPrime n
         | null candidates = pandigitalPrime (n - 1)
         | otherwise = maximum candidates
         where
+<<<<<<< HEAD
            candidates = [ read n  :: Integer| n <- permutations $ numbers $ map(show) [1..n], prime $ (read n)]
 --Utils
+=======
+           candidates = [ read x  :: Integer| x <- permutations $ numbers $ map(show) [1..x], prime $ (read x)]
+
+-- Utils
+>>>>>>> 9bb9b0a51d964cbfa3ee1a2e9ce4f430f6e6ce0d
 numbers xs = foldr (++) "" xs
 charcodes = (zip ['A'..'Z'] [10..35])
 readStringInt x = (read x :: Integer)
@@ -399,28 +414,9 @@ primes = 2 : filter prime [3..]
 
 asSet :: Eq a => [a] -> [a]
 asSet [] = []
-asSet (x:xs) | elem x xs = asSet xs
-             | otherwise = x : asSet xs
+asSet (x:xs) | elem x xs = asSet xs | otherwise = x : asSet xs
 
-prop :: String -> Int -> String
-prop account n = (accountPermutations account) !! n
-
-accountPermutations :: [Char] -> [[Char]]
-accountPermutations account = permutations account
-
--- testShuffle :: Int -> Int -> Int
--- testShuffle x c = shuffleNums x (c mod 9)
-
-shuffleNums :: Int -> Int -> Int
-shuffleNums x c
-  | (x < 57) && (x >= 48) = (x + c)
-  | x == 57 = (x - (10 - c))
-  | otherwise = x
-
-invalidateIban :: Int -> String -> String
-invalidateIban c x = map chr (map (shuffleNums c) (map ord x))
-
--- IBANS
+-- IBANS :: MOVED HERE TO NOT HAVE A CHUNK OF DATA IN THE MIDDLE OF THE FILE
 validIbans :: [String]
 validIbans = [
   "AL47212110090000000235698741",
