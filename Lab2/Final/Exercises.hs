@@ -258,4 +258,17 @@ solution6 = do
 exercise7 = print()
 
 -- Bonus Exercises
-exercisebonus = print()
+exercisebonus = solutionbonus
+
+solutionbonus = do
+  print $ euler29 [2..100]
+
+-- a ^ b => generates 15 distinct terms for a 2..5 and b 2..5
+-- how many terms does a^b generate for a 2 .. 100 and b 2..00
+euler29 :: [Integer] -> Int
+euler29 domain = length $ asSet [ a^b | a <- domain, b <-domain ]
+
+asSet :: Eq a => [a] -> [a]
+asSet [] = []
+asSet (x:xs) | elem x xs = asSet xs
+             | otherwise = x : asSet xs
