@@ -49,7 +49,7 @@ probs n = do
   ps <- probs (n-1)
   return (p:ps)
 
-exercise1 = quantilesIO 10000 4
+exercise1 = solution1
 
 quantilesIO :: Int -> Int -> IO()
 quantilesIO xs q = do {
@@ -70,6 +70,8 @@ chi (x:xs) m = foldr (\ x -> (+) (fromIntegral ((x - m) ^ 2) / fromIntegral m)) 
 quantiles :: [Float] -> [Float] -> [Int]
 quantiles xs [] = []
 quantiles xs (q:qs) = [genericLength $ filter (<q) xs] ++ (quantiles (filter (>=q) xs) qs)
+
+solution1 = quantilesIO 10000 4
 
 -- Exercise 2 :: Modified Version (group effort) of Bauke
 -- Implementation finished in 10 minutes, without the tests
