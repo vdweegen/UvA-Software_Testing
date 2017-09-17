@@ -65,7 +65,6 @@ doSum ((a1,a2,a3,a4):xs) (b1,b2,b3,b4) = doSum xs (a1+b1, a2+b2, a3+b3, a4+b4)
 -- Implementation finished in 10 minutes, without the tests
 -- Simply keying in the definitions for the triangles
 -- The pythagorean algorithm can probably be refactored by sorting a b c and then taking 2 and comparing against last
--- @ todo => add the properties to be tested
 data Shape = NoTriangle | Equilateral | Isosceles | Rectangular | Other
              deriving (Eq, Show)
 
@@ -78,14 +77,23 @@ exercise2 = do
 
 prop_noTriangle (Positive a) (Positive b) (Positive c) = triangleCombinations a b (a+b+c) NoTriangle
 prop_equilateral (Positive a) = triangleCombinations a a a Equilateral
-prop_isosceles (Positive a) (Positive b) = triangleCombinations a a b Isosceles
-prop_rectangular (Positive a) (Positive b) = triangleCombinations a b (a+b) Rectangular
+prop_isosceles (Positive a) (Positive b) = triangleCombinations a a (a+b) Isosceles
+prop_rectangular (Positive a) = validateRectangular $ pythagoreanTriplets !! a
 prop_other (Positive a) (Positive b) (Positive c) = triangleCombinations a b c Other
 
+pythagoreanTriplets :: [[Integer]]
+pythagoreanTriplets = generateTriplets 250
+
+generateTriplets :: Integer -> [[Integer]]
+generateTriplets n = [ [a,b,c] | a <- [1..n], b <- [1..n], c <- [1..n], (a^2) + (b^2) == (c^2)]
+
+validateRectangular :: [Integer] -> Bool
+validateRectangular (a:b:c:[]) = triangleCombinations a b c Rectangular
+
 triangleCombinations :: Integer -> Integer -> Integer -> Shape -> Bool
-triangleCombinations a b c expectedType = allOf expectedType $ [triangle a b (a+b+c), triangle a (a+b+c) b,
-                                          triangle b a (a+b+c), triangle b (a+b+c) a,
-                                          triangle (a+b+c) a b, triangle (a+b+c) b a]
+triangleCombinations a b c expectedType = allOf expectedType $ [triangle a b c, triangle a c b,
+                                          triangle b a c, triangle b c a,
+                                          triangle c a b, triangle c b a]
 
 allOf :: Shape -> [Shape] -> Bool
 allOf _ [] = True
