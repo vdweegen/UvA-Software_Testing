@@ -96,18 +96,39 @@ exercise2 = do
   print $ parse "*(1 + (2 -3))"
   print $ parse "+(1 + (2 -3))"
   print $ parse "*(1 + (-2 -3))"
+  -- emtpy
+  print $ propositional_test "" []
+  -- single value
+  print $ propositional_test "1" [(Prop 1)]
+  -- parenthesis (empty)
+  print $ propositional_test "(1)" []
+  -- conjunction (empty)
+  print $ propositional_test "*" []
+  -- disjunction (empty)
+  print $ propositional_test "+" []
+  -- negations (empty)
+  print $ propositional_test "-" []
+  -- implication (empty)
+  print $ propositional_test "==>" []
+  -- conjunction
+  print $ propositional_test "*(1 2)" [Cnj [Prop 1, Prop 2]]
+  -- disjunction
+  print $ propositional_test "+(1 2)" [Dsj [Prop 1, Prop 2]]
+  -- negation
+  print $ propositional_test "-1" [(Neg (Prop 1))]
+  -- implication
+  print $ propositional_test "(1==>2)" [Impl (Prop 1) (Prop 2)]
+  -- equivalence
+  print $ propositional_test "(1<=>1)" [Equiv (Prop 1) (Prop 1)]
+  -- complex
+  print $ propositional_test "((1==>2) ==> (1==>3))" [Impl (Impl (Prop 1) (Prop 2)) (Impl (Prop 1) (Prop 3))]
+  print $ propositional_test "(-(1==>2) ==> (1==>3))" [Impl (Neg (Impl (Prop 1) (Prop 2))) (Impl (Prop 1) (Prop 3))]
+  print $ propositional_test "(-(1==>2) <=> (1==>3))" [Equiv (Neg (Impl (Prop 1) (Prop 2))) (Impl (Prop 1) (Prop 3))]
+  print $ propositional_test "((1<=>2) ==> (1==>3))" [Impl (Equiv (Prop 1) (Prop 2)) (Impl (Prop 1) (Prop 3))]
 
-  -- What do we need to test:
-  --  empty
-  --  empty form
-  --  single value
-  --  parenthesis (open and close)
-  --  conjunction
-  --  disjunction
-  --  negations
-  --  implications
-  --  equivalences
-  --  combinations of the above?
+propositional_test :: [Char] -> [Form] -> Bool
+propositional_test s f = parse s == f
+
 
 -- =============================================================================
 -- Exercise 3
