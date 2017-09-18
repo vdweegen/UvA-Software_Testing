@@ -40,6 +40,8 @@ main = do
     exercisebonus
 
 -- Exercise 1 :: Merged version of Jordan and Willem-Jan
+--            :: Time spent: 180 minutes (really...) + 60 minutes merging/discussion
+
 -- QuickCheck for generating a number of random values and checking that the value is maintained
 
 probs :: Int -> IO [Float]
@@ -49,7 +51,7 @@ probs n = do
   ps <- probs (n-1)
   return (p:ps)
 
-exercise1 = solution1
+exercise1 = quantilesIO 10000 4
 
 quantilesIO :: Int -> Int -> IO()
 quantilesIO xs q = do {
@@ -71,16 +73,27 @@ quantiles :: [Float] -> [Float] -> [Int]
 quantiles xs [] = []
 quantiles xs (q:qs) = [genericLength $ filter (<q) xs] ++ (quantiles (filter (>=q) xs) qs)
 
-solution1 = quantilesIO 10000 4
-
 -- Exercise 2 :: Modified Version (group effort) of Bauke
--- Implementation finished in 10 minutes, without the tests
--- Simply keying in the definitions for the triangles
--- The pythagorean algorithm can probably be refactored by sorting a b c and then taking 2 and comparing against last
+--            :: Time spent: 75 minutes (implementation/tests/discussion)
+-- Implementation was simply keying in the definitions for the triangles
+-- However, testing this proved to be more difficult. Main reason for this difficulty was due to the ambiguity
+-- between Isosceles and Equilateral and the issue of generating Rectangular triangles
+-- For the ambiguity we simply added 1 to the length of the sides
+-- For testing the Rectangular data, we use a list of predefined rectangular triangles.
+-- We use the the random index from QuickCheck to validate it.
+-- This generates a wider variety than simply multiplying 1 random value with for instance 3,4,5.
+-- When inspecting the list of triangles generated, it also displays rectangular triangles with other ratio's
+-- than the standard 3,4,5 or 60,80,100 triangles
+
 data Shape = NoTriangle | Equilateral | Isosceles | Rectangular | Other
              deriving (Eq, Show)
 
-exercise2 = solution2
+exercise2 = do
+  quickCheck prop_noTriangle
+  quickCheck prop_equilateral
+  quickCheck prop_isosceles
+  quickCheck prop_rectangular
+  quickCheck prop_other
 
 prop_noTriangle (Positive a) (Positive b) (Positive c) = triangleCombinations a b (a+b+c) NoTriangle
 prop_equilateral (Positive a) = triangleCombinations a a a Equilateral
@@ -118,17 +131,17 @@ evaluateShape (a:b:c:[]) | invalidTriangle a b c = NoTriangle
 evaluateShape _ = NoTriangle
 
 invalidTriangle :: Integer -> Integer -> Integer -> Bool
-invalidTriangle a b c = (a + b < c);
-
-solution2 = do
-  quickCheck prop_noTriangle
-  quickCheck prop_equilateral
-  quickCheck prop_isosceles
-  quickCheck prop_rectangular
-  quickCheck prop_other
+invalidTriangle a b c = (a + b < c)
 
 -- Exercise 3a :: Cas' Version
-exercise3a = solution3a
+--             :: Time spent: 60 minutes (+ 30 minutes discussion)
+
+exercise3a = do
+  print $ compar domain one two
+  print $ compar domain one three
+  print $ compar domain one four
+  print $ compar domain two three
+  print $ compar domain three four
 
 stronger, weaker :: [a] -> (a -> Bool) -> (a -> Bool) -> Bool
 stronger xs p q = forall xs (\ x -> p x --> q x)
@@ -173,26 +186,24 @@ instance Ord PropertyStrength where
   compare Incomparable Weaker = LT
   compare Incomparable Incomparable = EQ
 
-solution3a = do
-  print $ compar domain one two
-  print $ compar domain one three
-  print $ compar domain one four
-  print $ compar domain two three
-  print $ compar domain three four
-
 -- Exercise 3b :: Cas' Version
-exercise3b = solution3b
+--             :: Time spent: 60 minutes (+ 30 minutes discussion)
+exercise3b = do
+  print $ sort $ map (combcompar domain) (combinations 2 [one,two,three,four])
 
 combinations :: Int -> [a] -> [[a]]
 combinations 0 _  = [ [] ]
 combinations n xs = [ y:ys | y:xs' <- tails xs, ys <- combinations (n-1) xs']
 
-solution3b = do
-  print $ sort $ map (combcompar domain) (combinations 2 [one,two,three,four])
-
 -- Exercise 4 :: Joint effort (decided to redo the whole thing)
+--            :: Time spent: 90 minutes (redo the whole thing + writing tests)
+-- We generate lists we know to be no-permutations.
+-- Then, we generate arbitrary lists and validate it against the Haskell library.
 -- In order to validate the implementation, run it against the library implementation provided
-exercise4 = solution4
+exercise4 = do
+  quickCheck prop_permutation_validate_length
+  quickCheck prop_permutation_validate_content
+  quickCheckWith stdArgs {maxSize=10} prop_permutation_validate_against_lib
 
 -- Weakest property => validate the length property holds, filtering by this property yields any list of n items
 prop_permutation_validate_length :: Positive Integer -> Bool
@@ -210,13 +221,19 @@ isPermutation :: Eq a => [a] -> [a] -> Bool
 isPermutation xs ys | length xs /= length ys = False
                     | otherwise = null $ (\\) xs ys
 
-solution4 = do
-  quickCheck prop_permutation_validate_length
-  quickCheck prop_permutation_validate_content
-  quickCheckWith stdArgs {maxSize=10} prop_permutation_validate_against_lib
+-- Exercise 5 :: Bauke and Cas' merged versions
+--            :: Time spent: 60 minutes (sum of its parts and refactoring/merging)
+-- Simply reusing the code for checking a permutation and making it stronger
+-- by checking for the unique indexes
+-- For the property checking, the same approach as in Exercise 4 is used.
+-- First, check some weak properties by generating lists which are known to be invalid.
+-- Then, use the permutations generator to verify the implementation using arbitrary lists.
 
--- Exercise 5 :: Merged version of Bauke and Cas
-exercise5 = solution5
+exercise5 = do
+  quickCheck prop_derangement_validate_length
+  quickCheck prop_derangement_validate_content
+  quickCheckWith stdArgs {maxSize=10} prop_derangement_validate_against_lib
+  quickCheckWith stdArgs {maxSize=10} prop_derangement_empty_lists
 
 -- Weakest property => validate the length property holds, filtering by this property yields any list of n items
 prop_derangement_validate_length :: Positive Integer -> Bool
@@ -230,19 +247,29 @@ prop_derangement_validate_content (Positive n) = not $ isDerangement [1..n] [2*n
 prop_derangement_validate_against_lib :: [Integer] -> Bool
 prop_derangement_validate_against_lib xs = allOf True (map (isDerangement xs) (deran xs))
 
+prop_derangement_empty_lists :: Positive Integer -> Bool
+prop_derangement_empty_lists (Positive n) =
+  [] == deran [ n | a <- [0..n]]
+
 isDerangement :: Eq a => [a] -> [a] -> Bool
 isDerangement x y = ((length $ findIndices id $ zipWith (==) x y) == 0) && isPermutation x y
 
 deran :: Eq a => [a] -> [[a]]
 deran x = filter (\ y -> isDerangement y x) (permutations x)
 
-solution5 = do
-  quickCheck prop_derangement_validate_length
-  quickCheck prop_derangement_validate_content
-  quickCheckWith stdArgs {maxSize=10} prop_derangement_validate_against_lib
-
 -- Exercise 6 :: Merged Version of Bauke and Willem-Jan
-exercise6 = solution6
+--            :: Time spent: 45 minutes (sum of its parts) + 15 minutes refactoring
+exercise6 = do
+  print $ simpleImplementation
+  quickCheck prop_GeneratesSameOutputForSameInput
+  quickCheck prop_ReversibleWhenAppliedTwice
+  quickCheck prop_MaintainsCase
+  quickCheck prop_MaintainsLength
+  quickCheck prop_ChangesAllAlphaCharacters
+  quickCheck prop_IgnoresAllNonAlphaCharacters
+
+simpleImplementation :: String
+simpleImplementation = map rot13 "a simple implementation"
 
 -- Requires generators
 -- one could argue that using a random a .. z generator.
@@ -296,16 +323,18 @@ isLowerCase, isUpperCase :: Char -> Bool
 isLowerCase char = ('a' <= char) && ('z' >= char)
 isUpperCase char = ('A' <= char) && ('Z' >= char)
 
-solution6 = do
-  quickCheck prop_GeneratesSameOutputForSameInput
-  quickCheck prop_ReversibleWhenAppliedTwice
-  quickCheck prop_MaintainsCase
-  quickCheck prop_MaintainsLength
-  quickCheck prop_ChangesAllAlphaCharacters
-  quickCheck prop_IgnoresAllNonAlphaCharacters
-
 -- Exercise 7 :: Merged version of Bauke, Willem-Jan, and Cas
-exercise7 = solution7
+--            :: Time spent: 120 minutes + 60 minutes (discussion/merging)
+-- Checking the iban algorithm was fairly easy to implement.
+-- For testing, the first idea was to simply shift permutations of the account
+-- and make sure those were invalidated. However, this quickly results in valid
+-- accounts, since there are a lot of account numbers and only 100 checksums.
+-- Therefore, a simple 'invalidator' was used to flip some values and invalidate
+-- the ibans provided
+
+exercise7 = do
+  print $ forall validIbans iban
+  print $ forall (map (invalidateIban 1) validIbans) iban
 
 iban :: String -> Bool
 iban account | not $ preCheck account = False
@@ -331,9 +360,20 @@ convertChars [] = "00"
 convertChars (x:xs) | ('A' <= x) && ('Z' >= x) = (show $ (+) 10 $ (ord x) - (ord 'A')) ++ convertChars xs
                     | otherwise = [x] ++ convertChars xs
 
-solution7 = do
-  print $ forall validIbans iban
-  print $ forall (map (invalidateIban 1) validIbans) iban
+shuffleNums :: Int -> Int -> Int
+shuffleNums x c
+  | (x < 57) && (x >= 48) = (x + c)
+  | x == 57 = (x - (10 - c))
+  | otherwise = x
+
+invalidateIban :: Int -> String -> String
+invalidateIban c x = map chr (map (shuffleNums c) (map ord x))
+
+prop :: String -> Int -> String
+prop account n = (accountPermutations account) !! n
+
+accountPermutations :: [Char] -> [[Char]]
+accountPermutations account = permutations account
 
   -- ===========================================================================
   -- The below two quicktest implementations fail, but they also prove a point
@@ -345,40 +385,50 @@ solution7 = do
   -- quickCheckResult(\n -> n >= 1 --> (iban (invalidateIban n "AL47212110090000000235698741")) == True)
 
 -- Bonus Exercises
-exercisebonus = solutionbonus
+exercisebonus = do
+  putStr "Euler 01, sum all natural numbers up to 1000, dividable by 3 or 5: "
+  print $ euler1
+  putStr "Euler 29, number of terms: "
+  print $ euler29
+  putStr "Euler 41, largest pandigital n-digit prime: "
+  print $ euler41
 
-solutionbonus = do
-  print $ euler29 [2..100]
+euler1 = sum $ [a | a <- [1..999], mod a 3 == 0 || mod a 5 == 0]
 
 -- a ^ b => generates 15 distinct terms for a 2..5 and b 2..5
 -- how many terms does a^b generate for a 2 .. 100 and b 2..00
-euler29 :: [Integer] -> Int
-euler29 domain = length $ asSet [ a^b | a <- domain, b <-domain ]
+euler29 :: Integer
+euler29 = genericLength $ distinctTerms [2..100]
+
+distinctTerms :: [Integer] -> [Integer]
+distinctTerms domain = asSet [ a^b | a <- domain, b <-domain ]
+
+euler41 :: Integer
+euler41 = pandigitalPrime 9
+
+pandigitalPrime :: Integer -> Integer
+pandigitalPrime n
+        | null candidates = pandigitalPrime (n - 1)
+        | otherwise = maximum candidates
+        where
+           candidates = [ read n  :: Integer| n <- permutations $ numbers $ map(show) [1..n], prime $ (read n)]
+-- Utils
+numbers xs = foldr (++) "" xs
+charcodes = (zip ['A'..'Z'] [10..35])
+readStringInt x = (read x :: Integer)
+
+prime :: Integer -> Bool
+prime n = n > 1 && all (\ x -> rem n x /= 0) xs
+  where xs = takeWhile (\ y -> y^2 <= n) primes
+
+primes :: [Integer]
+primes = 2 : filter prime [3..]
 
 asSet :: Eq a => [a] -> [a]
 asSet [] = []
-asSet (x:xs) | elem x xs = asSet xs
-             | otherwise = x : asSet xs
+asSet (x:xs) | elem x xs = asSet xs | otherwise = x : asSet xs
 
-prop :: String -> Int -> String
-prop account n = (accountPermutations account) !! n
-
-accountPermutations :: [Char] -> [[Char]]
-accountPermutations account = permutations account
-
--- testShuffle :: Int -> Int -> Int
--- testShuffle x c = shuffleNums x (c mod 9)
-
-shuffleNums :: Int -> Int -> Int
-shuffleNums x c
-  | (x < 57) && (x >= 48) = (x + c)
-  | x == 57 = (x - (10 - c))
-  | otherwise = x
-
-invalidateIban :: Int -> String -> String
-invalidateIban c x = map chr (map (shuffleNums c) (map ord x))
-
--- IBANS
+-- IBANS :: MOVED HERE TO NOT HAVE A CHUNK OF DATA IN THE MIDDLE OF THE FILE
 validIbans :: [String]
 validIbans = [
   "AL47212110090000000235698741",
