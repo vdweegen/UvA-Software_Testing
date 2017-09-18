@@ -143,16 +143,39 @@ exercise3 = do
 
   -- Step #1 :: Remove arrows
   -- Step #2 :: Conversion to negation normal form
-  -- Step #3 :: Remove Conjunctions
-  -- Step #4 :: Remove Disjunctions
-  print $ convertToCNF $ nnf $ arrowfree prop2
+  -- Step #3 :: Generate Truth Table
+  -- Step #4 :: Every result that is false, negate the literal
+  -- Step #5 :: Use the literals to construct the CNF
+  print $ getNonTruths $ convertToCNF $ nnf $ arrowfree prop
 
 convertToCNF :: Form -> Form
 convertToCNF f = f
 
-prop0 = (Neg (Prop 1))
-prop1 = (Impl (Prop 1) (Prop 2))
-prop2 = (Impl (Equiv (Prop 1) (Prop 2)) (Impl (Prop 1) (Prop 3)))
+-- This actually returns all valuations for False
+getNonTruths :: Form -> [Valuation]
+getNonTruths f = filter (\ v -> not $ evl v f) (allVals f)
+-- verify with this line (below)
+-- getNonTruths f = map (flip evl f) (filter (\ v -> not $ evl v f) (allVals f))
+
+-- negateValuations :: [Valuation] -> [Valuation]
+-- negateValuations (x:xs) =
+
+-- negateValuation :: Valuation -> Valuation
+-- negateValuation (x:xs) =
+
+
+-- generateTruths :: Form -> Form
+-- generateTruths f =
+
+-- Define base env
+x = Prop 1
+y = Prop 2
+z = Prop 3
+
+prop = Cnj [(Dsj [x,y]),(Neg z)]
+-- prop0 = (Neg (Prop 1))
+-- prop1 = (Impl (Prop 1) (Prop 2))
+-- prop2 = (Impl (Equiv (Prop 1) (Prop 2)) (Impl (Prop 1) (Prop 3)))
 
 -- =============================================================================
 -- Exercise 4
