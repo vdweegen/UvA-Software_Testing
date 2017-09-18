@@ -18,7 +18,7 @@ main = do
     putStrLn $ "> Exercise 3"
     exercise3
     putStrLn $ "> Exercise 4"
-    -- exercise4
+    exercise4
     putStrLn $ "> Exercise 5"
     -- exercise5
 
@@ -111,9 +111,9 @@ exercise3 = do
   print $ toCNF form3
 
 -- | Exercise 4
+-- Time spent: 1 hour on arbitrary and generators and another hour on the properties
 
--- | genForm (spent 1 hour on arbitrary and generators)
--- Generates random formulas, base case is a Prop, we recursively call genForm with a smaller n,
+-- | Generates random formulas, base case is a Prop, we recursively call genForm with a smaller n,
 -- We could use a different function to shrink n or use a different value for the multipleNextForm
 -- which doesn't depend on n, however the mod takes care of that now
 genForm :: Int -> Gen Form
@@ -131,6 +131,45 @@ genForm n | n == 0 = genProp
 
 instance Arbitrary Form where
   arbitrary = sized genForm
+
+-- | No arrows present in the formula after applying toCNF, so no Impl or Equiv.
+-- Furthermore check if neg is only applied to prop
+isCNF :: Form -> Bool
+isCNF f = isProp f || isNeg f || isCnj f || isDsj f
+
+isProp :: Form -> Bool
+isProp (Prop _) = True
+isProp _ = False
+
+isNeg :: Form -> Bool
+isNeg (Neg n) = isProp n
+isNeg _ = False
+
+isCnj :: Form -> Bool
+isCnj (Cnj cs) = all (\c -> isProp c || isNeg c || isCnj c || isDsj c) cs
+isCnj _ = False
+
+isDsj :: Form -> Bool
+isDsj (Dsj ds) = all (\d -> isProp d || isNeg d || isCnj d || isDsj d) ds
+isDsj _ = False
+
+-- | Helper method te evaluate all sets of values for a formula
+evlAll :: Form -> [Bool]
+evlAll f = map (`evl` f) (allVals f)
+
+prop_cnf_equiv :: Form -> Bool
+prop_cnf_equiv f = equiv (toCNF f) f
+
+prop_cnf_no_arrow :: Form -> Bool
+prop_cnf_no_arrow f = isCNF $ toCNF f
+
+prop_cnf_eval_equal :: Form -> Bool
+prop_cnf_eval_equal f = evlAll f == evlAll(toCNF f)
+
+exercise4 = do
+  quickCheck prop_cnf_equiv
+  quickCheck prop_cnf_no_arrow
+  quickCheck prop_cnf_eval_equal
 
 -- | Exercise 5
 type Clause  = [Int]
