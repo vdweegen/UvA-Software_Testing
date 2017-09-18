@@ -139,7 +139,7 @@ tests =
 -- Exercise 3
 -- =============================================================================
 exercise3 = do
-  -- Use the following 'given' stuff: Imp Equiv Neg Prop
+  -- Use the following 'given' stuff: Imp Equiv Neg Prop Dsj Cnj
 
   -- Step #1 :: Remove arrows
   -- Step #2 :: Conversion to negation normal form
@@ -153,6 +153,7 @@ convertToCNF f = arrowfree f
 prop0 = (Neg (Prop 1))
 prop1 = (Impl (Prop 1) (Prop 2))
 prop2 = (Impl (Equiv (Prop 1) (Prop 2)) (Impl (Prop 1) (Prop 3)))
+
 -- =============================================================================
 -- Exercise 4
 -- =============================================================================
