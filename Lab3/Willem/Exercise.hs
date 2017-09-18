@@ -16,7 +16,7 @@ main = do
     putStrLn $ "> Exercise 2"
     -- exercise2
     putStrLn $ "> Exercise 3"
-    -- exercise3
+    exercise3
     putStrLn $ "> Exercise 4"
     -- exercise4
     putStrLn $ "> Exercise 5"
@@ -93,7 +93,22 @@ exercise1 = do
 
 -- | Exercise 2
 
--- | Exercise 3
+-- | Exercise 3 (5 minutes)
+-- Taken form the slides, first make sure the formula is arrow free, next transform to NNF
+-- Simply look at the example forms to validate
+toCNF :: Form -> Form
+toCNF = nnf . arrowfree
+
+exercise3 = do
+  putStrLn "form1 to CNF:"
+  print form1
+  print $ toCNF form1
+  putStrLn "form2 to CNF:"
+  print form2
+  print $ toCNF form2
+  putStrLn "form3 to CNF:"
+  print form3
+  print $ toCNF form3
 
 -- | Exercise 4
 
