@@ -4,6 +4,7 @@ import Data.List
 import System.Random
 import Test.QuickCheck
 import Lab3.Lecture3
+import Control.Monad
 
 -- Define Main --
 main = do
@@ -90,3 +91,35 @@ exercise1 = do
   putStrLn "equivalence:"
   print $ equivalenceTest
 
+-- | Exercise 2
+
+-- | Exercise 3
+
+-- | Exercise 4
+
+-- | genForm (spent 1 hour on arbitrary and generators)
+-- Generates random formulas, base case is a Prop, we recursively call genForm with a smaller n,
+-- We could use a different function to shrink n or use a different value for the multipleNextForm
+-- which doesn't depend on n, however the mod takes care of that now
+genForm :: Int -> Gen Form
+genForm n | n == 0 = genProp
+          | n > 0  = oneof [
+            genProp,
+            liftM Neg nextForm,
+            liftM Cnj multipleNextForm,
+            liftM Dsj multipleNextForm,
+            liftM2 Impl nextForm nextForm,
+            liftM2 Equiv nextForm nextForm
+          ] where nextForm = genForm (n `div` 2)
+                  multipleNextForm = vectorOf (n `mod` 10) nextForm
+                  genProp = Prop `liftM` choose(0,9)
+
+instance Arbitrary Form where
+  arbitrary = sized genForm
+
+-- | Exercise 5
+type Clause  = [Int]
+type Clauses = [Clause]
+
+cnf2cls :: Form -> Clauses
+cnf2cls = undefined
