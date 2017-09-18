@@ -145,10 +145,10 @@ exercise3 = do
   -- Step #2 :: Conversion to negation normal form
   -- Step #3 :: Remove Conjunctions
   -- Step #4 :: Remove Disjunctions
-  print $ nnf $ convertToCNF prop2
+  print $ convertToCNF $ nnf $ arrowfree prop2
 
 convertToCNF :: Form -> Form
-convertToCNF f = arrowfree f
+convertToCNF f = f
 
 prop0 = (Neg (Prop 1))
 prop1 = (Impl (Prop 1) (Prop 2))
