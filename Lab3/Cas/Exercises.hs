@@ -10,7 +10,7 @@ main = do
     putStrLn $ "> Exercise 1"
     exercise1
     putStrLn $ "> Exercise 2"
-    -- exercise2
+    exercise2
     putStrLn $ "> Exercise 3"
     -- exercise3
     putStrLn $ "> Exercise 4"
@@ -91,6 +91,23 @@ equivalent (x:xs) (y:ys)
 -- =============================================================================
 -- Exercise 2
 -- =============================================================================
+exercise2 = do
+  -- test stuff
+  print $ parse "*(1 + (2 -3))"
+  print $ parse "+(1 + (2 -3))"
+  print $ parse "*(1 + (-2 -3))"
+
+  -- What do we need to test:
+  --  empty
+  --  empty form
+  --  single value
+  --  parenthesis (open and close)
+  --  conjunction
+  --  disjunction
+  --  negations
+  --  implications
+  --  equivalences
+  --  combinations of the above?
 
 -- =============================================================================
 -- Exercise 3
