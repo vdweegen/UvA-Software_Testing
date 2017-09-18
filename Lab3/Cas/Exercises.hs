@@ -143,6 +143,8 @@ exercise3 = do
 
   -- Step #1 :: Remove arrows
   -- Step #2 :: Conversion to negation normal form
+  -- Step #3 :: Remove Conjunctions
+  -- Step #4 :: Remove Disjunctions
   print $ nnf $ convertToCNF prop2
 
 convertToCNF :: Form -> Form
