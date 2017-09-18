@@ -12,7 +12,7 @@ main = do
     putStrLn $ "> Exercise 2"
     exercise2
     putStrLn $ "> Exercise 3"
-    -- exercise3
+    exercise3
     putStrLn $ "> Exercise 4"
     -- exercise4
     putStrLn $ "> Exercise 5"
@@ -138,7 +138,19 @@ tests =
 -- =============================================================================
 -- Exercise 3
 -- =============================================================================
+exercise3 = do
+  -- Use the following 'given' stuff: Imp Equiv Neg Prop
 
+  -- Step #1 :: Remove arrows
+  -- Step #2 :: Conversion to negation normal form
+  print $ nnf $ convertToCNF prop2
+
+convertToCNF :: Form -> Form
+convertToCNF f = arrowfree f
+
+prop0 = (Neg (Prop 1))
+prop1 = (Impl (Prop 1) (Prop 2))
+prop2 = (Impl (Equiv (Prop 1) (Prop 2)) (Impl (Prop 1) (Prop 3)))
 -- =============================================================================
 -- Exercise 4
 -- =============================================================================
