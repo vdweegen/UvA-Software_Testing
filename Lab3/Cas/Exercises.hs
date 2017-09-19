@@ -8,9 +8,9 @@ main = do
     putStrLn $ "Assignment 3 / Lab 3"
     putStrLn $ "===================="
     putStrLn $ "> Exercise 1"
-    -- exercise1
+    exercise1
     putStrLn $ "> Exercise 2"
-    -- exercise2
+    exercise2
     putStrLn $ "> Exercise 3"
     exercise3
     putStrLn $ "> Exercise 4"
@@ -139,28 +139,23 @@ tests =
 -- Exercise 3
 -- =============================================================================
 exercise3 = do
-  -- Use the following 'given' stuff: Imp Equiv Neg Prop Dsj Cnj
-
   -- Step #1 :: Remove arrows
   -- Step #2 :: Conversion to negation normal form
   -- Step #3 :: Generate Truth Table
   -- Step #4 :: Every result that is false, negate the literal
   -- Step #5 :: Use the literals to construct the CNF
   -- print $ convertToCNF $ getNonTruths $ nnf $ arrowfree prop
-  print $ invertLiterals $ getNonTruths $ nnf $ arrowfree prop
+  -- print $ invertLiterals $ getNonTruths $ nnf $ arrowfree prop
   print $ convertToCNF $ invertLiterals $ getNonTruths $ nnf $ arrowfree prop
   print $ parse $ convertToCNF $ invertLiterals $ getNonTruths $ nnf $ arrowfree prop
-  -- print $ double [1,2,3,4,5,6,7,8,9]
 
 convertToCNF :: [Valuation] -> String
 convertToCNF v = andCNF (map ordCNF v)
--- convertToCNF v = (map ordCNF v)
 
 andCNF :: [String] -> String
 andCNF (x:xs)
   | length xs < 2 = "+(" ++ x ++ " " ++ xs !! 0 ++ ")"
   | otherwise = "+(" ++ x ++ " " ++ andCNF xs ++ ")"
-
 
 ordCNF :: Valuation -> String
 ordCNF (x:xs)
@@ -184,9 +179,6 @@ revert (k,v) = if v == True then (k,False) else (k,True)
 -- This actually returns all valuations for False
 getNonTruths :: Form -> [Valuation]
 getNonTruths f = filter (\ v -> not $ evl v f) (allVals f)
-
--- generateTruths :: Form -> Form
--- generateTruths f =
 
 -- Define base env
 x = Prop 1
