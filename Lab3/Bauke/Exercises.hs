@@ -67,24 +67,44 @@ ambiguity2 = head $ parse "+( 3 1)"
 
 exercise2 = do
   quickCheck prop_sensibleData
+  quickCheck prop_unchanged
 
+-- All terms randomly generated should be parseable
 prop_sensibleData = monadicIO $ do
   formData <- run parseRandom
   assert ([] /= formData)
 
+-- All parsed terms can be 'shown' => they should be 1 : 1
+prop_unchanged = monadicIO $ do
+  (str, result) <- run parseIO
+  assert (str == (show $ head $ result))
+
+parseIO :: IO (String, [Form])
+parseIO = do
+  form <- randomForm
+  putStr "Parsing: "
+  putStrLn form
+  return $ (form, parse form)
+
+parseRandom :: IO [Form]
 parseRandom = do
               form <- randomForm
               putStr "Parsing: "
               putStrLn form
               return $ parse form
 
-randomOperator, randomSign, randomLiteral :: IO String
-randomOperator = randomFrom operators
-randomSign = randomFrom signs
-randomLiteral = randomFrom literals
-
 randomForms :: Integer -> IO [String]
 randomForms n = sequence [ randomForm | a <- [1..n]]
+
+-- | either a literal or a term
+randomTerm :: IO String
+randomTerm = do
+            n <- randomInteger [0,1]
+            l1 <- signedLiteral
+            f1 <- randomForm
+            if(0 == n)
+              then return f1
+              else return l1
 
 randomForm :: IO String
 randomForm = do
@@ -98,19 +118,29 @@ generateForm "==>" = composeTuple "" "==>" >>= (\t -> return t)
 generateForm "<=>" = composeTuple "" "<=>" >>= (\t -> return t)
 generateForm _ = return "INVALID"
 
+-- | Composes random signed literal with random sign of total composition
 composeTuple :: String -> String -> IO String
+composeTuple pre "" = composeTuple pre " "
 composeTuple pre mid = do
                        s1 <- randomSign
                        t1 <- signedLiteral
                        t2 <- signedLiteral
                        return $ s1 ++ pre ++ "(" ++ t1 ++ mid ++ t2 ++ ")"
 
+
+-- | Random literal with random sign bit
 signedLiteral :: IO String
 signedLiteral = do
               s <- randomSign
               l <- randomLiteral
-              return $ " " ++ s ++ l
+              return $ s ++ l
 
+randomOperator, randomSign, randomLiteral :: IO String
+randomOperator = randomFrom operators
+randomSign = randomFrom signs
+randomLiteral = randomFrom literals
+
+-- | Picks a random item from the list
 randomFrom :: Eq a => [a] -> IO a
 randomFrom xs = randomInteger xs >>= (\randIndex -> return (xs !! randIndex))
 
