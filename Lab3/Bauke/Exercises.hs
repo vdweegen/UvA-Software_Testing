@@ -72,7 +72,11 @@ prop_sensibleData = monadicIO $ do
   formData <- run parseRandom
   assert ([] /= formData)
 
-parseRandom = randomForm >>= (\form -> return $ parse form)
+parseRandom = do
+              form <- randomForm
+              putStr "Parsing: "
+              putStrLn form
+              return $ parse form
 
 randomOperator, randomSign, randomLiteral :: IO String
 randomOperator = randomFrom operators
@@ -91,7 +95,7 @@ generateForm :: String -> IO String
 generateForm "*" = composeTuple "*" "" >>= (\t -> return t)
 generateForm "+" = composeTuple "+" "" >>= (\t -> return t)
 generateForm "==>" = composeTuple "" "==>" >>= (\t -> return t)
-generateForm "<==>" = composeTuple "" "<==>" >>= (\t -> return t)
+generateForm "<=>" = composeTuple "" "<=>" >>= (\t -> return t)
 generateForm _ = return "INVALID"
 
 composeTuple :: String -> String -> IO String
@@ -114,7 +118,7 @@ randomInteger :: Eq a => [a] -> IO Int
 randomInteger xs = (randomRIO (0, (length xs)-1))
 
 operators :: [String]
-operators = ["+", "*","==>","<==>"]
+operators = ["+", "*","==>","<=>"]
 
 signs :: [String]
 signs = ["", "-"]
