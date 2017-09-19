@@ -5,7 +5,6 @@ import Lab3.Lecture3
 import Test.QuickCheck
 import System.Random
 
-
 exercise1 = do
   putStr "alwaysTrue is a tautology: "
   print $ tautology alwaysTrue
@@ -71,12 +70,13 @@ randomOperator = randomFrom operators
 randomSign = randomFrom signs
 randomLiteral = randomFrom literals
 
+randomForms :: Integer -> IO [String]
+randomForms n = sequence [ randomForm | a <- [1..n]]
 
-
+randomForm :: IO String
 randomForm = do
               oper <- randomOperator
-              putStr oper
-              return $ generateForm oper
+              generateForm oper
 
 generateForm :: String -> IO String
 generateForm "*" = do
