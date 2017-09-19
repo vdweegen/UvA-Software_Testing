@@ -8,9 +8,9 @@ main = do
     putStrLn $ "Assignment 3 / Lab 3"
     putStrLn $ "===================="
     putStrLn $ "> Exercise 1"
-    exercise1
+    -- exercise1
     putStrLn $ "> Exercise 2"
-    exercise2
+    -- exercise2
     putStrLn $ "> Exercise 3"
     exercise3
     putStrLn $ "> Exercise 4"
@@ -146,23 +146,39 @@ exercise3 = do
   -- Step #3 :: Generate Truth Table
   -- Step #4 :: Every result that is false, negate the literal
   -- Step #5 :: Use the literals to construct the CNF
-  print $ getNonTruths $ convertToCNF $ nnf $ arrowfree prop
+  -- print $ convertToCNF $ getNonTruths $ nnf $ arrowfree prop
+  print $ invertLiterals $ getNonTruths $ nnf $ arrowfree prop
+  print $ convertToCNF $ invertLiterals $ getNonTruths $ nnf $ arrowfree prop
+  -- print $ parse $ convertToCNF $ invertLiterals $ getNonTruths $ nnf $ arrowfree prop
+  -- print $ double [1,2,3,4,5,6,7,8,9]
 
-convertToCNF :: Form -> Form
-convertToCNF f = f
+convertToCNF :: [Valuation] -> String
+convertToCNF v = andCNF $ (map ordCNF v)
+
+andCNF :: [String] -> String
+andCNF (x:xs)
+  | length xs < 2 = "+(" ++ x ++ " " ++ xs !! 0 ++ ")"
+  | otherwise = "+(" ++ x ++ " " ++ andCNF xs ++ ")"
+
+
+ordCNF :: Valuation -> String
+ordCNF (x:xs)
+  | length xs < 2 = "*(" ++ show (fst x) ++ " " ++ show (fst (xs !! 0)) ++ ")"
+  | otherwise = "*(" ++ show (fst x) ++ " " ++ ordCNF xs ++ ")"
+
+invertLiterals :: [Valuation] -> [Valuation]
+invertLiterals v = map invertLiteral v
+
+invertLiteral :: Valuation -> Valuation
+invertLiteral v = map revert v
+
+-- Revert Valuations
+revert :: (Name,Bool) -> (Name,Bool)
+revert (k,v) = if v == True then (k,False) else (k,True)
 
 -- This actually returns all valuations for False
 getNonTruths :: Form -> [Valuation]
 getNonTruths f = filter (\ v -> not $ evl v f) (allVals f)
--- verify with this line (below)
--- getNonTruths f = map (flip evl f) (filter (\ v -> not $ evl v f) (allVals f))
-
--- negateValuations :: [Valuation] -> [Valuation]
--- negateValuations (x:xs) =
-
--- negateValuation :: Valuation -> Valuation
--- negateValuation (x:xs) =
-
 
 -- generateTruths :: Form -> Form
 -- generateTruths f =
