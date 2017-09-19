@@ -149,11 +149,12 @@ exercise3 = do
   -- print $ convertToCNF $ getNonTruths $ nnf $ arrowfree prop
   print $ invertLiterals $ getNonTruths $ nnf $ arrowfree prop
   print $ convertToCNF $ invertLiterals $ getNonTruths $ nnf $ arrowfree prop
-  -- print $ parse $ convertToCNF $ invertLiterals $ getNonTruths $ nnf $ arrowfree prop
+  print $ parse $ convertToCNF $ invertLiterals $ getNonTruths $ nnf $ arrowfree prop
   -- print $ double [1,2,3,4,5,6,7,8,9]
 
 convertToCNF :: [Valuation] -> String
-convertToCNF v = andCNF $ (map ordCNF v)
+convertToCNF v = andCNF (map ordCNF v)
+-- convertToCNF v = (map ordCNF v)
 
 andCNF :: [String] -> String
 andCNF (x:xs)
@@ -163,7 +164,11 @@ andCNF (x:xs)
 
 ordCNF :: Valuation -> String
 ordCNF (x:xs)
-  | length xs < 2 = "*(" ++ show (fst x) ++ " " ++ show (fst (xs !! 0)) ++ ")"
+  | length xs < 2 && snd x == True && snd (xs !! 0) == True = "*(" ++ show (fst x) ++ " " ++ show (fst (xs !! 0)) ++ ")"
+  | length xs < 2 && snd x == False && snd (xs !! 0) == True = "*(-" ++ show (fst x) ++ " " ++ show (fst (xs !! 0)) ++ ")"
+  | length xs < 2 && snd x == True && snd (xs !! 0) == False = "*(" ++ show (fst x) ++ " -" ++ show (fst (xs !! 0)) ++ ")"
+  | length xs < 2 && snd x == False && snd (xs !! 0) == False = "*(-" ++ show (fst x) ++ " -" ++ show (fst (xs !! 0)) ++ ")"
+  | length xs >= 2 && snd x == False = "*(-" ++ show (fst x) ++ " " ++ ordCNF xs ++ ")"
   | otherwise = "*(" ++ show (fst x) ++ " " ++ ordCNF xs ++ ")"
 
 invertLiterals :: [Valuation] -> [Valuation]
