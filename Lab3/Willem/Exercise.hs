@@ -8,18 +8,18 @@ import Control.Monad
 
 -- Define Main --
 main = do
-    putStrLn $ "===================="
-    putStrLn $ "Assignment 3 / Lab 3"
-    putStrLn $ "===================="
-    putStrLn $ "> Exercise 1"
+    putStrLn "===================="
+    putStrLn "Assignment 3 / Lab 3"
+    putStrLn "===================="
+    putStrLn "> Exercise 1"
     exercise1
-    putStrLn $ "> Exercise 2"
-    -- exercise2
-    putStrLn $ "> Exercise 3"
+    putStrLn "> Exercise 2"
+    exercise2
+    putStrLn "> Exercise 3"
     exercise3
-    putStrLn $ "> Exercise 4"
+    putStrLn "> Exercise 4"
     exercise4
-    putStrLn $ "> Exercise 5"
+    putStrLn "> Exercise 5"
     -- exercise5
 
 -- | Exercise 1
@@ -83,15 +83,34 @@ equivalenceTest =  (equiv form1 form1 == True)
 
 exercise1 = do
   putStrLn "contradictionTest:"
-  print $ contradictionTest
+  print contradictionTest
   putStrLn "tautology:"
-  print $ tautologyTest
+  print tautologyTest
   putStrLn "entails:"
-  print $ entailsTest
+  print entailsTest
   putStrLn "equivalence:"
-  print $ equivalenceTest
+  print equivalenceTest
 
 -- | Exercise 2
+-- Spent one hour of thinking about properties, did exercise 4 first, so reuse that generator
+-- Maybe add some basic tests?
+exercise2 = do
+  quickCheck prop_parse_equal
+  quickCheck prop_parse_invalid
+  quickCheck prop_parse_tail
+
+-- |Checks if the parser returns the same result when parsing the result of the show.
+-- Basically testing show and parse at the same time
+prop_parse_equal :: Form -> Bool
+prop_parse_equal f = (parse $ show f) == [f]
+
+-- | Adding a symbol in front of a valid form will result in a empty result
+prop_parse_invalid :: Form -> Bool
+prop_parse_invalid f = parse ("*" ++ show f) == []
+
+-- | Adding elements to the tail doesn't change the form
+prop_parse_tail :: Form -> Bool
+prop_parse_tail f = parse (show f ++ "*") == [f]
 
 -- | Exercise 3 (5 minutes)
 -- Taken form the slides, first make sure the formula is arrow free, next transform to NNF
