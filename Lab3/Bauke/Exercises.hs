@@ -61,9 +61,15 @@ ambiguity2 = head $ parse "+( 3 1)"
 -- | Generate a form => should pick an operator and then form
 -- | Time spent: 90 minutes on generator due to issues with the IO type.
 -- | Looked up the examples from the previous labs and used that to concatenate the strings
-
 -- | Looked up a way to check IO data with normal data
 -- | test link: https://hackage.haskell.org/package/QuickCheck-2.10.0.1/docs/Test-QuickCheck-Monadic.html
+
+-- | Time spent: additional 120 minutes on getting the stuff to work with quickCheck.
+-- | However, this was a useful quest on getting familiar with the monadic stuff.
+
+-- | mising IO stuff with non IO stuff can be simply done by binding them in an do statement.
+-- | nonMonadic <- monadicVersion
+-- | Alternatively via a lambda: someMonadicStuff = monad >>= (\nonMonadic -> return doStuff nonMonadic)
 
 exercise2 = do
   quickCheck prop_sensibleData
@@ -158,8 +164,30 @@ literals = [ show a | a <- [1..5]]
 
 -- | Exercise 3 - Convert Formulas into CNF
 -- | Simply convert to arrowFree and then nnf
-exercise3 = convert2cnf alwaysTrue
+
+
+exercise3 = do
+  quickCheck prop_wiki1
+  quickCheck prop_wiki2
+  quickCheck prop_wiki3
+
+prop_wiki1 = checkSample wikiSample1
+prop_wiki2 = checkSample wikiSample2
+prop_wiki3 = checkSample wikiSample3
+
+checkSample str = (equiv f cnf) && (f /= cnf)
+  where f = doParse str
+        cnf = convert2cnf f
+
+convert2cnf :: Form -> Form
 convert2cnf = nnf . arrowfree
+
+wikiSample1 = "-+(1 2)"
+wikiSample2 = "+(*(1 2) 3)"
+wikiSample3 = "*(1 *(+(2 3) +(2 5)))"
+
+doParse :: String -> Form
+doParse = head . parse
 
 -- | Exercise 4 - Random form generator
 
