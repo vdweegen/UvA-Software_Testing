@@ -102,11 +102,11 @@ exercise2 = do
 -- |Checks if the parser returns the same result when parsing the result of the show.
 -- Basically testing show and parse at the same time
 prop_parse_equal :: Form -> Bool
-prop_parse_equal f = (parse $ show f) == [f]
+prop_parse_equal f = parse (show f) == [f]
 
 -- | Adding a symbol in front of a valid form will result in a empty result
 prop_parse_invalid :: Form -> Bool
-prop_parse_invalid f = parse ("*" ++ show f) == []
+prop_parse_invalid f = null (parse ("*" ++ show f))
 
 -- | Adding elements to the tail doesn't change the form
 prop_parse_tail :: Form -> Bool
