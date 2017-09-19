@@ -1,9 +1,14 @@
 module Exercises where
 
+import Control.Monad
+
 import Lab3.Lecture3
 
-import Test.QuickCheck
 import System.Random
+
+import Test.QuickCheck
+import Test.QuickCheck.Monadic
+
 
 exercise1 = do
   putStr "alwaysTrue is a tautology: "
@@ -26,7 +31,6 @@ contradiction form = not $ satisfiable form
 
 -- | There is no set of values for which the form returns false
 tautology :: Form -> Bool
--- tautology form = allOf True (map (flip evl form) (allVals form))
 tautology f = all (\v -> evl v f) (allVals f)
 
 -- | logical entailment
@@ -44,26 +48,31 @@ equiv form1 form2 = allResults form1 == allResults form2
 allResults :: Form -> [Bool]
 allResults form = map (flip evl form) (allVals form)
 
+-- | some testSamples
 alwaysTrue, alwaysFalse :: Form
 alwaysTrue = head $ parse "+(1 -1)"
 alwaysFalse = head $ parse "*(1 -1)"
 
 nestedExpression = head $ parse "(+(1 -1) ==> 2)"
+ambiguity1 = head $ parse "+(-31)"
+ambiguity2 = head $ parse "+( 3 1)"
 
-allOf :: Eq a => a -> [a] -> Bool
-allOf _ [] = True
-allOf a (x:xs) = a == x && allOf a xs
-
--- | Exercise 2 -
-
--- | Exercise 3 - Convert Formulas into CNF
-exercise3 = convert2cnf alwaysTrue
-convert2cnf = nnf . arrowfree
-
--- | Exercise 4 - Random form generator
+-- | Exercise 2 - Random text generator for parser
 -- | Generate a form => should pick an operator and then form
 -- | Time spent: 90 minutes on generator due to issues with the IO type.
 -- | Looked up the examples from the previous labs and used that to concatenate the strings
+
+-- | Looked up a way to check IO data with normal data
+-- | test link: https://hackage.haskell.org/package/QuickCheck-2.10.0.1/docs/Test-QuickCheck-Monadic.html
+
+exercise2 = do
+  quickCheck prop_sensibleData
+
+prop_sensibleData = monadicIO $ do
+  formData <- run parseRandom
+  assert ([] /= formData)
+
+parseRandom = randomForm >>= (\form -> return $ parse form)
 
 randomOperator, randomSign, randomLiteral :: IO String
 randomOperator = randomFrom operators
@@ -79,35 +88,24 @@ randomForm = do
               generateForm oper
 
 generateForm :: String -> IO String
-generateForm "*" = do
-                     s1 <- randomSign
-                     l1 <- randomLiteral
-                     s2 <- randomSign
-                     l2 <- randomLiteral
-                     return $ "*(" ++ s1 ++ l1 ++ s2 ++ l2 ++ ")"
+generateForm "*" = composeTuple "*" "" >>= (\t -> return t)
+generateForm "+" = composeTuple "+" "" >>= (\t -> return t)
+generateForm "==>" = composeTuple "" "==>" >>= (\t -> return t)
+generateForm "<==>" = composeTuple "" "<==>" >>= (\t -> return t)
+generateForm _ = return "INVALID"
 
-generateForm "+" = do
-                     s1 <- randomSign
-                     l1 <- randomLiteral
-                     s2 <- randomSign
-                     l2 <- randomLiteral
-                     return $ "+(" ++ s1 ++ l1 ++ s2 ++ l2 ++ ")"
+composeTuple :: String -> String -> IO String
+composeTuple pre mid = do
+                       s1 <- randomSign
+                       t1 <- signedLiteral
+                       t2 <- signedLiteral
+                       return $ s1 ++ pre ++ "(" ++ t1 ++ mid ++ t2 ++ ")"
 
-generateForm "<==>" = do
-                        s1 <- randomSign
-                        l1 <- randomLiteral
-                        s2 <- randomSign
-                        l2 <- randomLiteral
-                        return $ "(" ++ s1 ++ l1 ++ "<==>" ++ s2 ++ l2 ++ ")"
-
-generateForm "==>" = do
-                        s1 <- randomSign
-                        l1 <- randomLiteral
-                        s2 <- randomSign
-                        l2 <- randomLiteral
-                        return $ "(" ++ s1 ++ l1 ++ "==>" ++ s2 ++ l2 ++ ")"
-
-generateForm _ = do return "INVALID"
+signedLiteral :: IO String
+signedLiteral = do
+              s <- randomSign
+              l <- randomLiteral
+              return $ " " ++ s ++ l
 
 randomFrom :: Eq a => [a] -> IO a
 randomFrom xs = randomInteger xs >>= (\randIndex -> return (xs !! randIndex))
@@ -122,7 +120,14 @@ signs :: [String]
 signs = ["", "-"]
 
 literals :: [String]
-literals = [ show a | a <- [1..1000]]
+literals = [ show a | a <- [1..5]]
+
+-- | Exercise 3 - Convert Formulas into CNF
+-- | Simply convert to arrowFree and then nnf
+exercise3 = convert2cnf alwaysTrue
+convert2cnf = nnf . arrowfree
+
+-- | Exercise 4 - Random form generator
 
 -- | Exercise 5 - Bonus Exercise
 -- | Time spent: 20 minutes => no useful output, just playing with the Forms to check how to fix it
