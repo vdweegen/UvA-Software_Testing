@@ -71,10 +71,17 @@ randomOperator = randomFrom operators
 randomSign = randomFrom signs
 randomLiteral = randomFrom literals
 
+
+
+randomForm = do
+              oper <- randomOperator
+              putStr oper
+              return $ generateForm oper
+
 generateForm :: String -> IO String
 generateForm "*" = do
                      s1 <- randomSign
-                     l1 <- randomLiteralß
+                     l1 <- randomLiteral
                      s2 <- randomSign
                      l2 <- randomLiteral
                      return $ "*(" ++ s1 ++ l1 ++ s2 ++ l2 ++ ")"
@@ -109,7 +116,7 @@ randomInteger :: Eq a => [a] -> IO Int
 randomInteger xs = (randomRIO (0, (length xs)-1))
 
 operators :: [String]
-operators = ["+", "*","==>","<=>"]
+operators = ["+", "*","==>","<==>"]
 
 signs :: [String]
 signs = ["", "-"]
