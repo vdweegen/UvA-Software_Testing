@@ -27,7 +27,7 @@ exercise1 = do
   print $ contradiction form1
   print $ contradiction form2
   print $ contradiction form3
-  putStrLn "tautology:"
+  putStrLn "Tautology:"
   print $ tautology form1
   print $ tautology form2
   print $ tautology form3
