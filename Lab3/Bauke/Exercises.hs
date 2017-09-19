@@ -58,9 +58,13 @@ allOf a (x:xs) = a == x && allOf a xs
 -- | Exercise 2 -
 
 -- | Exercise 3 - Convert Formulas into CNF
+exercise3 = convert2cnf alwaysTrue
+convert2cnf = nnf . arrowfree
 
 -- | Exercise 4 - Random form generator
 -- | Generate a form => should pick an operator and then form
+-- | Time spent: 90 minutes on generator due to issues with the IO type.
+-- | Looked up the examples from the previous labs and used that to concatenate the strings
 
 randomOperator, randomSign, randomLiteral :: IO String
 randomOperator = randomFrom operators
@@ -68,10 +72,26 @@ randomSign = randomFrom signs
 randomLiteral = randomFrom literals
 
 generateForm :: String -> IO String
-generateForm "<==>" = do
-                        a <- randomLiteral
-                        b <- randomLiteral
-                        return $ "(" ++ a ++ "<==>" ++ b ++ ")"
+generateForm "*" = do
+                     s1 <- randomSign
+                     l1 <- randomLiteral
+                     s2 <- randomSign
+                     l2 <- randomLiteral
+                     return $ "*(" ++ s1 ++ l1 ++ s2 ++ l2 ++ ")"
+
+generateForm "+" = do
+                     s1 <- randomSign
+                     l1 <- randomLiteral
+                     s2 <- randomSign
+                     l2 <- randomLiteral
+                     return $ "+(" ++ s1 ++ l1 ++ s2 ++ l2 ++ ")"
+
+generateForm inline = do
+                        s1 <- randomSign
+                        l1 <- randomLiteral
+                        s2 <- randomSign
+                        l2 <- randomLiteral
+                        return $ "(" ++ s1 ++ l1 ++ inline ++ s2 ++ l2 ++ ")"
 
 randomFrom :: Eq a => [a] -> IO a
 randomFrom xs = randomInteger xs >>= (\randIndex -> return (xs !! randIndex))
