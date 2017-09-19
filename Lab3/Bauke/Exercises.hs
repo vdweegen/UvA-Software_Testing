@@ -74,7 +74,7 @@ randomLiteral = randomFrom literals
 generateForm :: String -> IO String
 generateForm "*" = do
                      s1 <- randomSign
-                     l1 <- randomLiteral
+                     l1 <- randomLiteralß
                      s2 <- randomSign
                      l2 <- randomLiteral
                      return $ "*(" ++ s1 ++ l1 ++ s2 ++ l2 ++ ")"
@@ -86,12 +86,21 @@ generateForm "+" = do
                      l2 <- randomLiteral
                      return $ "+(" ++ s1 ++ l1 ++ s2 ++ l2 ++ ")"
 
-generateForm inline = do
+generateForm "<==>" = do
                         s1 <- randomSign
                         l1 <- randomLiteral
                         s2 <- randomSign
                         l2 <- randomLiteral
-                        return $ "(" ++ s1 ++ l1 ++ inline ++ s2 ++ l2 ++ ")"
+                        return $ "(" ++ s1 ++ l1 ++ "<==>" ++ s2 ++ l2 ++ ")"
+
+generateForm "==>" = do
+                        s1 <- randomSign
+                        l1 <- randomLiteral
+                        s2 <- randomSign
+                        l2 <- randomLiteral
+                        return $ "(" ++ s1 ++ l1 ++ "==>" ++ s2 ++ l2 ++ ")"
+
+generateForm _ = do return "INVALID"
 
 randomFrom :: Eq a => [a] -> IO a
 randomFrom xs = randomInteger xs >>= (\randIndex -> return (xs !! randIndex))
