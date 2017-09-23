@@ -80,15 +80,17 @@ test_tautology_incorrect1 n = not.all (tautology) $ [ generateContradictions [1.
 
 --main = print $ equi [True, True, False, True] [True, True, False, True]
 
--- Estimated time taken: 6 hours
--- I tried to create my definitions based on the satisfiability function provided and some logic laws
--- If satisfiability function is correct then most of the functions will hold. 
--- For testing, I deciding to create a function that creates a variable length tautologies, contradictions, and propositions
--- The basic form is the same just the number of props are different. 
--- Tautologies are disjunctions that have one proposition twice, once negated thus making the form a tautology
--- Contradictions are conjunctions that have one proposition twice, once negated thus making the form a contradiction
--- Propositions are just atomic propositions that can be true or false
--- [TODO] Equiv testing
+{-- Estimated time taken: 6 hours
+I tried to create my definitions based on the satisfiability function provided and some logic laws
+If satisfiability function is correct then most of the functions will hold. 
+For testing, I deciding to create a function that creates a variable length tautologies, contradictions, and propositions
+The basic form is the same just the number of props are different. 
+Tautologies are disjunctions that have one proposition twice, once negated thus making the form a tautology
+Contradictions are conjunctions that have one proposition twice, once negated thus making the form a contradiction
+Propositions are just atomic propositions that can be true or false
+[TODO] Equiv testing
+
+--}
 
 exercise1 =  do 
     putStrLn "Test Contradictions: List of contradictions"
@@ -109,3 +111,137 @@ exercise1 =  do
     print $ test_entailment_correct2 10    
     putStrLn "Test Entailments: List of non tautologies that cannot entail tautologies"
     print $ test_entailment_incorrect 10
+
+
+
+
+-- exercise2 = map (\(x,y) -> (parse x) == [y] ) expected_forms
+exercise2 = do
+    print $ all (null) test_incorrect_forms
+    print $ and test_expected_forms
+    print $ all (not.null) test_correct_forms
+
+{--
+
+    Trying to test this functions forces you to think about the edge cases. What can go wrong? How should it react? And then writing some tests for it. 
+    In this case Unit tests. The testing is related to the expected outputs. This function will either return a partial result, get an error or return an empty list when
+    it encounters bad input. Partial results are the hardest to test because checking if you have an empty list is not enough. 
+    The expected (partial) content should also be checked.
+
+    
+    Method: 
+    -   Incorrect content
+        returns partial form
+        Precondition: Input is a String
+        Postcondition: output is empty list
+    -   Correct content
+        The parser should successfully return full form
+        Precondition: Input is a String
+        Postcondition: Valid form
+    -   Expected forms
+        The parser should return the expected form after successful parsing
+        Precondition: Input is a String
+        Postcondition: Output matches the expected form
+
+    
+    Possible improvements:
+    Testing the expected partials
+    Testing the encoding and decoding using the show (Preconditions is that the show works correctly)
+
+--}
+test_incorrect_forms =  map (parse) incorrect_forms
+test_correct_forms =  map (parse) correct_forms
+test_expected_forms = map (\(x,y) ->  head (parse x) == y ) expected_forms
+
+incorrect_forms = [
+    "-+(1 0",
+    "(1)",
+    "(1 0",
+    "*1",
+    "==>",
+    ""]
+
+correct_forms = [
+    "-+(1 0)",
+    "1",
+    "*(1 0)",
+    "+(1 10 19)",
+    "(1==>2)",
+    "*((1==>2) 3)"]
+
+expected_forms = [
+    ("(10 ==> 1)", Impl (Prop 10) (Prop 1)),
+    ("(10 ==> 9)", Impl (Prop 10) (Prop 9)),
+    ("*(10 1)", Cnj [(Prop 10),(Prop 1)]),
+    ("-+(1 2)", Neg( Dsj [(Prop 1),(Prop 2)]))
+    ]
+
+
+
+
+exercise3 = do
+    print ()
+
+
+{--
+Too sleepy to write description will finish in the morning
+
+Need to add distribution when DSJ is on the outside!
+--}   
+
+distributeAgain p (Dsj xs) = Dsj (p++xs)
+distributeAgain p (Prop xs) = Cnj ((Prop xs):p)
+
+distributeRules xs (Cnj ps) = map (distributeAgain xs) ps
+distributeRules xs (Dsj ps) = map (distributeAgain xs) ps
+-- distributeRules (Prop p) (Dsj ps) = sortBy sortProps (map (\(Cnj xs) -> Dsj ((Prop p):xs)) ps)
+-- distributeRules (Prop p) (Dsj ps) = (map (\(Cnj xs) -> Dsj ((Prop p):xs)) ps)
+-- distributeRules (Prop p) (Cnj ps) = Cnj (Prop p : ps)
+
+-- distributeRules (Prop x) (Cnj z) = Cnj [Prop x, Cnj z]
+
+-- distributeRules ps x =  cnf x
+
+distributeDsj fs p =  concatMap (distributeRules fs) p
+-- distributeDsj fs ps =  map (\(Dsj x) -> Dsj (x) ) fs
+-- distributeDsj f fs =  map (\x -> Dsj [f, x] ) fs
+
+distributeDsjNew [] [] acc = []
+distributeDsjNew [] _  acc = acc
+distributeDsjNew _ [] acc = acc
+-- distributeDsjNew propositions = 
+
+sortProps (Prop x)  _ = LT 
+sortProps  _ (Prop x) = GT 
+sortProps f1 f2 = GT
+
+filterProps (Prop x) = True
+filterProps _ = False
+
+filterCnj (Cnj x) = True
+filterCnj _ = False
+
+-- distribute' fs = distributeDsj (map cnf cnj) ps
+--     where 
+--         buckets = partition filterProps fs
+--         ps = map (cnf) $ fst buckets
+--         cnj = map (cnf) $ snd buckets
+
+distribute fs = Dsj dis
+    where 
+        buckets = partition (not.filterCnj) fs
+        ps = map (cnf) $ fst buckets
+        cnj = map (cnf) $ snd buckets
+        dis = foldr (distributeDsj) (filter filterCnj cnj) [ps]
+       
+
+
+cnf :: Form -> Form
+cnf (Prop x) = Prop x
+cnf (Neg (Prop x)) = Neg (Prop x)
+cnf (Cnj fs) = Cnj (map cnf (sortBy sortProps fs))
+cnf (Dsj fs) 
+      | not.null $ filter (filterCnj) fs  = (distribute (map cnf fs))
+      | otherwise = Dsj (map cnf fs)
+    where
+        ffs = sortBy sortProps fs
