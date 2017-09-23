@@ -221,19 +221,30 @@ filterProps _ = False
 filterCnj (Cnj x) = True
 filterCnj _ = False
 
--- distribute' fs = distributeDsj (map cnf cnj) ps
+filterDsj (Dsj x) = True
+filterDsj _ = False
+
+-- -- distribute' fs = distributeDsj (map cnf cnj) ps
+-- --     where 
+-- --         buckets = partition filterProps fs
+-- --         ps = map (cnf) $ fst buckets
+-- --         cnj = map (cnf) $ snd buckets
+
+-- distribute fs = Dsj dis
 --     where 
---         buckets = partition filterProps fs
+--         buckets = partition (not.filterCnj) fs
 --         ps = map (cnf) $ fst buckets
 --         cnj = map (cnf) $ snd buckets
-
-distribute fs = Dsj dis
-    where 
-        buckets = partition (not.filterCnj) fs
-        ps = map (cnf) $ fst buckets
-        cnj = map (cnf) $ snd buckets
-        dis = foldr (distributeDsj) (filter filterCnj cnj) [ps]
+--         dis = foldr (distributeDsj) (filter filterCnj cnj) [ps]
        
+
+
+
+distribute fs = Cnj expand
+    where 
+        cnjs = (filter filterCnj fs)
+        notConj = (filter (not.filterCnj)) fs 
+        expand = nub $  concatMap (\(Cnj x) ->  map (\xx -> Dsj (nub (xx:notConj)) ) x) cnjs
 
 
 cnf :: Form -> Form
@@ -241,7 +252,9 @@ cnf (Prop x) = Prop x
 cnf (Neg (Prop x)) = Neg (Prop x)
 cnf (Cnj fs) = Cnj (map cnf (sortBy sortProps fs))
 cnf (Dsj fs) 
-      | not.null $ filter (filterCnj) fs  = (distribute (map cnf fs))
+      | not.null $ filter (filterDsj) fs  = cnf $ Dsj ((liftDsj fs) ++ (filter (not.filterDsj) fs))
+      | not.null $ filter (filterCnj) fs  = cnf (distribute (map cnf fs))
       | otherwise = Dsj (map cnf fs)
     where
         ffs = sortBy sortProps fs
+        liftDsj fs = nub $ concatMap (\(Dsj xs) -> map (\y -> y ) xs)   (filter (filterDsj) fs)
