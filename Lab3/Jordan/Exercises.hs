@@ -123,7 +123,7 @@ exercise2 = do
 
 {--
 
-    Trying to test this functions forces you to think about the edge cases. What can go wrong? How should it react? And then writing some tests for it. 
+    Trying to test this functions forces you to think about the edge cases. What do you expect? What can go wrong? How should it react? And then writing some tests for it. 
     In this case Unit tests. The testing is related to the expected outputs. This function will either return a partial result, get an error or return an empty list when
     it encounters bad input. Partial results are the hardest to test because checking if you have an empty list is not enough. 
     The expected (partial) content should also be checked.
@@ -237,7 +237,7 @@ filterDsj _ = False
 --         cnj = map (cnf) $ snd buckets
 --         dis = foldr (distributeDsj) (filter filterCnj cnj) [ps]
        
-
+test_cnf f = equiv  (nnf $ arrowfree $ head $ parse f) (cnf $ nnf $ arrowfree $ head $ parse f)
 
 distribute fs = Cnj expand'
     where 
@@ -260,13 +260,16 @@ uniqueMap f xs = ys
             ys = nub $ map f xs
 
 cnf :: Form -> Form
-cnf (Prop x) = Prop x
-cnf (Neg (Prop x)) = Neg (Prop x)
-cnf (Cnj fs) = Cnj (map cnf (sortBy sortProps fs))
-cnf (Dsj fs) 
-      | not.null $ filter (filterDsj) fs  = cnf $ Dsj ((liftDsj fs) ++ (filter (not.filterDsj) fs))
-      | not.null $ filter (filterCnj) fs  = cnf (distribute (uniqueMap cnf fs))
-      | otherwise = Dsj (uniqueMap cnf fs)
+cnf  = cnf' . nnf . arrowfree 
+
+cnf' :: Form -> Form
+cnf' (Prop x) = Prop x
+cnf' (Neg (Prop x)) = Neg (Prop x)
+cnf' (Cnj fs) = Cnj (map cnf' (sortBy sortProps fs))
+cnf' (Dsj fs) 
+      | not.null $ filter (filterDsj) fs  = cnf' $ Dsj ((liftDsj fs) ++ (filter (not.filterDsj) fs))
+      | not.null $ filter (filterCnj) fs  = cnf' (distribute (uniqueMap cnf' fs))
+      | otherwise = Dsj (uniqueMap cnf' fs)
     where
         ffs = sortBy sortProps fs
         liftDsj fs = nub $ concatMap (\(Dsj xs) -> map (\y -> y ) xs)   (filter (filterDsj) fs)
