@@ -19,13 +19,13 @@ main = do
     putStrLn $ "Assignment 3 / Lab 3"
     putStrLn $ "===================="
     putStrLn $ "> Exercise 1"
-    -- exercise1
+    exercise1
     putStrLn $ "> Exercise 2"
-    -- exercise2
+    exercise2
     putStrLn $ "> Exercise 3"
-    -- exercise3
+    exercise3
     putStrLn $ "> Exercise 4"
-    -- exercise4
+    exercise4
     putStrLn $ "> Exercise 5"
     exercise5
 
@@ -299,6 +299,7 @@ convertToCNF v = andCNF (map ordCNF v)
 
 andCNF :: [String] -> String
 andCNF (x:xs)
+  | length xs == 0 = x
   | length xs < 2 = "*(" ++ x ++ " " ++ xs !! 0 ++ ")"
   | otherwise = "*(" ++ x ++ " " ++ andCNF xs ++ ")"
 
