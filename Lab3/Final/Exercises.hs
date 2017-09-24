@@ -448,13 +448,7 @@ type Clause = [Int]
 -- All
 
 exercise5 = do
-  print $ handleConversion wiki2Input
-
-handleConversion :: Form -> Clauses
-handleConversion f = read $ (convertToCl $ (preprocess f)) :: Clauses
-
-preprocess :: Form -> String
-preprocess = show . convertToCls . cnf . nnf . arrowfree
+  print $ smashCL $ convertToCl $ show $ convertToCls $ cnf $ nnf $ arrowfree wiki3Input
 
 wiki1Input, wiki2Input, wiki3Input :: Form
 wiki1Input = doParse "+(-2 -3)"
@@ -464,10 +458,13 @@ wiki3Input = doParse "*(1 *(+(2 4) +(2 5)))"
 wiki1Result, wiki2Result, wiki3Result :: Clauses
 wiki1Result = [[-2, -3]]
 wiki2Result = [[1, 3], [2, 3]]
-wiki3Result = [[1], [2, 3], [2, 5]]
+wiki3Result = [[1], [2, 4], [2, 5]]
 
 convertToCl :: String -> String
 convertToCl s = replace ")" "]" $ replace "+(" "[" $ replace "*(" "[" $ replace " " "," s
+
+smashCL :: String -> String
+smashCL s = if (isInfixOf "[[" s == True) || (isInfixOf "]]" s == True) then do smashCL ( replace "[[" "[" $ (replace "]]" "]" s)) else "[" ++ s ++ "]"
 
 -- | Non-Traditional Implementation using the four steps provided by the link
 convertToCls :: Form -> Form
