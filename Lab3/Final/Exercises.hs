@@ -2,6 +2,8 @@ module Lab3.Final.Exercises where
 
 import Data.List
 
+import Data.String.Utils -- cabal update; cabal install MissingH
+
 import Lab3.Lecture3
 
 import System.Random
@@ -17,13 +19,13 @@ main = do
     putStrLn $ "Assignment 3 / Lab 3"
     putStrLn $ "===================="
     putStrLn $ "> Exercise 1"
-    exercise1
+    -- exercise1
     putStrLn $ "> Exercise 2"
-    exercise2
+    -- exercise2
     putStrLn $ "> Exercise 3"
-    exercise3
+    -- exercise3
     putStrLn $ "> Exercise 4"
-    exercise4
+    -- exercise4
     putStrLn $ "> Exercise 5"
     exercise5
 
@@ -444,7 +446,8 @@ type Clause = [Int]
 -- | In order to verify the correctness of the function we use the random form generator.
 -- All
 
-exercise5 = print $ "I say hello"
+exercise5 = do
+  print $ convertToCl $ show $ convertToCls $ cnf $ nnf $ arrowfree wiki2Input
 
 wiki1Input, wiki2Input, wiki3Input :: Form
 wiki1Input = doParse "+(-2 -3)"
@@ -455,6 +458,9 @@ wiki1Result, wiki2Result, wiki3Result :: Clauses
 wiki1Result = [[-2, -3]]
 wiki2Result = [[1, 3], [2, 3]]
 wiki3Result = [[1], [2, 3], [2, 5]]
+
+convertToCl :: String -> String
+convertToCl s = replace ")" "]" $ replace "+(" "[" $ replace "*(" "[" $ replace " " "," s
 
 -- | Non-Traditional Implementation using the four steps provided by the link
 convertToCls :: Form -> Form
