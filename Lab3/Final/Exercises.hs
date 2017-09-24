@@ -430,5 +430,13 @@ isDsj (Dsj ds) = all (\d -> isProp d || isNeg d || isCnj d || isDsj d) ds
 isDsj _ = False
 
 -- | Exercise 5 - Bonus exercise
+type Clauses = [Clause]
+type Clause = [Int]
 
-exercise 5 = "Missing..."
+-- | In order to verify the correctness of the function we use the random form generator.
+-- All
+
+exercise5 = putStrLn "Missing..."
+
+toClauses :: String -> Clauses
+toClauses str = read $ str :: Clauses
