@@ -192,12 +192,6 @@ Too sleepy to write description will finish in the morning
 Need to add distribution when DSJ is on the outside!
 --}   
 
-sortProps (Prop x)  _ = LT 
-sortProps  _ (Prop x) = GT 
-sortProps f1 f2 = GT
-
-filterProps (Prop x) = True
-filterProps _ = False
 
 filterCnj (Cnj x) = True
 filterCnj _ = False
