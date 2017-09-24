@@ -271,6 +271,8 @@ checkResults str = do
                  print $ convertTraditional f
                  putStr "Non traditional result: "
                  print $ convertNonTraditional f
+                 putStr "Krak: "
+                 print $ convertTraditional $ doParse "+(1 2)"
                  where f = (doParse str)
 
 -- | Precondition is that the passed in form is non-cnf
@@ -433,10 +435,34 @@ isDsj _ = False
 type Clauses = [Clause]
 type Clause = [Int]
 
+-- | Converting the Forms was simply rewriting the 'convertTraditional'
+
 -- | In order to verify the correctness of the function we use the random form generator.
 -- All
 
-exercise5 = putStrLn "Missing..."
+exercise5 = print $ "I say hello"
 
-toClauses :: String -> Clauses
-toClauses str = read $ str :: Clauses
+convertString :: String -> Clauses
+convertString = cnf2cls . convertNonTraditional . doParse
+
+cnf2cls :: Form -> Clauses
+cnf2cls (Dsj []) = []
+cnf2cls (Dsj (f1:f2:[])) = (cnf2cls f1) ++ (cnf2cls f2)
+
+cnf2cls (Cnj (f1:f2:[])) | (isLiteral f1) && (isLiteral f2) = [(convertLiteral f1), (convertLiteral f2)]
+                         | otherwise = undefined
+cnf2cls (Prop a) = [[a]]
+cnf2cls (Neg (Prop a)) = [[-1 *a]]
+
+convertLiteral :: Form -> Clause
+convertLiteral (Prop a) = [a]
+convertLiteral (Neg (Prop a)) = [-1 * a]
+convertLiteral _ = []
+
+convertForm :: Form -> Clauses
+convertForm _ = undefined
+
+isLiteral :: Form -> Bool
+isLiteral (Prop _) = True
+isLiteral (Neg (Prop _)) = True
+isLiteral _ = False
