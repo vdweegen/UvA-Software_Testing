@@ -8,15 +8,15 @@ main = do
     putStrLn $ "Assignment 3 / Lab 3"
     putStrLn $ "===================="
     putStrLn $ "> Exercise 1"
-    -- exercise1
+    exercise1
     putStrLn $ "> Exercise 2"
-    -- exercise2
+    exercise2
     putStrLn $ "> Exercise 3"
-    -- exercise3
+    exercise3
     putStrLn $ "> Exercise 4"
     -- exercise4
     putStrLn $ "> Exercise 5"
-    exercise5
+    -- exercise5
 
 -- =============================================================================
 -- Exercise 1 :: Time spent: +- 180 min
@@ -162,6 +162,7 @@ convertToCNF v = andCNF (map ordCNF v)
 
 andCNF :: [String] -> String
 andCNF (x:xs)
+  | length xs == 0 = x
   | length xs < 2 = "*(" ++ x ++ " " ++ xs !! 0 ++ ")"
   | otherwise = "*(" ++ x ++ " " ++ andCNF xs ++ ")"
 
@@ -206,30 +207,3 @@ prop2 = Dsj [Cnj [x,y], z]           -- +(*(1 2) 3)
 -- =============================================================================
 -- Exercise 5
 -- =============================================================================
-type Clause  = [Int]
-type Clauses = [Clause]
-
-
-exercise5 = do
-  print $ convertToCL $ invertLiterals $ allVals $ nnf $ arrowfree prop2
-  -- print $ parse $ convertToCL $ invertLiterals $ allVals $ nnf $ arrowfree prop2
-
-
--- dsj2cl :: Form -> Clauses
-
-convertToCL :: [Valuation] -> String
-convertToCL v = andCL (map ordCL v)
-
-andCL :: [String] -> String
-andCL (x:xs)
-  | length xs < 2 = "[" ++ x ++ "," ++ xs !! 0 ++ "]"
-  | otherwise = "[" ++ x ++ "," ++ andCL xs ++ "]"
-
-ordCL :: Valuation -> String
-ordCL (x:xs)
-  | length xs < 2 && snd x == True && snd (xs !! 0) == True = "[" ++ show (fst x) ++ "," ++ show (fst (xs !! 0)) ++ "]"
-  | length xs < 2 && snd x == False && snd (xs !! 0) == True = "[-" ++ show (fst x) ++ "," ++ show (fst (xs !! 0)) ++ "]"
-  | length xs < 2 && snd x == True && snd (xs !! 0) == False = "[" ++ show (fst x) ++ ",-" ++ show (fst (xs !! 0)) ++ "]"
-  | length xs < 2 && snd x == False && snd (xs !! 0) == False = "[-" ++ show (fst x) ++ ",-" ++ show (fst (xs !! 0)) ++ "]"
-  | length xs >= 2 && snd x == False = "[-" ++ show (fst x) ++ "," ++ ordCL xs ++ "]"
-  | otherwise = "[" ++ show (fst x) ++ "," ++ ordCL xs ++ "]"
