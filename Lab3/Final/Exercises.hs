@@ -271,6 +271,7 @@ checkResults str = do
                  print $ convertNonTraditional f
                  where f = (doParse str)
 
+-- | Precondition is that the passed in form is non-cnf
 checkAdaption :: Form -> Bool
 checkAdaption f = (f /= (convertTraditional f)) && (f /= (convertNonTraditional f))
 
