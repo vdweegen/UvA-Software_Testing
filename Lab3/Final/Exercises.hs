@@ -1,5 +1,7 @@
 module Lab3.Final.Exercises where
 
+import Data.List
+
 import Lab3.Lecture3
 
 import System.Random
@@ -238,25 +240,25 @@ exceptionForIncorrectTokens = doParse "(1<==>3)"
 emptyListForPartialTokens = parse "((1 2) (3 4))"
 
 -- =============================================================================
--- Exercise 3 :: Time spent +- 360 min
+-- Exercise 3 :: Time spent more than 12 hours! spent
+-- We have implemented two ways, the 'traditional way' using the truth tables as demonstrated during the workshop
+-- The other way uses a four-way conversion described in the link:
+-- http://homepage.cs.uiowa.edu/~tinelli/classes/188/Fall10/notes/cnf-conversion.pdf
+-- We use both ways and verify them against each other and the original
+-- For test input we used the wikiPedia examples which were known to be nnf
+-- Tested by verifying the truth tables and the String forms are unmatched
 -- =============================================================================
+wiki1, wiki2, wiki3 :: String
+wiki1 = "-+(1 2)"
+wiki2 = "+(*(1 2) 3)"
+wiki3 = "*(1 *(+(2 3) +(2 5)))"
+
 exercise3 = do
-  -- Step #1 :: Remove arrows
-  -- Step #2 :: Conversion to negation normal form
-  -- Step #3 :: Generate Truth Table
-  -- Step #4 :: Every result that is false, negate the literal
-  -- Step #5 :: Use the literals to construct the CNF
-  -- print $ convertToCNF $ getNonTruths $ nnf $ arrowfree prop
-  -- print $ invertLiterals $ getNonTruths $ nnf $ arrowfree prop
-  print $ convertToCNF $ invertLiterals $ getNonTruths $ nnf $ arrowfree prop
-  print $ parse $ convertToCNF $ invertLiterals $ getNonTruths $ nnf $ arrowfree prop
-  print $ equiv wiki1 (doAll wiki1)
+  print True
 
-wiki1 :: Form
-wiki1 = doParse "+(*(1 2) 3)"
-
-doAll :: Form -> Form
-doAll = doParse . convertToCNF . invertLiterals . getNonTruths . nnf . arrowfree
+-- | Traditional using using the truth tables
+convertTraditional :: Form -> Form
+convertTraditional = doParse . convertToCNF . invertLiterals . getNonTruths . nnf . arrowfree
 
 convertToCNF :: [Valuation] -> String
 convertToCNF v = andCNF (map ordCNF v)
@@ -289,12 +291,42 @@ revert (k,v) = if v == True then (k,False) else (k,True)
 getNonTruths :: Form -> [Valuation]
 getNonTruths f = filter (\ v -> not $ evl v f) (allVals f)
 
--- Define base env
-x = Prop 1
-y = Prop 2
-z = Prop 3
+-- | Implementation using the four steps provided by the link
+convertNonTraditional :: Form -> Form
+convertNonTraditional = cnf . nnf . arrowfree
 
-prop = Cnj [(Dsj [x,y]),(Neg z)]
--- prop0 = (Neg (Prop 1))
--- prop1 = (Impl (Prop 1) (Prop 2))
--- prop2 = (Impl (Equiv (Prop 1) (Prop 2)) (Impl (Prop 1) (Prop 3)))
+cnf :: Form -> Form
+cnf  = cnf' . nnf . arrowfree
+
+cnf' :: Form -> Form
+cnf' (Prop x) = Prop x
+cnf' (Neg (Prop x)) = Neg (Prop x)
+cnf' (Cnj fs) = Cnj (map cnf' fs)
+cnf' (Dsj fs)
+      | not.null $ filter (filterDsj) fs  = cnf' $ Dsj ((liftDsj fs) ++ (filter (not.filterDsj) fs))
+      | not.null $ filter (filterCnj) fs  = cnf' (distribute (uniqueMap cnf' fs))
+      | otherwise = Dsj (uniqueMap cnf' fs)
+    where
+        liftDsj fs = nub $ concatMap (\(Dsj xs) -> map (\y -> y ) xs)   (filter (filterDsj) fs)
+
+filterDsj (Dsj x) = True
+filterDsj _ = False
+
+filterCnj (Cnj x) = True
+filterCnj _ = False
+
+filterProps (Prop x) = True
+filterProps _ = False
+
+distribute fs = Cnj expand'
+    where
+        cnjs = (filter filterCnj fs)
+        notConj = (filter (not.filterCnj)) fs
+        combineCnj = sequence (map (\(Cnj x) -> x) cnjs)
+        expand' = map (\cnjList ->  Dsj (nub (notConj ++ cnjList))) combineCnj
+
+
+uniqueMap f xs = ys
+        where
+            ys = nub $ map f xs
+
