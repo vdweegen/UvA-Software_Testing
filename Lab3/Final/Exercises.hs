@@ -251,7 +251,7 @@ emptyListForPartialTokens = parse "((1 2) (3 4))"
 wiki1, wiki2, wiki3 :: String
 wiki1 = "-+(1 2)"
 wiki2 = "+(*(1 2) 3)"
-wiki3 = "*(1 *(+(2 3) +(2 5)))"
+wiki3 = "*(1 +(2 *(2 5)))"
 
 exercise3 = do
   putStr "Checking results for wiki1: "
