@@ -1,6 +1,8 @@
 module Exercises where
 
 import Lab3.Lecture3
+import Data.String.Utils
+import Data.List
 
 -- Define Main --
 main = do
@@ -16,7 +18,7 @@ main = do
     putStrLn $ "> Exercise 4"
     -- exercise4
     putStrLn $ "> Exercise 5"
-    -- exercise5
+    exercise5
 
 -- =============================================================================
 -- Exercise 1 :: Time spent: +- 180 min
@@ -207,3 +209,83 @@ prop2 = Dsj [Cnj [x,y], z]           -- +(*(1 2) 3)
 -- =============================================================================
 -- Exercise 5
 -- =============================================================================
+type Clauses = [Clause]
+type Clause = [Int]
+
+exercise5 = do
+  print $ smashCL $ convertToCl $ show $ convertToCls $ cnf $ nnf $ arrowfree wiki1Input
+  print $ smashCL $ convertToCl $ show $ convertToCls $ cnf $ nnf $ arrowfree wiki2Input
+  print $ smashCL $ convertToCl $ show $ convertToCls $ cnf $ nnf $ arrowfree wiki3Input
+
+wiki1Input, wiki2Input, wiki3Input :: Form
+wiki1Input = doParse "+(-2 -3)"
+wiki2Input = doParse "*(+(1 3) +(2 3))"
+wiki3Input = doParse "*(1 *(+(2 4) +(2 5)))"
+
+wiki1Result, wiki2Result, wiki3Result :: Clauses
+wiki1Result = [[-2, -3]]
+wiki2Result = [[1, 3], [2, 3]]
+wiki3Result = [[1], [2, 4], [2, 5]]
+
+convertToCl :: String -> String
+convertToCl s = replace ")" "]" $ replace "+(" "[" $ replace "*(" "[" $ replace " " "," s
+
+smashCL :: String -> String
+smashCL s = if (isInfixOf "[[" s == True) || (isInfixOf "]]" s == True) then do smashCL ( replace "[[" "[" $ (replace "]]" "]" s)) else "[" ++ s ++ "]"
+
+convertToCls :: Form -> Form
+convertToCls = cls . nnf . arrowfree
+
+cls :: Form -> Form
+cls  = cls' . nnf . arrowfree
+
+cls' :: Form -> Form
+cls' (Prop x) = Prop x
+cls' (Neg (Prop x)) = Neg (Prop x)
+cls' (Cnj fs) = Cnj (map cls' fs)
+cls' (Dsj fs)
+      | not.null $ filter (filterDsj) fs  = cls' $ Dsj ((liftDsj fs) ++ (filter (not.filterDsj) fs))
+      | not.null $ filter (filterCnj) fs  = cls' (distribute (uniqueMap cls' fs))
+      | otherwise = Dsj (uniqueMap cls' fs)
+    where
+        liftDsj fs = nub $ concatMap (\(Dsj xs) -> map (\y -> y ) xs)   (filter (filterDsj) fs)
+
+-- Borrowed the below from our group-deliverable
+cnf :: Form -> Form
+cnf  = cnf' . nnf . arrowfree
+
+cnf' :: Form -> Form
+cnf' (Prop x) = Prop x
+cnf' (Neg (Prop x)) = Neg (Prop x)
+cnf' (Cnj fs) = Cnj (map cnf' fs)
+cnf' (Dsj fs)
+  | not.null $ filter (filterDsj) fs  = cnf' $ Dsj ((liftDsj fs) ++ (filter (not.filterDsj) fs))
+  | not.null $ filter (filterCnj) fs  = cnf' (distribute (uniqueMap cnf' fs))
+  | otherwise = Dsj (uniqueMap cnf' fs)
+  where
+    liftDsj fs = nub $ concatMap (\(Dsj xs) -> map (\y -> y ) xs)   (filter (filterDsj) fs)
+
+filterDsj :: Form -> Bool
+filterDsj (Dsj x) = True
+filterDsj _ = False
+
+filterCnj :: Form -> Bool
+filterCnj (Cnj x) = True
+filterCnj _ = False
+
+filterProps :: Form -> Bool
+filterProps (Prop x) = True
+filterProps _ = False
+
+distribute :: [Form] -> Form
+distribute fs = Cnj expand'
+  where
+    cnjs = (filter filterCnj fs)
+    notConj = (filter (not.filterCnj)) fs
+    combineCnj = sequence (map (\(Cnj x) -> x) cnjs)
+    expand' = map (\cnjList ->  Dsj (nub (notConj ++ cnjList))) combineCnj
+
+uniqueMap :: Eq a => (a1 -> a) -> [a1] -> [a]
+uniqueMap f xs = ys
+  where
+    ys = nub $ map f xs
