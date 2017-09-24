@@ -441,12 +441,22 @@ isDsj _ = False
 
 -- | Exercise 5 - Bonus exercise
 -- | Converting the Forms was simply rewriting the 'convertTraditional'
-
--- | In order to verify the correctness of the function we use the random form generator.
--- All
 -- | Exercise 5 - Bonus Exercise
 -- | Time spent: 20 minutes => no useful output, just playing with the Forms to check how to fix it
 -- | Additional time: 120 minutes. Still not satisfied with the result, but the unautomated tests work
+
+-- | Correctness of the conversion is checked by accounting for all variables and disjunctions
+-- The length of the Clauses -1 matches the  amount of Conjunctions in the orignal form.
+-- Also, no variables are lost in the translation.
+-- By accounting for these two, the number of disjunctions must be correct.
+
+-- | Automated tests
+-- We did manage to have the generation in place for quickTest, from exercise 4.
+-- Also, the checking of the properties is in place (variables / conjunctions)
+-- However, only linking these two together wasn't succesful within the timeframe...
+-- In pseudoCode it should look like:
+-- checkVariableAmount f $ cnf2cls . toCnf f
+--    where f <- someRandomForm
 
 type Clauses = [Clause]
 type Clause = [Int]
@@ -469,6 +479,7 @@ exercise5 = do
   quickCheck prop_wiki3
   quickCheck prop_variablesMaintained
   quickCheck prop_conjunctionsMaintained
+  quickCheck w
 
 -- | Manual checks for correct conversion
 prop_wiki1 =
