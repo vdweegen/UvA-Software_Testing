@@ -262,8 +262,14 @@ exercise3 = do
   print $ checkResults wiki3
 
 checkResults :: String -> Bool
-checkResults str = equiv' [f , convertTraditional f, convertNonTraditional f]
-  where f = doParse str
+checkResults str = (checkEquivalence f) && (checkAdaption f)
+                 where f = (doParse str)
+
+checkAdaption :: Form -> Bool
+checkAdaption f = (f /= (convertTraditional f)) && (f /= (convertNonTraditional f))
+
+checkEquivalence :: Form -> Bool
+checkEquivalence f = equiv' [f , convertTraditional f, convertNonTraditional f]
 
 -- | Simple equivalence checker for list of forms
 equiv' :: [Form] -> Bool
