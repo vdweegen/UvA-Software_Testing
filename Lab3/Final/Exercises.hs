@@ -2,6 +2,22 @@ module Lab3.Final.Exercises where
 
 import Lab3.Lecture3
 
+-- Define Main --
+main = do
+    putStrLn $ "===================="
+    putStrLn $ "Assignment 3 / Lab 3"
+    putStrLn $ "===================="
+    putStrLn $ "> Exercise 1"
+    exercise1
+    putStrLn $ "> Exercise 2"
+    -- exercise2
+    putStrLn $ "> Exercise 3"
+    -- exercise3
+    putStrLn $ "> Exercise 4"
+    -- exercise4
+    putStrLn $ "> Exercise 5"
+    -- exercise5
+
 -- | Exercise 1
 -- Time spent: 2 hours
 -- The implementation mimics as one who would manually check the properties.
@@ -111,8 +127,3 @@ exceptionForIncorrectTokens = doParse "(1<==>3)"
 
 -- | Empty list for tokens which are all partial
 emptyListForPartialTokens = parse "((1 2) (3 4))"
-
-
-
-
-
