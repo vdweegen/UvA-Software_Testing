@@ -9,6 +9,8 @@ import System.Random
 import Test.QuickCheck
 import Test.QuickCheck.Monadic
 
+import Control.Monad
+
 -- Define Main --
 main = do
     putStrLn $ "===================="
@@ -357,4 +359,71 @@ distribute fs = Cnj expand'
 uniqueMap f xs = ys
         where
             ys = nub $ map f xs
+
+-- | Exercise 4
+-- Time spent: 1 hour on arbitrary and generators
+--             1 hour on the properties
+
+-- | Generates random formulas, base case is a Prop, we recursively call genForm with a smaller n,
+-- We could use a different function to shrink n or use a different value for the multipleNextForm
+-- which doesn't depend on n, however the mod takes care of that now
+
+-- | Limited to maximum 5 due to computational constraints
+exercise4 = do
+  quickCheckWith stdArgs {maxSize = 5} prop_cnf_equiv
+  quickCheckWith stdArgs {maxSize = 5} prop_cnf_no_arrow
+  quickCheckWith stdArgs {maxSize = 5} prop_cnf_eval_equal
+
+-- | Same as applied earlier, but now using a quickCheck generator
+prop_cnf_equiv :: Form -> Bool
+prop_cnf_equiv f = equiv (convertNonTraditional f) f
+
+prop_cnf_no_arrow :: Form -> Bool
+prop_cnf_no_arrow f = isCNF $ convertNonTraditional f
+
+prop_cnf_eval_equal :: Form -> Bool
+prop_cnf_eval_equal f = evlAll f == evlAll(convertNonTraditional f)
+
+-- | Helper method te evaluate all sets of values for a formula
+evlAll :: Form -> [Bool]
+evlAll f = map (`evl` f) (allVals f)
+
+genForm :: Int -> Gen Form
+genForm n | n == 0 = genProp
+          | n > 0  = oneof [
+            genProp,
+            liftM Neg nextForm,
+            liftM Cnj multipleNextForm,
+            liftM Dsj multipleNextForm,
+            liftM2 Impl nextForm nextForm,
+            liftM2 Equiv nextForm nextForm
+          ] where nextForm = genForm (n `div` 2)
+                  multipleNextForm = vectorOf (n `mod` 10) nextForm
+                  genProp = Prop `liftM` choose(0,9)
+
+instance Arbitrary Form where
+  arbitrary = sized genForm
+
+-- | No arrows present in the formula after applying toCNF, so no Impl or Equiv.
+-- Furthermore check if neg is only applied to prop
+isCNF :: Form -> Bool
+isCNF f = isProp f || isNeg f || isCnj f || isDsj f
+
+isProp :: Form -> Bool
+isProp (Prop _) = True
+isProp _ = False
+
+isNeg :: Form -> Bool
+isNeg (Neg n) = isProp n
+isNeg _ = False
+
+isCnj :: Form -> Bool
+isCnj (Cnj cs) = all (\c -> isProp c || isNeg c || isCnj c || isDsj c) cs
+isCnj _ = False
+
+isDsj :: Form -> Bool
+isDsj (Dsj ds) = all (\d -> isProp d || isNeg d || isCnj d || isDsj d) ds
+isDsj _ = False
+
+
 
