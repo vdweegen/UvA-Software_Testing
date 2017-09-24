@@ -182,8 +182,9 @@ expected_forms = [
 
 
 exercise3 = do
-    print ()
-
+    print $ test_cnf "+(1 2 3 *(4 5))"
+    print $ test_cnf "+(*(4 5))"
+ 
 
 {--
 Too sleepy to write description will finish in the morning
@@ -191,36 +192,22 @@ Too sleepy to write description will finish in the morning
 Need to add distribution when DSJ is on the outside!
 --}   
 
-sortProps (Prop x)  _ = LT 
-sortProps  _ (Prop x) = GT 
-sortProps f1 f2 = GT
-
-filterProps (Prop x) = True
-filterProps _ = False
 
 filterCnj (Cnj x) = True
 filterCnj _ = False
 
 filterDsj (Dsj x) = True
 filterDsj _ = False
-       
-test_cnf f = equiv  (nnf $ arrowfree $ head $ parse f) (cnf $ nnf $ arrowfree $ head $ parse f)
+
+test_cnf :: String -> Bool
+test_cnf f = equiv  (nnf $ arrowfree $ head $ parse f) (cnf $ head $ parse f)
 
 distribute fs = Cnj expand'
     where 
         cnjs = (filter filterCnj fs)
         notConj = (filter (not.filterCnj)) fs 
         combineCnj = sequence (map (\(Cnj x) -> x) cnjs)
-        -- expand = nub $  concatMap (\(Cnj x) ->  map (\xx -> Dsj (nub (xx:notConj)) ) x) cnjs
         expand' = map (\cnjList ->  Dsj (nub (notConj ++ cnjList))) combineCnj
-
-distribute' fs = Cnj expand
-    where 
-        cnjs = (filter filterCnj fs)
-        notConj = (filter (not.filterCnj)) fs 
-        combineCnj = sequence (map (\(Cnj x) -> x) cnjs)
-        expand = nub $  concatMap (\(Cnj x) ->  map (\xx -> Dsj (nub (xx:notConj)) ) x) cnjs
-
 
 uniqueMap f xs = ys
         where
@@ -232,11 +219,10 @@ cnf  = cnf' . nnf . arrowfree
 cnf' :: Form -> Form
 cnf' (Prop x) = Prop x
 cnf' (Neg (Prop x)) = Neg (Prop x)
-cnf' (Cnj fs) = Cnj (map cnf' (sortBy sortProps fs))
+cnf' (Cnj fs) = Cnj (map cnf' ( fs))
 cnf' (Dsj fs) 
       | not.null $ filter (filterDsj) fs  = cnf' $ Dsj ((liftDsj fs) ++ (filter (not.filterDsj) fs))
       | not.null $ filter (filterCnj) fs  = cnf' (distribute (uniqueMap cnf' fs))
       | otherwise = Dsj (uniqueMap cnf' fs)
     where
-        ffs = sortBy sortProps fs
         liftDsj fs = nub $ concatMap (\(Dsj xs) -> map (\y -> y ) xs)   (filter (filterDsj) fs)
