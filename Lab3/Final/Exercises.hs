@@ -95,4 +95,24 @@ equivalenceTest =  (equiv form1 form1 == True)
                 && (equiv form3 form3 == True)
 
 
+-- | Exercise 2
+-- The 'happy day' scenario was tested using a random form generator.
+-- All these forms should be eating by the parser and should return a non-empty list
+-- When showing the parsed form back to the console, they should be equivalent to the input
+-- Generating counter examples proved to be difficult, since the parser exposed different behaviour
+-- for different kind of errors.
+-- One would expect the parser to return just the form for correct input or nothing at all for incorrect input.
+
+-- | This partial result only returns the first term. the implication to the second is missing
+partialResultForMissingBrackets = doParse "(1==>2) ==> (1==>3)"
+
+-- | When invalid tokens are received, an exception is thrown
+exceptionForIncorrectTokens = doParse "(1<==>3)"
+
+-- | Empty list for tokens which are all partial
+emptyListForPartialTokens = parse "((1 2) (3 4))"
+
+
+
+
 
