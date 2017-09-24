@@ -458,11 +458,6 @@ wiki1Input = doParse "+(-2 -3)"
 wiki2Input = doParse "*(+(1 3) +(2 3))"
 wiki3Input = doParse "*(1 *(+(2 3) +(2 5)))"
 
-variables :: String -> Int
-variables (s:tr) | isNumber s = 1 + variables tr
-                 | otherwise = variables tr
-
-
 wiki1Result, wiki2Result, wiki3Result :: Clauses
 wiki1Result = [[-2, -3]]
 wiki2Result = [[1, 3], [2, 3]]
@@ -473,7 +468,10 @@ exercise5 = do
   quickCheck prop_wiki1
   quickCheck prop_wiki2
   quickCheck prop_wiki3
+  quickCheck prop_variablesMaintained
+  quickCheck prop_conjunctionsMaintained
 
+-- | Manual checks for correct conversion
 prop_wiki1 =
   wiki1Result == (cnf2cls wiki1Input)
 
@@ -483,6 +481,28 @@ prop_wiki2 =
 prop_wiki3 =
   wiki3Result == (cnf2cls wiki3Input)
 
+prop_variablesMaintained =
+  (formVariables wiki3Input) == (clauseVariables $ cnf2cls wiki3Input)
+
+prop_conjunctionsMaintained =
+  (1 + formConjunctions wiki3Input) == (genericLength $ cnf2cls wiki3Input)
+
+clauseVariables :: Clauses -> Integer
+clauseVariables [] = 0
+clauseVariables (x:xs) = genericLength x + clauseVariables xs
+
+formVariables, formConjunctions, formDisjunctions :: Form -> Integer
+formVariables f = count isNumber $ show f
+formConjunctions f = count ( == '*') $ show f
+formDisjunctions f = count ( == '+') $ show f
+
+-- | Generic counter
+count :: (Char -> Bool) -> String -> Integer
+count c [] = 0
+count c (x:xs) | c x = 1 + count c xs
+               | otherwise = count c xs
+
+-- | Utility for console calling convenience
 convertString :: String -> Clauses
 convertString = cnf2cls . doParse
 
