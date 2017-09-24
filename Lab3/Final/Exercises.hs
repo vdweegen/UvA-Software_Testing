@@ -455,3 +455,21 @@ wiki1Result, wiki2Result, wiki3Result :: Clauses
 wiki1Result = [[-2, -3]]
 wiki2Result = [[1, 3], [2, 3]]
 wiki3Result = [[1], [2, 3], [2, 5]]
+
+-- | Non-Traditional Implementation using the four steps provided by the link
+convertToCls :: Form -> Form
+convertToCls = cls . nnf . arrowfree
+
+cls :: Form -> Form
+cls  = cls' . nnf . arrowfree
+
+cls' :: Form -> Form
+cls' (Prop x) = Prop x
+cls' (Neg (Prop x)) = Neg (Prop x)
+cls' (Cnj fs) = Cnj (map cls' fs)
+cls' (Dsj fs)
+      | not.null $ filter (filterDsj) fs  = cls' $ Dsj ((liftDsj fs) ++ (filter (not.filterDsj) fs))
+      | not.null $ filter (filterCnj) fs  = cls' (distribute (uniqueMap cls' fs))
+      | otherwise = Dsj (uniqueMap cls' fs)
+    where
+        liftDsj fs = nub $ concatMap (\(Dsj xs) -> map (\y -> y ) xs)   (filter (filterDsj) fs)
