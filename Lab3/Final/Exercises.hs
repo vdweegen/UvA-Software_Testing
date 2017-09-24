@@ -2,6 +2,11 @@ module Lab3.Final.Exercises where
 
 import Lab3.Lecture3
 
+import System.Random
+
+import Test.QuickCheck
+import Test.QuickCheck.Monadic
+
 -- Define Main --
 main = do
     putStrLn $ "===================="
@@ -112,6 +117,7 @@ equivalenceTest =  (equiv form1 form1 == True)
 
 
 -- | Exercise 2
+-- Time spent: approximately 3 hours
 -- The 'happy day' scenario was tested using a random form generator.
 -- All these forms should be eating by the parser and should return a non-empty list
 -- When showing the parsed form back to the console, they should be equivalent to the input
@@ -121,7 +127,106 @@ equivalenceTest =  (equiv form1 form1 == True)
 -- Perhaps a nice approach for this would be to have a signature Maybe Form
 -- This also allows for parsing an empty string, knowing it is valid tautology, instead of spreading false results
 -- Due to parsing partially correct data
+-- Generate a form => should pick an operator and then form
+-- Time spent: 90 minutes on generator due to issues with the IO type.
+-- Looked up the examples from the previous labs and used that to concatenate the strings
+-- Looked up a way to check IO data with normal data
+-- Time spent: additional 120 minutes on getting the stuff to work with quickCheck.
+-- However, this was a useful quest on getting familiar with the monadic stuff.
+-- missing IO stuff with non IO stuff can be simply done by binding them in an do statement.
+-- nonMonadic <- monadicVersion
+-- Alternatively via a lambda: someMonadicStuff = monad >>= (\nonMonadic -> return doStuff nonMonadic)
 
+exercise2 = do
+  quickCheck prop_sensibleData
+  quickCheck prop_unchanged
+
+-- All terms randomly generated parse to a non-empty list
+prop_sensibleData = monadicIO $ do
+  formData <- run parseRandom
+  assert ([] /= formData)
+
+-- All parsed terms can be 'shown' => they should be 1 : 1
+prop_unchanged = monadicIO $ do
+  (str, result) <- run parseIO
+  assert (str == (show $ head $ result))
+
+parseIO :: IO (String, [Form])
+parseIO = do
+  form <- randomForm
+  putStr "Parsing: "
+  putStrLn form
+  return $ (form, parse form)
+
+parseRandom :: IO [Form]
+parseRandom = do
+              form <- randomForm
+              putStr "Parsing: "
+              putStrLn form
+              return $ parse form
+
+randomForms :: Integer -> IO [String]
+randomForms n = sequence [ randomForm | a <- [1..n]]
+
+-- | either a literal or a term
+randomTerm :: IO String
+randomTerm = do
+            n <- randomInteger [0,1]
+            l1 <- signedLiteral
+            f1 <- randomForm
+            if(0 == n)
+              then return f1
+              else return l1
+
+randomForm :: IO String
+randomForm = do
+              oper <- randomOperator
+              generateForm oper
+
+generateForm :: String -> IO String
+generateForm "*" = composeTuple "*" "" >>= (\t -> return t)
+generateForm "+" = composeTuple "+" "" >>= (\t -> return t)
+generateForm "==>" = composeTuple "" "==>" >>= (\t -> return t)
+generateForm "<=>" = composeTuple "" "<=>" >>= (\t -> return t)
+generateForm _ = return "INVALID"
+
+-- | Composes random signed literal with random sign of total composition
+composeTuple :: String -> String -> IO String
+composeTuple pre "" = composeTuple pre " "
+composeTuple pre mid = do
+                       s1 <- randomSign
+                       t1 <- signedLiteral
+                       t2 <- signedLiteral
+                       return $ s1 ++ pre ++ "(" ++ t1 ++ mid ++ t2 ++ ")"
+
+
+-- | Random literal with random sign bit
+signedLiteral :: IO String
+signedLiteral = do
+              s <- randomSign
+              l <- randomLiteral
+              return $ s ++ l
+
+randomOperator, randomSign, randomLiteral :: IO String
+randomOperator = randomFrom operators
+randomSign = randomFrom signs
+randomLiteral = randomFrom literals
+
+-- | Picks a random item from the list passed
+randomFrom :: Eq a => [a] -> IO a
+randomFrom xs = randomInteger xs >>= (\randIndex -> return (xs !! randIndex))
+
+randomInteger :: Eq a => [a] -> IO Int
+randomInteger xs = (randomRIO (0, (length xs)-1))
+
+operators :: [String]
+operators = ["+", "*","==>","<=>"]
+
+signs :: [String]
+signs = ["", "-"]
+
+literals :: [String]
+literals = [ show a | a <- [1..5]]
 
 -- | This partial result only returns the first term. the implication to the second is missing
 partialResultForMissingBrackets = doParse "(1==>2) ==> (1==>3)"
@@ -131,3 +236,68 @@ exceptionForIncorrectTokens = doParse "(1<==>3)"
 
 -- | Empty list for tokens which are all partial
 emptyListForPartialTokens = parse "((1 2) (3 4))"
+
+-- =============================================================================
+-- Exercise 3 :: Time spent +- 360 min
+-- =============================================================================
+exercise3 = do
+  -- Step #1 :: Remove arrows
+  -- Step #2 :: Conversion to negation normal form
+  -- Step #3 :: Generate Truth Table
+  -- Step #4 :: Every result that is false, negate the literal
+  -- Step #5 :: Use the literals to construct the CNF
+  -- print $ convertToCNF $ getNonTruths $ nnf $ arrowfree prop
+  -- print $ invertLiterals $ getNonTruths $ nnf $ arrowfree prop
+  print $ convertToCNF $ invertLiterals $ getNonTruths $ nnf $ arrowfree prop
+  print $ parse $ convertToCNF $ invertLiterals $ getNonTruths $ nnf $ arrowfree prop
+
+checkWiki = equiv wiki1 (doAll wiki1)
+
+wiki1 :: Form
+wiki1 = doParse "+(*(1 2) 3)"
+
+doAll :: Form -> Form
+doAll = doParse . convertToCNF . invertLiterals . getNonTruths . nnf . arrowfree
+
+convertToCNF :: [Valuation] -> String
+convertToCNF v = andCNF (map ordCNF v)
+
+andCNF :: [String] -> String
+andCNF (x:xs)
+  | length xs < 2 = "+(" ++ x ++ " " ++ xs !! 0 ++ ")"
+  | otherwise = "+(" ++ x ++ " " ++ andCNF xs ++ ")"
+
+ordCNF :: Valuation -> String
+ordCNF (x:xs)
+  | length xs < 2 && snd x == True && snd (xs !! 0) == True = "*(" ++ show (fst x) ++ " " ++ show (fst (xs !! 0)) ++ ")"
+  | length xs < 2 && snd x == False && snd (xs !! 0) == True = "*(-" ++ show (fst x) ++ " " ++ show (fst (xs !! 0)) ++ ")"
+  | length xs < 2 && snd x == True && snd (xs !! 0) == False = "*(" ++ show (fst x) ++ " -" ++ show (fst (xs !! 0)) ++ ")"
+  | length xs < 2 && snd x == False && snd (xs !! 0) == False = "*(-" ++ show (fst x) ++ " -" ++ show (fst (xs !! 0)) ++ ")"
+  | length xs >= 2 && snd x == False = "*(-" ++ show (fst x) ++ " " ++ ordCNF xs ++ ")"
+  | otherwise = "*(" ++ show (fst x) ++ " " ++ ordCNF xs ++ ")"
+
+invertLiterals :: [Valuation] -> [Valuation]
+invertLiterals v = map invertLiteral v
+
+invertLiteral :: Valuation -> Valuation
+invertLiteral v = map revert v
+
+-- Revert Valuations
+revert :: (Name,Bool) -> (Name,Bool)
+revert (k,v) = if v == True then (k,False) else (k,True)
+
+-- This actually returns all valuations for False
+getNonTruths :: Form -> [Valuation]
+getNonTruths f = filter (\ v -> not $ evl v f) (allVals f)
+
+-- Define base env
+x = Prop 1
+y = Prop 2
+z = Prop 3
+
+prop = Cnj [(Dsj [x,y]),(Neg z)]
+-- prop0 = (Neg (Prop 1))
+-- prop1 = (Impl (Prop 1) (Prop 2))
+-- prop2 = (Impl (Equiv (Prop 1) (Prop 2)) (Impl (Prop 1) (Prop 3)))
+
+
