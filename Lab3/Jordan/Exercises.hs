@@ -3,6 +3,8 @@ import Data.List
 import System.Random
 import Test.QuickCheck
 import Lab3.Lecture3
+import Data.List (tails, stripPrefix)
+import Data.Maybe (catMaybes)
 
 
 -- http://intrologic.stanford.edu/notes/chapter_03.html
@@ -189,28 +191,6 @@ Too sleepy to write description will finish in the morning
 Need to add distribution when DSJ is on the outside!
 --}   
 
-distributeAgain p (Dsj xs) = Dsj (p++xs)
-distributeAgain p (Prop xs) = Cnj ((Prop xs):p)
-
-distributeRules xs (Cnj ps) = map (distributeAgain xs) ps
-distributeRules xs (Dsj ps) = map (distributeAgain xs) ps
--- distributeRules (Prop p) (Dsj ps) = sortBy sortProps (map (\(Cnj xs) -> Dsj ((Prop p):xs)) ps)
--- distributeRules (Prop p) (Dsj ps) = (map (\(Cnj xs) -> Dsj ((Prop p):xs)) ps)
--- distributeRules (Prop p) (Cnj ps) = Cnj (Prop p : ps)
-
--- distributeRules (Prop x) (Cnj z) = Cnj [Prop x, Cnj z]
-
--- distributeRules ps x =  cnf x
-
-distributeDsj fs p =  concatMap (distributeRules fs) p
--- distributeDsj fs ps =  map (\(Dsj x) -> Dsj (x) ) fs
--- distributeDsj f fs =  map (\x -> Dsj [f, x] ) fs
-
-distributeDsjNew [] [] acc = []
-distributeDsjNew [] _  acc = acc
-distributeDsjNew _ [] acc = acc
--- distributeDsjNew propositions = 
-
 sortProps (Prop x)  _ = LT 
 sortProps  _ (Prop x) = GT 
 sortProps f1 f2 = GT
@@ -223,19 +203,6 @@ filterCnj _ = False
 
 filterDsj (Dsj x) = True
 filterDsj _ = False
-
--- -- distribute' fs = distributeDsj (map cnf cnj) ps
--- --     where 
--- --         buckets = partition filterProps fs
--- --         ps = map (cnf) $ fst buckets
--- --         cnj = map (cnf) $ snd buckets
-
--- distribute fs = Dsj dis
---     where 
---         buckets = partition (not.filterCnj) fs
---         ps = map (cnf) $ fst buckets
---         cnj = map (cnf) $ snd buckets
---         dis = foldr (distributeDsj) (filter filterCnj cnj) [ps]
        
 test_cnf f = equiv  (nnf $ arrowfree $ head $ parse f) (cnf $ nnf $ arrowfree $ head $ parse f)
 
