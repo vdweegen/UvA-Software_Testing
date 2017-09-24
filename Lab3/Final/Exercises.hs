@@ -23,9 +23,9 @@ main = do
     putStrLn $ "> Exercise 3"
     exercise3
     putStrLn $ "> Exercise 4"
-    -- exercise4
+    exercise4
     putStrLn $ "> Exercise 5"
-    -- exercise5
+    exercise5
 
 -- | Exercise 1
 -- Time spent: 2 hours
@@ -241,7 +241,7 @@ exceptionForIncorrectTokens = doParse "(1<==>3)"
 -- | Empty list for tokens which are all partial
 emptyListForPartialTokens = parse "((1 2) (3 4))"
 
--- =============================================================================
+-- | ============================================================================= | ==
 -- Exercise 3 :: Time spent more than 12 hours! spent
 -- We have implemented two ways, the 'traditional way' using the truth tables as demonstrated during the workshop
 -- The other way uses a four-way conversion described in the link:
@@ -249,7 +249,7 @@ emptyListForPartialTokens = parse "((1 2) (3 4))"
 -- We use both ways and verify them against each other and the original
 -- For test input we used the wikiPedia examples which were known to be nnf
 -- Tested by verifying the truth tables and the String forms are unmatched
--- =============================================================================
+-- | ============================================================================= | ==
 wiki1, wiki2, wiki3 :: String
 wiki1 = "-+(1 2)"
 wiki2 = "+(*(1 2) 3)"
@@ -313,11 +313,11 @@ invertLiterals v = map invertLiteral v
 invertLiteral :: Valuation -> Valuation
 invertLiteral v = map revert v
 
--- Revert Valuations
+-- | Revert Valuations
 revert :: (Name,Bool) -> (Name,Bool)
 revert (k,v) = if v == True then (k,False) else (k,True)
 
--- This actually returns all valuations for False
+-- | This actually returns all valuations for False
 getNonTruths :: Form -> [Valuation]
 getNonTruths f = filter (\ v -> not $ evl v f) (allVals f)
 
@@ -360,13 +360,17 @@ uniqueMap f xs = ys
         where
             ys = nub $ map f xs
 
--- | Exercise 4
+-- | Exercise 4 ====================================================================== | ==
 -- Time spent: 1 hour on arbitrary and generators
 --             1 hour on the properties
 
 -- | Generates random formulas, base case is a Prop, we recursively call genForm with a smaller n,
 -- We could use a different function to shrink n or use a different value for the multipleNextForm
 -- which doesn't depend on n, however the mod takes care of that now
+
+-- | In order to check the correctness, we apply similar steps as the tests in Exercise 3,
+-- but now using random forms. Therefore, the property does not test if the physical implementation differs.
+-- In theory, the random function generator could generate something which complies to the CNF
 
 -- | Limited to maximum 5 due to computational constraints
 exercise4 = do
@@ -425,5 +429,6 @@ isDsj :: Form -> Bool
 isDsj (Dsj ds) = all (\d -> isProp d || isNeg d || isCnj d || isDsj d) ds
 isDsj _ = False
 
+-- | Exercise 5 - Bonus exercise
 
-
+exercise 5 = "Missing..."
