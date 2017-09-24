@@ -442,8 +442,21 @@ type Clause = [Int]
 
 exercise5 = print $ "I say hello"
 
+wiki1Input, wiki2Input, wiki3Input :: Form
+wiki1Input = doParse "+(-2 -3)"
+wiki2Input = doParse "*(+(1 3) +(2 3))"
+wiki3Input = doParse "*(1 *(+(2 4) +(2 5)))"
+
+wiki1Result, wiki2Result, wiki3Result :: Clauses
+wiki1Result = [[-2, -3]]
+wiki2Result = [[1, 3], [2, 3]]
+wiki3Result = [[1], [2, 3], [2, 5]]
+
 convertString :: String -> Clauses
-convertString = cnf2cls . convertNonTraditional . doParse
+convertString = convertCnfForm . doParse
+
+convertCnfForm :: Form -> Clauses
+convertCnfForm = cnf2cls . convertNonTraditional
 
 cnf2cls :: Form -> Clauses
 cnf2cls (Dsj []) = []
