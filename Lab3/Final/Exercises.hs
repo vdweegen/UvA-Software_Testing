@@ -448,6 +448,7 @@ isDsj _ = False
 -- | Time spent: 20 minutes => no useful output, just playing with the Forms to check how to fix it
 -- | Additional time: 120 minutes. Still not satisfied with the result, but the unautomated tests work
 
+
 type Clauses = [Clause]
 type Clause = [Int]
 
@@ -455,7 +456,7 @@ type Clause = [Int]
 wiki1Input, wiki2Input, wiki3Input :: Form
 wiki1Input = doParse "+(-2 -3)"
 wiki2Input = doParse "*(+(1 3) +(2 3))"
-wiki3Input = doParse "*(1 *(+(2 4) +(2 5)))"
+wiki3Input = doParse "*(1 *(+(2 3) +(2 5)))"
 
 variables :: String -> Int
 variables (s:tr) | isNumber s = 1 + variables tr
@@ -467,17 +468,33 @@ wiki1Result = [[-2, -3]]
 wiki2Result = [[1, 3], [2, 3]]
 wiki3Result = [[1], [2, 3], [2, 5]]
 
-exercise5 = undefined
+-- | Manual Quick Checks
+exercise5 = do
+  quickCheck prop_wiki1
+  quickCheck prop_wiki2
+  quickCheck prop_wiki3
+
+prop_wiki1 =
+  wiki1Result == (cnf2cls wiki1Input)
+
+prop_wiki2 =
+  wiki2Result == (cnf2cls wiki2Input)
+
+prop_wiki3 =
+  wiki3Result == (cnf2cls wiki3Input)
 
 convertString :: String -> Clauses
 convertString = cnf2cls . doParse
 
 cnf2cls :: Form -> Clauses
 cnf2cls (Dsj (f1:f2:[])) | (isLiteral f1) && (isLiteral f2) = [(convertLiteral f1) ++ (convertLiteral f2)]
-                         | (isLiteral f1) = zipWith (++) [(convertLiteral f1)] (cnf2cls f2)
+                         | (isLiteral f1) = zipWith (++) [convertLiteral f1] (cnf2cls f2)
+                         | (isLiteral f2) = zipWith (++) (cnf2cls f1) [convertLiteral f2]
                          | otherwise = zipWith (++) (cnf2cls f1) (cnf2cls f2)
 
 cnf2cls (Cnj (f1:f2:[])) | (isLiteral f1) && (isLiteral f2) = [convertLiteral f1, convertLiteral f2]
+                         | (isLiteral f1) = [convertLiteral f1] ++ cnf2cls f2
+                         | (isLiteral f2) = cnf2cls f1 ++ [convertLiteral f2]
                          | otherwise = cnf2cls f1 ++ cnf2cls f2
 cnf2cls (Prop a) = [[a]]
 cnf2Cls (Neg (Prop a)) = [[-1 * a]]
