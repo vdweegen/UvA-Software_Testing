@@ -265,6 +265,7 @@ checkResults :: String -> Bool
 checkResults str = equiv' [f , convertTraditional f, convertNonTraditional f]
   where f = doParse str
 
+-- | Simple equivalence checker for list of forms
 equiv' :: [Form] -> Bool
 equiv' (f1:f2:[]) = equiv f1 f2
 equiv' (f1:f2:fs) = (equiv f1 f2) && (equiv' (f2:fs))
