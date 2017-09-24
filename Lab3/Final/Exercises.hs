@@ -460,8 +460,7 @@ convertCnfForm = cnf2cls . convertNonTraditional
 
 cnf2cls :: Form -> Clauses
 cnf2cls (Dsj []) = []
-cnf2cls (Dsj (f1:f2:[])) = (cnf2cls f1) ++ (cnf2cls f2)
-
+cnf2cls (Dsj (f1:f2:[])) | (isLiteral f1) && (isLiteral f2) = [ (convertLiteral f1) ++ (convertLiteral f2)]
 cnf2cls (Cnj (f1:f2:[])) | (isLiteral f1) && (isLiteral f2) = [(convertLiteral f1), (convertLiteral f2)]
                          | otherwise = undefined
 cnf2cls (Prop a) = [[a]]
