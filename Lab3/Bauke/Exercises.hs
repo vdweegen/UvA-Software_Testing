@@ -222,16 +222,20 @@ convertString :: String -> Clauses
 convertString = cnf2cls . doParse
 
 cnf2cls :: Form -> Clauses
-cnf2cls (Dsj (l1:l2:[])) | (isLiteral l1) && (isLiteral l2) = [(convertLiteral l1) ++ (convertLiteral l2)]
-                         | otherwise = undefined
+cnf2cls (Dsj (f1:f2:[])) | (isLiteral f1) && (isLiteral f2) = [(convertLiteral f1) ++ (convertLiteral f2)]
+                         | (isLiteral f1) = [(convertLiteral f1)] ++ (convertForm f2)
+                         | otherwise = (convertForm f1) ++ (convertForm f2)
 
-cnf2cls (Cnj (l1:l2:[])) | (isLiteral l1) && (isLiteral l2) = [convertLiteral l1, convertLiteral l2]
+cnf2cls (Cnj (f1:f2:[])) | (isLiteral f1) && (isLiteral f2) = [convertLiteral f1, convertLiteral f2]
                          | otherwise = undefined
 
 convertLiteral :: Form -> Clause
 convertLiteral (Prop a) = [a]
 convertLiteral (Neg (Prop a)) = [-1 * a]
 convertLiteral _ = []
+
+convertForm :: Form -> Clauses
+convertForm _ = undefined
 
 isLiteral :: Form -> Bool
 isLiteral (Prop _) = True
