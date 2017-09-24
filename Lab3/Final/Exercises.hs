@@ -1,5 +1,6 @@
 module Lab3.Final.Exercises where
 
+import Data.Char
 import Data.List
 
 import Data.String.Utils -- cabal update; cabal install MissingH
@@ -439,47 +440,53 @@ isDsj (Dsj ds) = all (\d -> isProp d || isNeg d || isCnj d || isDsj d) ds
 isDsj _ = False
 
 -- | Exercise 5 - Bonus exercise
-type Clauses = [Clause]
-type Clause = [Int]
-
 -- | Converting the Forms was simply rewriting the 'convertTraditional'
 
 -- | In order to verify the correctness of the function we use the random form generator.
 -- All
+-- | Exercise 5 - Bonus Exercise
+-- | Time spent: 20 minutes => no useful output, just playing with the Forms to check how to fix it
+-- | Additional time: 120 minutes. Still not satisfied with the result, but the unautomated tests work
 
-exercise5 = do
-  print $ smashCL $ convertToCl $ show $ convertToCls $ cnf $ nnf $ arrowfree wiki3Input
+type Clauses = [Clause]
+type Clause = [Int]
+
 
 wiki1Input, wiki2Input, wiki3Input :: Form
 wiki1Input = doParse "+(-2 -3)"
 wiki2Input = doParse "*(+(1 3) +(2 3))"
 wiki3Input = doParse "*(1 *(+(2 4) +(2 5)))"
 
+variables :: String -> Int
+variables (s:tr) | isNumber s = 1 + variables tr
+                 | otherwise = variables tr
+
+
 wiki1Result, wiki2Result, wiki3Result :: Clauses
 wiki1Result = [[-2, -3]]
 wiki2Result = [[1, 3], [2, 3]]
-wiki3Result = [[1], [2, 4], [2, 5]]
+wiki3Result = [[1], [2, 3], [2, 5]]
 
-convertToCl :: String -> String
-convertToCl s = replace ")" "]" $ replace "+(" "[" $ replace "*(" "[" $ replace " " "," s
+exercise5 = undefined
 
-smashCL :: String -> String
-smashCL s = if (isInfixOf "[[" s == True) || (isInfixOf "]]" s == True) then do smashCL ( replace "[[" "[" $ (replace "]]" "]" s)) else "[" ++ s ++ "]"
+convertString :: String -> Clauses
+convertString = cnf2cls . doParse
 
--- | Non-Traditional Implementation using the four steps provided by the link
-convertToCls :: Form -> Form
-convertToCls = cls . nnf . arrowfree
+cnf2cls :: Form -> Clauses
+cnf2cls (Dsj (f1:f2:[])) | (isLiteral f1) && (isLiteral f2) = [(convertLiteral f1) ++ (convertLiteral f2)]
+                         | (isLiteral f1) = zipWith (++) [(convertLiteral f1)] (cnf2cls f2)
+                         | otherwise = zipWith (++) (cnf2cls f1) (cnf2cls f2)
 
-cls :: Form -> Form
-cls  = cls' . nnf . arrowfree
+cnf2cls (Cnj (f1:f2:[])) | (isLiteral f1) && (isLiteral f2) = [convertLiteral f1, convertLiteral f2]
+                         | otherwise = cnf2cls f1 ++ cnf2cls f2
+cnf2cls (Prop a) = [[a]]
+cnf2Cls (Neg (Prop a)) = [[-1 * a]]
 
-cls' :: Form -> Form
-cls' (Prop x) = Prop x
-cls' (Neg (Prop x)) = Neg (Prop x)
-cls' (Cnj fs) = Cnj (map cls' fs)
-cls' (Dsj fs)
-      | not.null $ filter (filterDsj) fs  = cls' $ Dsj ((liftDsj fs) ++ (filter (not.filterDsj) fs))
-      | not.null $ filter (filterCnj) fs  = cls' (distribute (uniqueMap cls' fs))
-      | otherwise = Dsj (uniqueMap cls' fs)
-    where
-        liftDsj fs = nub $ concatMap (\(Dsj xs) -> map (\y -> y ) xs)   (filter (filterDsj) fs)
+convertLiteral :: Form -> Clause
+convertLiteral (Prop a) = [a]
+convertLiteral (Neg (Prop a)) = [-1 * a]
+
+isLiteral :: Form -> Bool
+isLiteral (Prop _) = True
+isLiteral (Neg (Prop _)) = True
+isLiteral _ = False
