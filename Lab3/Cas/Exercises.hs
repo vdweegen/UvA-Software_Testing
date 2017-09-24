@@ -61,13 +61,13 @@ tautology :: Form -> Bool
 tautology f = all (\ v -> evl v f) (allVals f)
 
 showIssue = doEntail "*(1 2)" "+(*(1 2) 3)"
+showIssue2 = doEntail "*(1 2)" "*(3 4)"
 
 doEntail :: String -> String -> Bool
 doEntail f1 f2 = entails (doParse f1) (doParse f2)
 
 doParse :: String -> Form
 doParse = head . parse
-
 
 -- logical entailment :: check
 entails :: Form -> Form -> Bool
