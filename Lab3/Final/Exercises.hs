@@ -447,7 +447,13 @@ type Clause = [Int]
 -- All
 
 exercise5 = do
-  print $ convertToCl $ show $ convertToCls $ cnf $ nnf $ arrowfree wiki2Input
+  print $ handleConversion wiki2Input
+
+handleConversion :: Form -> Clauses
+handleConversion f = read $ (convertToCl $ (preprocess f)) :: Clauses
+
+preprocess :: Form -> String
+preprocess = show . convertToCls . cnf . nnf . arrowfree
 
 wiki1Input, wiki2Input, wiki3Input :: Form
 wiki1Input = doParse "+(-2 -3)"
