@@ -118,6 +118,10 @@ equivalenceTest =  (equiv form1 form1 == True)
 -- Generating counter examples proved to be difficult, since the parser exposed different behaviour
 -- for different kind of errors.
 -- One would expect the parser to return just the form for correct input or nothing at all for incorrect input.
+-- Perhaps a nice approach for this would be to have a signature Maybe Form
+-- This also allows for parsing an empty string, knowing it is valid tautology, instead of spreading false results
+-- Due to parsing partially correct data
+
 
 -- | This partial result only returns the first term. the implication to the second is missing
 partialResultForMissingBrackets = doParse "(1==>2) ==> (1==>3)"
