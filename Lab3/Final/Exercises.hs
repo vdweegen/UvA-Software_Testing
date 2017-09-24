@@ -323,7 +323,7 @@ revert (k,v) = if v == True then (k,False) else (k,True)
 getNonTruths :: Form -> [Valuation]
 getNonTruths f = filter (\ v -> not $ evl v f) (allVals f)
 
--- | Implementation using the four steps provided by the link
+-- | Non-Traditional Implementation using the four steps provided by the link
 convertNonTraditional :: Form -> Form
 convertNonTraditional = cnf . nnf . arrowfree
 
@@ -341,15 +341,19 @@ cnf' (Dsj fs)
     where
         liftDsj fs = nub $ concatMap (\(Dsj xs) -> map (\y -> y ) xs)   (filter (filterDsj) fs)
 
+filterDsj :: Form -> Bool
 filterDsj (Dsj x) = True
 filterDsj _ = False
 
+filterCnj :: Form -> Bool
 filterCnj (Cnj x) = True
 filterCnj _ = False
 
+filterProps :: Form -> Bool
 filterProps (Prop x) = True
 filterProps _ = False
 
+distribute :: [Form] -> Form
 distribute fs = Cnj expand'
     where
         cnjs = (filter filterCnj fs)
@@ -357,7 +361,7 @@ distribute fs = Cnj expand'
         combineCnj = sequence (map (\(Cnj x) -> x) cnjs)
         expand' = map (\cnjList ->  Dsj (nub (notConj ++ cnjList))) combineCnj
 
-
+uniqueMap :: Eq a => (a1 -> a) -> [a1] -> [a]
 uniqueMap f xs = ys
         where
             ys = nub $ map f xs
@@ -445,36 +449,9 @@ exercise5 = print $ "I say hello"
 wiki1Input, wiki2Input, wiki3Input :: Form
 wiki1Input = doParse "+(-2 -3)"
 wiki2Input = doParse "*(+(1 3) +(2 3))"
-wiki3Input = doParse "*(1 *(+(2 4) +(2 5)))"
+wiki3Input = doParse "*(1 *(+(  +(2 5)))"
 
 wiki1Result, wiki2Result, wiki3Result :: Clauses
 wiki1Result = [[-2, -3]]
 wiki2Result = [[1, 3], [2, 3]]
 wiki3Result = [[1], [2, 3], [2, 5]]
-
-convertString :: String -> Clauses
-convertString = convertCnfForm . doParse
-
-convertCnfForm :: Form -> Clauses
-convertCnfForm = cnf2cls . convertNonTraditional
-
-cnf2cls :: Form -> Clauses
-cnf2cls (Dsj []) = []
-cnf2cls (Dsj (f1:f2:[])) | (isLiteral f1) && (isLiteral f2) = [ (convertLiteral f1) ++ (convertLiteral f2)]
-cnf2cls (Cnj (f1:f2:[])) | (isLiteral f1) && (isLiteral f2) = [(convertLiteral f1), (convertLiteral f2)]
-                         | otherwise = undefined
-cnf2cls (Prop a) = [[a]]
-cnf2cls (Neg (Prop a)) = [[-1 *a]]
-
-convertLiteral :: Form -> Clause
-convertLiteral (Prop a) = [a]
-convertLiteral (Neg (Prop a)) = [-1 * a]
-convertLiteral _ = []
-
-convertForm :: Form -> Clauses
-convertForm _ = undefined
-
-isLiteral :: Form -> Bool
-isLiteral (Prop _) = True
-isLiteral (Neg (Prop _)) = True
-isLiteral _ = False
