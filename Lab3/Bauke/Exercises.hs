@@ -202,16 +202,42 @@ alwaysTrueResult = [[1, -1]]
 alwaysFalseResult = [[1],[-1]]
 nestedExpressionResult = [[1, -1], [2]]
 
+wiki1Input, wiki2Input, wiki3Input :: Form
+wiki1Input = doParse "+(-2 -3)"
+wiki2Input = doParse "*(+(1 3) +(2 3))"
+wiki3Input = doParse "*(1 *(+(2 4) +(2 5)))"
+
+wiki1Result, wiki2Result, wiki3Result :: Clauses
+wiki1Result = [[-2, -3]]
+wiki2Result = [[1, 3], [2, 3]]
+wiki3Result = [[1], [2, 3], [2, 5]]
+
 exercise5 = do
   putStr "alwaysTrue in CNF: "
   print $ alwaysTrueResult == (cnf2cls alwaysTrue)
   putStr "alwaysFalse in CNF: "
   print $ alwaysFalseResult == (cnf2cls alwaysFalse)
 
-cnf2cls :: Form -> Clauses
-cnf2cls form = undefined
+convertString :: String -> Clauses
+convertString = cnf2cls . doParse
 
-extractForms :: Form -> [Form]
-extractForms (Cnj fs) = fs
-extractForms (Dsj fs) = fs
-extractForms (Neg f) = [f]
+cnf2cls :: Form -> Clauses
+cnf2cls (Dsj (l1:l2:[])) | (isLiteral l1) && (isLiteral l2) = [(convertLiteral l1) ++ (convertLiteral l2)]
+                         | otherwise = undefined
+
+cnf2cls (Cnj (l1:l2:[])) | (isLiteral l1) && (isLiteral l2) = [convertLiteral l1, convertLiteral l2]
+                         | otherwise = undefined
+
+convertLiteral :: Form -> Clause
+convertLiteral (Prop a) = [a]
+convertLiteral (Neg (Prop a)) = [-1 * a]
+convertLiteral _ = []
+
+isLiteral :: Form -> Bool
+isLiteral (Prop _) = True
+isLiteral (Neg (Prop _)) = True
+isLiteral _ = False
+
+
+
+
