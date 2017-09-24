@@ -254,15 +254,21 @@ wiki2 = "+(*(1 2) 3)"
 wiki3 = "*(1 +(2 *(2 5)))"
 
 exercise3 = do
-  putStr "Checking results for wiki1: "
-  print $ checkResults wiki1
-  putStr "Checking results for wiki2: "
-  print $ checkResults wiki2
-  putStr "Checking results for wiki3: "
-  print $ checkResults wiki3
+  checkResults wiki1
+  checkResults wiki2
+  checkResults wiki3
 
-checkResults :: String -> Bool
-checkResults str = (checkEquivalence f) && (checkAdaption f)
+-- | Added some syntactic sugar here for printing on the console
+checkResults :: String -> IO()
+checkResults str = do
+                 putStr "Checking equivalence and rewriting for "
+                 putStr str
+                 putStr ": "
+                 print $ (checkEquivalence f) && (checkAdaption f)
+                 putStr "Traditional result: "
+                 print $ convertTraditional f
+                 putStr "Non traditional result: "
+                 print $ convertNonTraditional f
                  where f = (doParse str)
 
 checkAdaption :: Form -> Bool
