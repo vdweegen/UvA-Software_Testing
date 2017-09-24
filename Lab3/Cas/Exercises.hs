@@ -60,6 +60,15 @@ contradiction f = all (\ v -> not $ evl v f) (allVals f)
 tautology :: Form -> Bool
 tautology f = all (\ v -> evl v f) (allVals f)
 
+showIssue = doEntail "*(1 2)" "+(*(1 2) 3)"
+
+doEntail :: String -> String -> Bool
+doEntail f1 f2 = entails (doParse f1) (doParse f2)
+
+doParse :: String -> Form
+doParse = head . parse
+
+
 -- logical entailment :: check
 entails :: Form -> Form -> Bool
 entails x y = entailment (allResults x) (allResults y)
@@ -74,7 +83,6 @@ entailment (x:xs) (y:ys)
 
 allResults :: Form -> [Bool]
 allResults x = map (flip evl x) (allVals x)
-
 
 -- logical equivalence :: check
 equiv :: Form -> Form -> Bool
