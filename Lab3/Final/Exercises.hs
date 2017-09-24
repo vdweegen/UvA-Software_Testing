@@ -254,7 +254,21 @@ wiki2 = "+(*(1 2) 3)"
 wiki3 = "*(1 *(+(2 3) +(2 5)))"
 
 exercise3 = do
-  print True
+  putStr "Checking results for wiki1: "
+  print $ checkResults wiki1
+  putStr "Checking results for wiki2: "
+  print $ checkResults wiki2
+  putStr "Checking results for wiki3: "
+  print $ checkResults wiki3
+
+checkResults :: String -> Bool
+checkResults str = equiv' [f , convertTraditional f, convertNonTraditional f]
+  where f = doParse str
+
+equiv' :: [Form] -> Bool
+equiv' (f1:f2:[]) = equiv f1 f2
+equiv' (f1:f2:fs) = (equiv f1 f2) && (equiv' (f2:fs))
+
 
 -- | Traditional using using the truth tables
 convertTraditional :: Form -> Form
