@@ -274,7 +274,7 @@ checkResults str = do
                  print $ convertTraditional f
                  putStr "Non traditional result: "
                  print $ convertNonTraditional f
-                 putStr "Krak: "
+                 putStr "Threw exception with Traditional implementation: "
                  print $ convertTraditional $ doParse "+(1 2)"
                  where f = (doParse str)
 
