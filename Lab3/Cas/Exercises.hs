@@ -154,25 +154,25 @@ exercise3 = do
   -- Step #5 :: Use the literals to construct the CNF
   -- print $ convertToCNF $ getNonTruths $ nnf $ arrowfree prop
   -- print $ invertLiterals $ getNonTruths $ nnf $ arrowfree prop
-  print $ convertToCNF $ invertLiterals $ getNonTruths $ nnf $ arrowfree prop
-  print $ parse $ convertToCNF $ invertLiterals $ getNonTruths $ nnf $ arrowfree prop
+  print $ convertToCNF $ invertLiterals $ getNonTruths $ nnf $ arrowfree prop2
+  print $ parse $ convertToCNF $ invertLiterals $ getNonTruths $ nnf $ arrowfree prop2
 
 convertToCNF :: [Valuation] -> String
 convertToCNF v = andCNF (map ordCNF v)
 
 andCNF :: [String] -> String
 andCNF (x:xs)
-  | length xs < 2 = "+(" ++ x ++ " " ++ xs !! 0 ++ ")"
-  | otherwise = "+(" ++ x ++ " " ++ andCNF xs ++ ")"
+  | length xs < 2 = "*(" ++ x ++ " " ++ xs !! 0 ++ ")"
+  | otherwise = "*(" ++ x ++ " " ++ andCNF xs ++ ")"
 
 ordCNF :: Valuation -> String
 ordCNF (x:xs)
-  | length xs < 2 && snd x == True && snd (xs !! 0) == True = "*(" ++ show (fst x) ++ " " ++ show (fst (xs !! 0)) ++ ")"
-  | length xs < 2 && snd x == False && snd (xs !! 0) == True = "*(-" ++ show (fst x) ++ " " ++ show (fst (xs !! 0)) ++ ")"
-  | length xs < 2 && snd x == True && snd (xs !! 0) == False = "*(" ++ show (fst x) ++ " -" ++ show (fst (xs !! 0)) ++ ")"
-  | length xs < 2 && snd x == False && snd (xs !! 0) == False = "*(-" ++ show (fst x) ++ " -" ++ show (fst (xs !! 0)) ++ ")"
-  | length xs >= 2 && snd x == False = "*(-" ++ show (fst x) ++ " " ++ ordCNF xs ++ ")"
-  | otherwise = "*(" ++ show (fst x) ++ " " ++ ordCNF xs ++ ")"
+  | length xs < 2 && snd x == True && snd (xs !! 0) == True = "+(" ++ show (fst x) ++ " " ++ show (fst (xs !! 0)) ++ ")"
+  | length xs < 2 && snd x == False && snd (xs !! 0) == True = "+(-" ++ show (fst x) ++ " " ++ show (fst (xs !! 0)) ++ ")"
+  | length xs < 2 && snd x == True && snd (xs !! 0) == False = "+(" ++ show (fst x) ++ " -" ++ show (fst (xs !! 0)) ++ ")"
+  | length xs < 2 && snd x == False && snd (xs !! 0) == False = "+(-" ++ show (fst x) ++ " -" ++ show (fst (xs !! 0)) ++ ")"
+  | length xs >= 2 && snd x == False = "+(-" ++ show (fst x) ++ " " ++ ordCNF xs ++ ")"
+  | otherwise = "+(" ++ show (fst x) ++ " " ++ ordCNF xs ++ ")"
 
 invertLiterals :: [Valuation] -> [Valuation]
 invertLiterals v = map invertLiteral v
@@ -194,6 +194,7 @@ y = Prop 2
 z = Prop 3
 
 prop = Cnj [(Dsj [x,y]),(Neg z)]
+prop2 = Dsj [Cnj [x,y], z]           -- +(*(1 2) 3)
 -- prop0 = (Neg (Prop 1))
 -- prop1 = (Impl (Prop 1) (Prop 2))
 -- prop2 = (Impl (Equiv (Prop 1) (Prop 2)) (Impl (Prop 1) (Prop 3)))
