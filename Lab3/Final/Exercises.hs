@@ -448,7 +448,6 @@ isDsj _ = False
 -- | Time spent: 20 minutes => no useful output, just playing with the Forms to check how to fix it
 -- | Additional time: 120 minutes. Still not satisfied with the result, but the unautomated tests work
 
-
 type Clauses = [Clause]
 type Clause = [Int]
 
@@ -484,13 +483,16 @@ prop_wiki3 =
 prop_variablesMaintained =
   (formVariables wiki3Input) == (clauseVariables $ cnf2cls wiki3Input)
 
+-- | When converting, each 'AND' should have a separate term in the clauses
 prop_conjunctionsMaintained =
   (1 + formConjunctions wiki3Input) == (genericLength $ cnf2cls wiki3Input)
 
+-- | Count variable amount in Clauses
 clauseVariables :: Clauses -> Integer
 clauseVariables [] = 0
 clauseVariables (x:xs) = genericLength x + clauseVariables xs
 
+-- | Ability to extract information form the forms
 formVariables, formConjunctions, formDisjunctions :: Form -> Integer
 formVariables f = count isNumber $ show f
 formConjunctions f = count ( == '*') $ show f
@@ -506,6 +508,7 @@ count c (x:xs) | c x = 1 + count c xs
 convertString :: String -> Clauses
 convertString = cnf2cls . doParse
 
+-- | Conversion algorithm
 cnf2cls :: Form -> Clauses
 cnf2cls (Dsj (f1:f2:[])) | (isLiteral f1) && (isLiteral f2) = [(convertLiteral f1) ++ (convertLiteral f2)]
                          | (isLiteral f1) = zipWith (++) [convertLiteral f1] (cnf2cls f2)
