@@ -239,13 +239,25 @@ filterDsj _ = False
        
 
 
-
-distribute fs = Cnj expand
+distribute fs = Cnj expand'
     where 
         cnjs = (filter filterCnj fs)
         notConj = (filter (not.filterCnj)) fs 
+        combineCnj = sequence (map (\(Cnj x) -> x) cnjs)
+        -- expand = nub $  concatMap (\(Cnj x) ->  map (\xx -> Dsj (nub (xx:notConj)) ) x) cnjs
+        expand' = map (\cnjList ->  Dsj (nub (notConj ++ cnjList))) combineCnj
+
+distribute' fs = Cnj expand
+    where 
+        cnjs = (filter filterCnj fs)
+        notConj = (filter (not.filterCnj)) fs 
+        combineCnj = sequence (map (\(Cnj x) -> x) cnjs)
         expand = nub $  concatMap (\(Cnj x) ->  map (\xx -> Dsj (nub (xx:notConj)) ) x) cnjs
 
+
+uniqueMap f xs = ys
+        where
+            ys = nub $ map f xs
 
 cnf :: Form -> Form
 cnf (Prop x) = Prop x
@@ -253,8 +265,8 @@ cnf (Neg (Prop x)) = Neg (Prop x)
 cnf (Cnj fs) = Cnj (map cnf (sortBy sortProps fs))
 cnf (Dsj fs) 
       | not.null $ filter (filterDsj) fs  = cnf $ Dsj ((liftDsj fs) ++ (filter (not.filterDsj) fs))
-      | not.null $ filter (filterCnj) fs  = cnf (distribute (map cnf fs))
-      | otherwise = Dsj (map cnf fs)
+      | not.null $ filter (filterCnj) fs  = cnf (distribute (uniqueMap cnf fs))
+      | otherwise = Dsj (uniqueMap cnf fs)
     where
         ffs = sortBy sortProps fs
         liftDsj fs = nub $ concatMap (\(Dsj xs) -> map (\y -> y ) xs)   (filter (filterDsj) fs)
