@@ -141,6 +141,10 @@ exercise8 = do
 exercise9 = do
   print()
 
+-- basic Show definition
+instance Show Statement where
+  show s = ""
+
 -- =============================================================================
 -- Exercise 10 :: Time spent +-
 -- =============================================================================
