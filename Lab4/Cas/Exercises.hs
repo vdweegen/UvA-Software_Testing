@@ -2,8 +2,9 @@ module Lab4 where
 
 import Data.List
 import System.Random
-import Lab4.SetOrd
 import Test.QuickCheck
+import Lab4.SetOrd
+import Lab4.Lecture4
 
 -- Define Main --
 main = do
