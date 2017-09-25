@@ -118,7 +118,9 @@ r @@ s =
   nub [ (x,z) | (x,y) <- r, (w,z) <- s, y == w ]
 
 trClos :: Ord a => Rel a -> Rel a
-trClos x = x
+trClos r = if r == transitive then transitive else trClos transitive
+  where transitive = nub $ (r ++ (r@@r))
+
 
 -- =============================================================================
 -- Exercise 7 :: Time spent +-
