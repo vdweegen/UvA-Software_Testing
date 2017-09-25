@@ -108,8 +108,8 @@ symClos = sort . nub . foldr (\(a,b) x -> (a,b):(b,a):x) []
 -- =============================================================================
 exercise6 = do
   let ex6list = [(1,2),(2,3),(3,4)]  -- should give [(1,2),(1,3),(1,4),(2,3),(2,4),(3,4)].
-  print $ ex6list
-  print $ ex6list @@ ex6list
+  -- print $ ex6list
+  -- print $ ex6list @@ ex6list
   print $ trClos ex6list
 
 infixr 5 @@
