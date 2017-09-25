@@ -120,7 +120,6 @@ trClos :: Ord a => Rel a -> Rel a
 trClos r = if r == transitive then transitive else trClos transitive
   where transitive = sort $ nub $ (r ++ (r@@r))
 
-
 -- =============================================================================
 -- Exercise 7 :: Time spent +-
 -- =============================================================================
