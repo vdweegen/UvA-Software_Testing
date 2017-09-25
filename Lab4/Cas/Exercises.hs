@@ -2,10 +2,9 @@ module Lab4 where
 
 import Data.List
 import System.Random
-
 import Lab4.SetOrd
-
 import Test.QuickCheck
+
 -- Define Main --
 main = do
     putStrLn $ "===================="
