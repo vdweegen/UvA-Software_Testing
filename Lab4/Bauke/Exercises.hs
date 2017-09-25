@@ -42,7 +42,8 @@ exercise1 = print ()
 
 
 -- =============================================================================
--- Exercise 2 :: Time spent +-
+-- Exercise 2 :: Time spent +- 15 minutes
+-- Simly took the random form generator from Lab 3 and added the Set part
 -- =============================================================================
 exercise2 = randomInt >>= (\n -> randomIntegers n)
 
@@ -58,7 +59,8 @@ randomInt :: IO Int
 randomInt = randomRIO (0, 100)
 
 -- =============================================================================
--- Exercise 3 :: Time spent +-
+-- Exercise 3 :: Time spent +- 30 minutes
+-- Re-used the quickCheck MonadicIO from Lab 3, als added the properties
 -- =============================================================================
 exercise3 = do
   quickCheck prop_intersectionLength
@@ -102,10 +104,9 @@ validateDifferenceLength n = do
   ys <- randomSet n
   return $ (size xs) >= (size (difference xs ys))
 
+-- | Custom size which returns the amounf of items in a set
 size :: Ord a => Set a -> Int
 size (Set xs) = length xs
-
-
 
 -- =============================================================================
 -- Exercise 4 :: Time spent +-
@@ -114,28 +115,105 @@ exercise4 = do
   print()
 
 -- =============================================================================
--- Exercise 5 :: Time spent +-
+-- Exercise 5 :: Time spent +- 10 minutes
+-- Simply a recursive concatenation of the lists
+-- Used sample exercise along with one with two equal terms to show no duplicates in a set
 -- =============================================================================
+type Rel a = [(a,a)]
+
 exercise5 = do
-  print()
+  putStr "Example is correct: "
+  print $ [(1,2),(2,1),(2,3),(3,2),(3,4),(4,3)] == symClos [(1,2),(2,3),(3,4)]
+  putStr "No duplicates for equal terms: "
+  print $ [(1,1)] == symClos [(1,1)]
+
+symClos :: Ord a => Rel a -> Rel a
+symClos [] = []
+symClos ((a,b):xs) = nub $ ((a,b):(b,a):(symClos xs))
 
 -- =============================================================================
--- Exercise 6 :: Time spent +-
+-- Exercise 6 :: Time spent +- 30 minutes
+-- Same loop recursion utilizing the infixr operation
+-- However, this could be solved using the fix / fp' from the workshop!
 -- =============================================================================
+inputRelation = [(1,2),(2,3),(3,4)]
+expectedClosure = [(1,2),(1,3),(1,4),(2,3),(2,4),(3,4)]
+
 exercise6 = do
-  print()
+  putStr "Expecting transitive closure to be correct: "
+  print $ expectedClosure == (trClos inputRelation)
+
+infixr 5 @@
+(@@) :: Eq a => Rel a -> Rel a -> Rel a
+r @@ s =
+  nub [(x,z) | (x,y) <- r, (w,z) <- s, y == w]
+
+trClos :: Ord a => Rel a -> Rel a
+trClos xs | xs == result = sort xs
+          | otherwise = trClos result
+          where result = nub $ xs ++ (xs @@ xs)
 
 -- =============================================================================
--- Exercise 7 :: Time spent +-
+-- Exercise 7 :: Time spent +- 10 minutes
+-- Adding a simple (hardly randomized) property to test
 -- =============================================================================
 exercise7 = do
-  print()
+  quickCheck prop_unchanged
+
+-- | For any closure with non-different fields, the output is the same
+prop_unchanged :: Int -> Bool
+prop_unchanged n =
+  (a == trClos a) && (a == symClos a)
+  where a = [(n,n)]
 
 -- =============================================================================
--- Exercise 8 :: Time spent +-
+-- Exercise 8 :: Time spent +- 60 minutes
+-- Didn't even try manually solving
+-- Relied on the quickCheck generator to generate an example every time
+-- Keyed in the random generators + quickCheck property
+-- Took some time to fix the syntactic sugar of the nested do loops
 -- =============================================================================
 exercise8 = do
-  print()
+  quickCheck prop_checkCompare
+
+prop_checkCompare n = monadicIO $ do
+  result <- run (checkComparison n)
+  assert (result)
+
+checkComparison :: Int -> IO Bool
+checkComparison n = do
+  rels <- randomRelations n
+  let stClos = symTrClos rels
+  let tsClos = trSymClos rels
+  if stClos /= tsClos
+  then do
+    putStr "Error when checking: "
+    print rels
+    putStr "symmetric transitive: "
+    print stClos
+    putStr "transitive symmetric: "
+    print tsClos
+    return False
+  else return True
+
+-- | Generate some random test inptu
+randomRelations :: Int -> IO (Rel Int)
+randomRelations n = sequence [ randomRelation n| a <- [1..n]]
+
+-- | Some random mapping from (a,b)
+randomRelation :: Int -> IO (Int, Int)
+randomRelation n = do
+            a <- randomRIO (0, n)
+            b <- randomRIO (0, n)
+            return $ (a,b)
+
+-- | First transitive closure, then symmetric
+symTrClos :: Ord a => Rel a -> Rel a
+symTrClos = symClos . trClos
+
+-- | First symmetric, then transitive closure
+trSymClos :: Ord a => Rel a -> Rel a
+trSymClos = trClos . symClos
 
 -- =============================================================================
 -- Exercise 9 :: Time spent +-
