@@ -94,7 +94,8 @@ exercise4 = do
 -- Exercise 5 :: Time spent +-
 -- =============================================================================
 exercise5 = do
-  print $ symClos [(1,2),(2,3),(3,4)]
+  let ex5list = [(1,2),(2,3),(3,4)] -- should give [(1,2),(2,1),(2,3),(3,2),(3,4),(4,3)]
+  print $ symClos ex5list
 
 type Rel a = [(a,a)]
 
