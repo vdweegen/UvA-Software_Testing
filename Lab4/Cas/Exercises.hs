@@ -107,7 +107,18 @@ symClos = foldr (\(a,b) x -> (a,b):(b,a):x) []
 -- Exercise 6 :: Time spent +-
 -- =============================================================================
 exercise6 = do
-  print()
+  let ex6list = [(1,2),(2,3),(3,4)]  -- should give [(1,2),(1,3),(1,4),(2,3),(2,4),(3,4)].
+  print $ ex6list
+  print $ ex6list @@ ex6list
+  print $ trClos ex6list
+
+infixr 5 @@
+(@@) :: Eq a => Rel a -> Rel a -> Rel a
+r @@ s =
+  nub [ (x,z) | (x,y) <- r, (w,z) <- s, y == w ]
+
+trClos :: Ord a => Rel a -> Rel a
+trClos x = x
 
 -- =============================================================================
 -- Exercise 7 :: Time spent +-
