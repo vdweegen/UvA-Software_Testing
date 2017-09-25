@@ -43,7 +43,18 @@ exercise1 = do
 -- Exercise 2 :: Time spent +-
 -- =============================================================================
 exercise2 = do
-  print()
+  x <- set
+  print x
+
+-- 'Borrowed from Lecture2'
+getRandomInt :: Int -> IO Int
+getRandomInt n = getStdRandom (randomR (0,n))
+
+set :: IO (Set Int)
+set = do
+  p <- getStdGen                    -- used to randomly pick an item
+  x <- getRandomInt 100             -- get a random int
+  return $ list2set $ take x (randomRs (-500, 500) p)
 
 -- =============================================================================
 -- Exercise 3 :: Time spent +-
