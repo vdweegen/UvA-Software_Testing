@@ -101,7 +101,7 @@ type Rel a = [(a,a)]
 
 symClos :: Ord a => Rel a -> Rel a
  -- not sure if we should add 'sort.' before foldr, since the assignment states 'sorted'
-symClos = foldr (\(a,b) x -> (a,b):(b,a):x) []
+symClos = sort $ nub $ foldr (\(a,b) x -> (a,b):(b,a):x) []
 
 -- =============================================================================
 -- Exercise 6 :: Time spent +-
@@ -119,7 +119,7 @@ r @@ s =
 
 trClos :: Ord a => Rel a -> Rel a
 trClos r = if r == transitive then transitive else trClos transitive
-  where transitive = nub $ (r ++ (r@@r))
+  where transitive = sort $ nub $ (r ++ (r@@r))
 
 
 -- =============================================================================
