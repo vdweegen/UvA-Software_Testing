@@ -84,7 +84,7 @@ difference (Set xs) (Set ys) = (Set ((\\) xs ys))
 
 prop_intersectionLength (Positive n) = monadicIO $ do
   result <- run $ validateIntersectionLength n
-  assert (True == result)
+  assert (result)
 
 validateIntersectionLength :: Int -> IO Bool
 validateIntersectionLength n = do
@@ -94,7 +94,7 @@ validateIntersectionLength n = do
 
 prop_differenceLength (Positive n) = monadicIO $ do
   result <- run $ validateDifferenceLength n
-  assert (True == result)
+  assert (result)
 
 validateDifferenceLength :: Int -> IO Bool
 validateDifferenceLength n = do
