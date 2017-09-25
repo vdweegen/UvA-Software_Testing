@@ -93,8 +93,8 @@ exercise4 = do
 -- Exercise 5 :: Time spent +-
 -- =============================================================================
 exercise5 = do
-  let ex5list = [(1,2),(2,3),(3,4)] -- should give [(1,2),(2,1),(2,3),(3,2),(3,4),(4,3)]
-  print $ symClos ex5list
+  let list = [(1,2),(2,3),(3,4)] -- should give [(1,2),(2,1),(2,3),(3,2),(3,4),(4,3)]
+  print $ symClos list
 
 type Rel a = [(a,a)]
 
@@ -105,10 +105,10 @@ symClos = sort . nub . foldr (\(a,b) x -> (a,b):(b,a):x) []
 -- Exercise 6 :: Time spent +-
 -- =============================================================================
 exercise6 = do
-  let ex6list = [(1,2),(2,3),(3,4)]  -- should give [(1,2),(1,3),(1,4),(2,3),(2,4),(3,4)].
-  -- print $ ex6list
-  -- print $ ex6list @@ ex6list
-  print $ trClos ex6list
+  let list = [(1,2),(2,3),(3,4)]  -- should give [(1,2),(1,3),(1,4),(2,3),(2,4),(3,4)].
+  -- print $ list
+  -- print $ list @@ list
+  print $ trClos list
 
 infixr 5 @@
 (@@) :: Eq a => Rel a -> Rel a -> Rel a
@@ -129,7 +129,10 @@ exercise7 = do
 -- Exercise 8 :: Time spent +-
 -- =============================================================================
 exercise8 = do
-  print()
+  let list = [(1,2),(2,3),(3,4)]
+  print $ symClos $ trClos list
+  print $ trClos $ symClos list
+  print $ (symClos $ trClos list) == (trClos $ symClos list)
 
 -- =============================================================================
 -- Exercise 9 :: Time spent +-
