@@ -94,7 +94,13 @@ exercise4 = do
 -- Exercise 5 :: Time spent +-
 -- =============================================================================
 exercise5 = do
-  print()
+  print $ symClos [(1,2),(2,3),(3,4)]
+
+type Rel a = [(a,a)]
+
+symClos :: Ord a => Rel a -> Rel a
+ -- not sure if we should add 'sort.' before foldr, since the assignment states 'sorted'
+symClos = foldr (\(a,b) x -> (a,b):(b,a):x) []
 
 -- =============================================================================
 -- Exercise 6 :: Time spent +-
