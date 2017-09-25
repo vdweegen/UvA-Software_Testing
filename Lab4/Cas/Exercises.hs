@@ -100,7 +100,6 @@ exercise5 = do
 type Rel a = [(a,a)]
 
 symClos :: Ord a => Rel a -> Rel a
- -- not sure if we should add 'sort.' before foldr, since the assignment states 'sorted'
 symClos = sort . nub . foldr (\(a,b) x -> (a,b):(b,a):x) []
 
 -- =============================================================================
