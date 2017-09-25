@@ -56,11 +56,34 @@ set = do
   x <- getRandomInt 100             -- get a random int
   return $ list2set $ take x (randomRs (-500, 500) p)
 
+
 -- =============================================================================
 -- Exercise 3 :: Time spent +-
 -- =============================================================================
 exercise3 = do
-  print()
+  x <- set
+  y <- set
+  print $ x
+  print $ y
+  print $ intersectionSet x y
+  print $ differenceSet x y
+
+-- little helper
+set2list :: Ord a => Set a -> [a]
+set2list (Set []) = []
+set2list (Set (x:xs)) = x : set2list (Set xs)
+
+intersectionSet :: (Ord a) => Set a -> Set a -> Set a
+intersectionSet (Set []) set2 = Set []
+intersectionSet set1 (Set []) = Set []
+intersectionSet set1 set2 = list2set ((set2list set1) `intersect` (set2list set2))
+
+differenceSet :: (Ord a) => Set a -> Set a -> Set a
+differenceSet (Set []) set2 = set2
+differenceSet set1 (Set []) = Set []
+differenceSet set1 set2 = list2set ((set2list set1) \\ (set2list set2))
+
+
 -- =============================================================================
 -- Exercise 4 :: Time spent +-
 -- =============================================================================
