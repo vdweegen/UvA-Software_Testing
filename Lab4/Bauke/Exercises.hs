@@ -197,9 +197,26 @@ prop_unchanged n =
 -- Keyed in the random generators + quickCheck property
 -- Took some time to fix the syntactic sugar of the nested do loops
 -- Note: Intentionally returns TRUE on both occasions, simply to not 'break' the loop on the first error
+-- Looking at the printed counter examples, one can immediately see why the transitive closure of the
+-- symmetric closure returns more items than the symmetric closure of the transitive closure
+-- The symmetric closure of a (a,b) results in both (a,b) and (b,a)
+-- When mapping the transitivity, a relation from (a,a) and (b,b) is then applied.
+-- The transitive closure of (a,b) is still (a,b). Making that symmetric
+-- Will result in only (a,b) and (b,a). An example is shown below
 -- =============================================================================
 exercise8 = do
   quickCheckWith stdArgs {maxSize = 10} prop_checkCompare
+  simpleCounterExample
+
+
+simpleCounterExample :: IO ()
+simpleCounterExample = do
+    let relation = [(0,1)]
+    putStr "Simple counter example: "
+    print relation
+    let stClos = symTrClos relation
+    let tsClos = trSymClos relation
+    putStrLn $ show stClos ++ " /= " ++ show tsClos
 
 prop_checkCompare n = monadicIO $ do
   result <- run (checkComparison n)
