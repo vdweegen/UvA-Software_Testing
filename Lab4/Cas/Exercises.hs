@@ -112,6 +112,7 @@ isIntersection (Set (x:xs)) s2 s3
 -- test difference (all items in set a should not be in set b)
 isDifference :: Ord a => Set a -> Set a -> Set a -> Bool
 isDifference _ (Set []) _ = True
+isDifference (Set []) _ _ = True
 isDifference s (Set (x:xs)) s3
   | inSet x s = isDifference s (Set xs) s3
   | not(inSet x s) && inSet x s3 = isDifference s (Set xs) s3
