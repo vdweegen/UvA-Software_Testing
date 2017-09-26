@@ -200,23 +200,21 @@ prop_unchanged n =
 -- Looking at the printed counter examples, one can immediately see why the transitive closure of the
 -- symmetric closure returns more items than the symmetric closure of the transitive closure
 -- The symmetric closure of a (a,b) results in both (a,b) and (b,a)
--- When mapping the transitivity, a relation from (a,a) and (b,b) is then applied.
+-- When mapping the transitivity on this result, relations from (a,a) and (b,b) are found.
 -- The transitive closure of (a,b) is still (a,b). Making that symmetric
--- Will result in only (a,b) and (b,a). An example is shown below
+-- Will result in only (a,b) and (b,a). This specific example added below
 -- =============================================================================
 exercise8 = do
   quickCheckWith stdArgs {maxSize = 10} prop_checkCompare
   simpleCounterExample
 
-
 simpleCounterExample :: IO ()
 simpleCounterExample = do
     let relation = [(0,1)]
-    putStr "Simple counter example: "
-    print relation
-    let stClos = symTrClos relation
-    let tsClos = trSymClos relation
-    putStrLn $ show stClos ++ " /= " ++ show tsClos
+    putStrLn $ "Simple counter example: " ++ show relation
+    let stc = symTrClos relation
+    let rsc = trSymClos relation
+    putStrLn $ show stc ++ " /= " ++ show rsc
 
 prop_checkCompare n = monadicIO $ do
   result <- run (checkComparison n)
