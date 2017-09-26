@@ -45,7 +45,7 @@ exercise1 = print ()
 -- Exercise 2 :: Time spent +- 15 minutes
 -- Simly took the random form generator from Lab 3 and added the Set part
 -- =============================================================================
-exercise2 = randomInt >>= (\n -> randomIntegers n)
+exercise2 = randomInt 100 >>= (\n -> randomIntegers n)
 
 -- | Set of maximum n items
 randomSet :: Int -> IO (Set Int)
@@ -54,10 +54,10 @@ randomSet n = do
                 return $ Set (nub xs)
 
 randomIntegers :: Int -> IO [Int]
-randomIntegers n = sequence [ randomInt | a <- [1..n]]
+randomIntegers n = sequence [ randomInt 100 | a <- [1..n]]
 
-randomInt :: IO Int
-randomInt = randomRIO (0, 100)
+randomInt :: Int -> IO Int
+randomInt n = randomRIO (0, n)
 
 -- =============================================================================
 -- Exercise 3 :: Time spent +- 30 minutes
@@ -192,13 +192,14 @@ prop_unchanged n =
 
 -- =============================================================================
 -- Exercise 8 :: Time spent +- 60 minutes
--- Didn't even try manually solving
+-- Didn't even try to manually find counter examples
 -- Relied on the quickCheck generator to generate an example every time
 -- Keyed in the random generators + quickCheck property
 -- Took some time to fix the syntactic sugar of the nested do loops
+-- Note: Intentionally returns TRUE on both occasions, simply to not 'break' the loop on the first error
 -- =============================================================================
 exercise8 = do
-  quickCheck prop_checkCompare
+  quickCheckWith stdArgs {maxSize = 10} prop_checkCompare
 
 prop_checkCompare n = monadicIO $ do
   result <- run (checkComparison n)
@@ -217,20 +218,20 @@ checkComparison n = do
     print stClos
     putStr "transitive symmetric: "
     print tsClos
-    return False
+    return True
   else return True
 
 -- | Generate some random values composing a set of maximum n elements
 randomRelations :: Int -> IO (Rel Int)
 randomRelations n = do
-    rels <- sequence [ randomRelation n| a <- [1..n]]
+    rels <- sequence [ randomRelation n | a <- [1..n]]
     return $ nub rels
 
 -- | Some random mapping from (a,b)
 randomRelation :: Int -> IO (Int, Int)
 randomRelation n = do
-            a <- randomRIO (0, n)
-            b <- randomRIO (0, n)
+            a <- randomInt n
+            b <- randomInt n
             return $ (a,b)
 
 -- | First transitive closure, then symmetric
