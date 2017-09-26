@@ -65,10 +65,25 @@ set = do
 exercise3 = do
   x <- set
   y <- set
+  z <- set
+  putStrLn "Three Random Lists, x,y,z"
   print $ x
   print $ y
-  print $ intersectionSet x y
-  print $ differenceSet x y
+  print $ z
+  putStrLn "Intersection of x and y:"
+  let intersection = intersectionSet x y
+  print $ intersection
+  putStrLn "isIntersection intersection x y"
+  print $ isIntersection intersection x y
+  putStrLn "isIntersection intersection x z"
+  print $ isIntersection intersection x z
+  putStrLn "Difference of x and y:"
+  let difference = differenceSet x y
+  print $ difference
+  putStrLn "isDifference difference x y"
+  print $ isDifference difference x y
+  putStrLn "isDifference difference x z"
+  print $ isDifference difference x z
 
 -- little helper
 set2list :: Ord a => Set a -> [a]
@@ -85,6 +100,20 @@ differenceSet (Set []) set2 = set2
 differenceSet set1 (Set []) = Set []
 differenceSet set1 set2 = list2set ((set2list set1) \\ (set2list set2))
 
+-- test intersection (all items should be in both sets)
+isIntersection :: Ord a => Set a -> Set a -> Set a -> Bool
+isIntersection (Set []) _ _ = True
+isIntersection (Set (x:xs)) s2 s3
+  | inSet x s2 && inSet x s3 = isIntersection (Set xs) s2 s3
+  | otherwise = False
+
+-- test difference (all items in set a should not be in set b)
+isDifference :: Ord a => Set a -> Set a -> Set a -> Bool
+isDifference _ (Set []) _ = True
+isDifference s (Set (x:xs)) s3
+  | inSet x s = isDifference s (Set xs) s3
+  | not(inSet x s) && inSet x s3 = isDifference s (Set xs) s3
+  | otherwise = False
 
 -- =============================================================================
 -- Exercise 4 :: Time spent +-
