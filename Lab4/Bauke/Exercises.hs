@@ -47,10 +47,11 @@ exercise1 = print ()
 -- =============================================================================
 exercise2 = randomInt >>= (\n -> randomIntegers n)
 
+-- | Set of maximum n items
 randomSet :: Int -> IO (Set Int)
 randomSet n = do
                 xs <- randomIntegers n
-                return $ Set xs
+                return $ Set (nub xs)
 
 randomIntegers :: Int -> IO [Int]
 randomIntegers n = sequence [ randomInt | a <- [1..n]]
@@ -159,6 +160,29 @@ trClos xs | xs == result = sort xs
 -- =============================================================================
 exercise7 = do
   quickCheck prop_unchanged
+  quickCheck prop_initialRelations
+
+-- | All elements in the original set are present in the closure
+prop_initialRelations n = monadicIO $ do
+  result <- run (checkContent n)
+  assert (result)
+
+checkContent :: Int -> IO Bool
+checkContent n = do
+  rels <- randomRelations n
+  let sym = symClos rels
+  if null $ (\\) rels sym
+  then return True
+  else do
+    putStr "Input set: "
+    print rels
+    putStr "Symmettric closure: "
+    print $ sym
+    putStr "Difference between: "
+    print $ (\\) rels sym
+    return False
+
+
 
 -- | For any closure with non-different fields, the output is the same
 prop_unchanged :: Int -> Bool
@@ -196,9 +220,11 @@ checkComparison n = do
     return False
   else return True
 
--- | Generate some random test inptu
+-- | Generate some random values composing a set of maximum n elements
 randomRelations :: Int -> IO (Rel Int)
-randomRelations n = sequence [ randomRelation n| a <- [1..n]]
+randomRelations n = do
+    rels <- sequence [ randomRelation n| a <- [1..n]]
+    return $ nub rels
 
 -- | Some random mapping from (a,b)
 randomRelation :: Int -> IO (Int, Int)
