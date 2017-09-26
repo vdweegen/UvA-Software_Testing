@@ -38,6 +38,8 @@ main = do
 
 exercise1 = do
   print()
+-- how can one test operations on list comprehensions that simulate infinity?
+-- 
 
 -- =============================================================================
 -- Exercise 2 :: Time spent +-
