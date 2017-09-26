@@ -63,27 +63,29 @@ set = do
 -- Exercise 3 :: Time spent +-
 -- =============================================================================
 exercise3 = do
-  x <- set
-  y <- set
-  z <- set
-  putStrLn "Three Random Lists, x,y,z"
-  print $ x
-  print $ y
-  print $ z
-  putStrLn "Intersection of x and y:"
-  let intersection = intersectionSet x y
-  print $ intersection
-  putStrLn "isIntersection intersection x y"
-  print $ isIntersection intersection x y
-  putStrLn "isIntersection intersection x z"
-  print $ isIntersection intersection x z
-  putStrLn "Difference of x and y:"
-  let difference = differenceSet x y
-  print $ difference
-  putStrLn "isDifference difference x y"
-  print $ isDifference difference x y
-  putStrLn "isDifference difference x z"
-  print $ isDifference difference x z
+  -- x <- set
+  -- y <- set
+  -- z <- set
+  -- putStrLn "Three Random Lists, x,y,z"
+  -- print $ x
+  -- print $ y
+  -- print $ z
+  -- putStrLn "Intersection of x and y:"
+  -- let intersection = intersectionSet x y
+  -- print $ intersection
+  -- putStrLn "isIntersection intersection x y"
+  -- print $ isIntersection intersection x y
+  -- putStrLn "isIntersection intersection x z"
+  -- print $ isIntersection intersection x z
+  -- putStrLn "Difference of x and y:"
+  -- let difference = differenceSet x y
+  -- print $ difference
+  -- putStrLn "isDifference difference x y"
+  -- print $ isDifference difference x y
+  -- putStrLn "isDifference difference x z"
+  -- print $ isDifference difference x z
+  test 1 100 set intersectionSet isIntersection
+  test 1 100 set differenceSet isDifference
 
 -- little helper
 set2list :: Ord a => Set a -> [a]
@@ -114,6 +116,18 @@ isDifference s (Set (x:xs)) s3
   | inSet x s = isDifference s (Set xs) s3
   | not(inSet x s) && inSet x s3 = isDifference s (Set xs) s3
   | otherwise = False
+
+test :: Integer -> Integer -> IO (Set Int) -> (Set Int -> Set Int -> Set Int)
+  -> (Set Int -> Set Int -> Set Int -> Bool) -> IO ()
+test k n i f r =
+  if k == n then
+    print (show n ++ " tests passed")
+  else do
+    s1 <- i
+    s2 <- i
+    if r (f s1 s2) s1 s2 then
+      do test (k+1) n i f r
+    else error ("[" ++ show s1 ++ "," ++ show s2 ++ "] failed after " ++ (show k) ++ " attempts")
 
 -- =============================================================================
 -- Exercise 4 :: Time spent +-
