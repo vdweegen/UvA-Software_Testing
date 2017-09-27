@@ -12,25 +12,25 @@ main = do
     putStrLn $ "Assignment 4 / Lab 4"
     putStrLn $ "===================="
     putStrLn $ "> Exercise 1"
-    exercise1
+    -- exercise1
     putStrLn $ "> Exercise 2"
-    exercise2
+    -- exercise2
     putStrLn $ "> Exercise 3"
-    exercise3
+    -- exercise3
     putStrLn $ "> Exercise 4"
-    exercise4
+    -- exercise4
     putStrLn $ "> Exercise 5"
-    exercise5
+    -- exercise5
     putStrLn $ "> Exercise 6"
-    exercise6
+    -- exercise6
     putStrLn $ "> Exercise 7"
-    exercise7
+    -- exercise7
     putStrLn $ "> Exercise 8"
     exercise8
     putStrLn $ "> Exercise 9"
-    exercise9
+    -- exercise9
     putStrLn $ "> Exercise 10"
-    exercise10
+    -- exercise10
 
 -- =============================================================================
 -- Exercise 1 :: Time spent: +-
@@ -170,11 +170,22 @@ getRelations (Set (x:xs)) (Set (y:ys)) = (x,y) : getRelations (list2set xs) (lis
 -- =============================================================================
 -- Exercise 8 :: Time spent +-
 -- =============================================================================
+
+-- The symmetric closure of a transitive closure of a set cannot be the same as
+-- a transitive closure of a symmetric closure due to the fact that (even for
+-- a single relation) a symmetric closure required that (a <=> b) where a
+-- transitive close only requires (a => b) meaning that a set of relations the
+-- follow from a symmetric close is always larger than a transitive closure.
+
+-- Three simple examples that disprove the statement are given below
+
 exercise8 = do
-  let list = [(1,2),(2,3),(3,4)]
-  print $ symClos $ trClos list
-  print $ trClos $ symClos list
+  let list = [(1,2)]
+  let list2 = [(1,2),(2,3)]
+  let list3 = [(1,2),(2,3),(3,4)]
   print $ (symClos $ trClos list) == (trClos $ symClos list)
+  print $ (symClos $ trClos list2) == (trClos $ symClos list2)
+  print $ (symClos $ trClos list3) == (trClos $ symClos list3)
 
 -- =============================================================================
 -- Exercise 9 :: Time spent +-
