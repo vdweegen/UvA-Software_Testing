@@ -3,6 +3,7 @@ module Lab4 where
 import Data.List
 import System.Random
 import Test.QuickCheck
+import Test.QuickCheck.Monadic
 import Lab4.SetOrd
 import Lab4.Lecture4
 
@@ -186,6 +187,26 @@ exercise8 = do
   print $ (symClos $ trClos list) == (trClos $ symClos list)
   print $ (symClos $ trClos list2) == (trClos $ symClos list2)
   print $ (symClos $ trClos list3) == (trClos $ symClos list3)
+  quickCheckResult prop_checkCompare
+  -- verboseCheckResult prop_checkCompare
+
+prop_checkCompare n = monadicIO $ do
+  result <- run (checkComparison n)
+  assert (result)
+
+checkComparison :: Positive Int -> IO Bool
+checkComparison (Positive n) = do
+  a <- fixedLengthSet n
+  b <- fixedLengthSet n
+  let list = getRelations a b
+  if (symClos $ trClos list) == (trClos $ symClos list) && (list /= list)
+  then do
+    -- print $ list
+    -- print $ symClos $ trClos list
+    -- print $ trClos $ symClos list
+    return False
+  else return True
+
 
 -- =============================================================================
 -- Exercise 9 :: Time spent +-
