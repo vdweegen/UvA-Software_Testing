@@ -79,12 +79,12 @@ fib = Seq [Ass "x" (I 0), Ass "y" (I 1),
                    Ass "y" (Add (V "z") (V "y")),
                    Ass "n" (Subtr (V "n") (I 1))])]
 
-run :: [(Var,Integer)] -> Statement -> [Var] -> [Integer]
-run xs program vars =
-  exec program (updates initEnv xs) $$
-    \ env -> map (\c -> eval c env) (map V vars)
+-- run :: [(Var,Integer)] -> Statement -> [Var] -> [Integer]
+-- run xs program vars =
+--   exec program (updates initEnv xs) $$
+--     \ env -> map (\c -> eval c env) (map V vars)
 
-runFib n = run [("n",n)] fib ["x"]
+-- runFib n = run [("n",n)] fib ["x"]
 
 while :: (a -> Bool) -> (a -> a) -> a -> a
 while = until . (not.)
