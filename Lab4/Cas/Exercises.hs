@@ -39,7 +39,7 @@ main = do
 exercise1 = do
   print()
 -- how can one test operations on list comprehensions that simulate infinity?
--- 
+--
 
 -- =============================================================================
 -- Exercise 2 :: Time spent +-
@@ -63,27 +63,6 @@ set = do
 -- Exercise 3 :: Time spent +-
 -- =============================================================================
 exercise3 = do
-  -- x <- set
-  -- y <- set
-  -- z <- set
-  -- putStrLn "Three Random Lists, x,y,z"
-  -- print $ x
-  -- print $ y
-  -- print $ z
-  -- putStrLn "Intersection of x and y:"
-  -- let intersection = intersectionSet x y
-  -- print $ intersection
-  -- putStrLn "isIntersection intersection x y"
-  -- print $ isIntersection intersection x y
-  -- putStrLn "isIntersection intersection x z"
-  -- print $ isIntersection intersection x z
-  -- putStrLn "Difference of x and y:"
-  -- let difference = differenceSet x y
-  -- print $ difference
-  -- putStrLn "isDifference difference x y"
-  -- print $ isDifference difference x y
-  -- putStrLn "isDifference difference x z"
-  -- print $ isDifference difference x z
   test 1 100 set intersectionSet isIntersection
   test 1 100 set differenceSet isDifference
 
