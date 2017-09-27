@@ -65,13 +65,16 @@ fixedLengthSet n = do
   x <- getRandomInt 100             -- get a random int
   return $ list2set $ take n $ nub (randomRs (0, 500) p)
 
-
 -- =============================================================================
 -- Exercise 3 :: Time spent +-
 -- =============================================================================
 exercise3 = do
   test 1 100 set intersectionSet isIntersection
   test 1 100 set differenceSet isDifference
+  quickCheckResult prop_checkIntersection
+  -- verboseCheckResult prop_checkIntersection
+  quickCheckResult prop_checkDifference
+  -- verboseCheckResult prop_checkDifferece
 
 -- little helper
 set2list :: Ord a => Set a -> [a]
@@ -104,6 +107,7 @@ isDifference s (Set (x:xs)) s3
   | not(inSet x s) && inSet x s3 = isDifference s (Set xs) s3
   | otherwise = False
 
+-- Own test (adapted from Lab2)
 test :: Integer -> Integer -> IO (Set Int) -> (Set Int -> Set Int -> Set Int)
   -> (Set Int -> Set Int -> Set Int -> Bool) -> IO ()
 test k n i f r =
@@ -115,6 +119,31 @@ test k n i f r =
     if r (f s1 s2) s1 s2 then
       do test (k+1) n i f r
     else error ("[" ++ show s1 ++ "," ++ show s2 ++ "] failed after " ++ (show k) ++ " attempts")
+
+-- QuickCheck Tests
+prop_checkIntersection n = monadicIO $ do
+  result <- run (checkIntersection n)
+  assert (result)
+
+prop_checkDifference n = monadicIO $ do
+  result <- run (checkDifference n)
+  assert (result)
+
+checkIntersection :: Positive Int -> IO Bool
+checkIntersection (Positive n) = do
+  s1 <- fixedLengthSet n
+  s2 <- fixedLengthSet n
+  if isIntersection (intersectionSet s1 s2) s1 s2 then
+    do return True
+  else return False
+
+checkDifference :: Positive Int -> IO Bool
+checkDifference (Positive n) = do
+  s1 <- fixedLengthSet n
+  s2 <- fixedLengthSet n
+  if isDifference (differenceSet s1 s2) s1 s2 then
+    do return True
+  else return False
 
 -- =============================================================================
 -- Exercise 4 :: Time spent +-
