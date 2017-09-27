@@ -13,25 +13,25 @@ main = do
     putStrLn $ "Assignment 4 / Lab 4"
     putStrLn $ "===================="
     putStrLn $ "> Exercise 1"
-    -- exercise1
+    exercise1
     putStrLn $ "> Exercise 2"
-    -- exercise2
+    exercise2
     putStrLn $ "> Exercise 3"
-    -- exercise3
+    exercise3
     putStrLn $ "> Exercise 4"
-    -- exercise4
+    exercise4
     putStrLn $ "> Exercise 5"
-    -- exercise5
+    exercise5
     putStrLn $ "> Exercise 6"
-    -- exercise6
+    exercise6
     putStrLn $ "> Exercise 7"
-    -- exercise7
+    exercise7
     putStrLn $ "> Exercise 8"
     exercise8
     putStrLn $ "> Exercise 9"
-    -- exercise9
+    exercise9
     putStrLn $ "> Exercise 10"
-    -- exercise10
+    exercise10
 
 -- =============================================================================
 -- Exercise 1 :: Time spent: +-
