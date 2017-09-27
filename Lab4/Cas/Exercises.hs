@@ -50,13 +50,19 @@ exercise2 = do
 
 -- 'Borrowed from Lecture2'
 getRandomInt :: Int -> IO Int
-getRandomInt n = getStdRandom (randomR (0,n))
+getRandomInt n = randomRIO (0,n)
 
 set :: IO (Set Int)
 set = do
   p <- getStdGen                    -- used to randomly pick an item
   x <- getRandomInt 100             -- get a random int
-  return $ list2set $ take x (randomRs (-500, 500) p)
+  return $ list2set $ take x $ nub (randomRs (0, 500) p)
+
+fixedLengthSet :: Int -> IO (Set Int)
+fixedLengthSet n = do
+  p <- getStdGen                    -- used to randomly pick an item
+  x <- getRandomInt 100             -- get a random int
+  return $ list2set $ take n $ nub (randomRs (0, 500) p)
 
 
 -- =============================================================================
@@ -149,12 +155,13 @@ trClos r = if r == transitive then transitive else trClos transitive
 -- Exercise 7 :: Time spent +-
 -- =============================================================================
 exercise7 = do
-  a <- set
-  b <- set
+  a <- fixedLengthSet 10
+  b <- fixedLengthSet 10
   -- print(a)
   -- print(b)
   print $ getRelations a b
 
+-- The below generates a random relation, based on two sets
 getRelations :: (Ord a) => Set a -> Set a -> Rel a
 getRelations (Set []) _ = []
 getRelations _ (Set []) = []
