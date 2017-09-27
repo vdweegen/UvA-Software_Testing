@@ -149,7 +149,16 @@ trClos r = if r == transitive then transitive else trClos transitive
 -- Exercise 7 :: Time spent +-
 -- =============================================================================
 exercise7 = do
-  print()
+  a <- set
+  b <- set
+  -- print(a)
+  -- print(b)
+  print $ getRelations a b
+
+getRelations :: (Ord a) => Set a -> Set a -> Rel a
+getRelations (Set []) _ = []
+getRelations _ (Set []) = []
+getRelations (Set (x:xs)) (Set (y:ys)) = (x,y) : getRelations (list2set xs) (list2set ys)
 
 -- =============================================================================
 -- Exercise 8 :: Time spent +-
