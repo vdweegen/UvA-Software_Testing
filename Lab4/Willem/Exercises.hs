@@ -52,10 +52,11 @@ exercise2 = do
 
 -- | Re-use getIntL from Lecture2.hs and use the list2set from SetOrd.hs
 -- Time spent 10 mins
+-- Stop using the list2set and use nub and sort from Haskell
 getIntS :: Int -> Int -> IO (Set Int)
 getIntS k n = do
   l <- getIntL k n
-  return(list2set l)
+  return(Set (sort $ nub l))
 
 -- | Using Arbitrary from Quickcheck, based on Arbitrary instance from list
 -- Using fmap to get a set
