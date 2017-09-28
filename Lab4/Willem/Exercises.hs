@@ -45,9 +45,9 @@ exercise1 = do
 -- =============================================================================
 exercise2 = do
   set <- getIntS 10 10
-  putStrLn("Manual:")
-  print(set)
-  putStrLn("Quickcheck:")
+  putStrLn "Manual:"
+  print set
+  putStrLn "Quickcheck:"
   sample(arbitrary :: Gen (Set Int))
 
 -- | Re-use getIntL from Lecture2.hs and use the list2set from SetOrd.hs
@@ -59,6 +59,7 @@ getIntS k n = do
   return(listToSet l)
 
 -- | Helper function to transform a list to a set
+-- Time spent 15 mins to remove the list2set
 listToSet :: (Eq a, Ord a) => [a] -> Set a
 listToSet l = Set (sort $ nub l)
 
@@ -69,7 +70,7 @@ listToSet l = Set (sort $ nub l)
 instance (Arbitrary a, Ord a) => Arbitrary (Set a) where
   arbitrary = sized $ \n -> do
     k <- choose (0,n)
-    listToSet `fmap` (sequence [ arbitrary | _ <- [1..k] ])
+    listToSet `fmap` sequence [ arbitrary | _ <- [1..k] ]
 
 -- =============================================================================
 -- Exercise 3 :: Time spent +-
