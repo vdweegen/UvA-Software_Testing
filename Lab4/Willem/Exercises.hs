@@ -77,6 +77,18 @@ instance (Arbitrary a, Ord a) => Arbitrary (Set a) where
 -- =============================================================================
 exercise3 = do
   print()
+
+-- | Use unionSet from SetOrd.hs
+-- Use intersect and \\ from Data.List
+intersectionSet, differenceSet :: (Ord a) => Set a -> Set a -> Set a
+intersectionSet (Set []) _ = emptySet
+intersectionSet _ (Set []) = emptySet
+intersectionSet (Set xs) (Set ys) = Set (xs `intersect` ys)
+
+differenceSet set1 (Set []) = set1
+differenceSet (Set []) _ = emptySet
+differenceSet (Set xs) (Set ys) = Set (xs  \\ ys)
+
 -- =============================================================================
 -- Exercise 4 :: Time spent +-
 -- =============================================================================
