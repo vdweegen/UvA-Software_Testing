@@ -2,6 +2,9 @@ module Lab4 where
 
 import Data.List
 import System.Random
+import Lab2.Lecture2
+import Lab4.SetOrd
+import Control.Monad
 
 import Test.QuickCheck
 -- Define Main --
@@ -41,7 +44,19 @@ exercise1 = do
 -- Exercise 2 :: Time spent +-
 -- =============================================================================
 exercise2 = do
-  print()
+  set <- getIntS 10 10
+  putStrLn("Manual:")
+  print(set)
+  putStrLn("Quickcheck:")
+  sample(arbitrary :: Gen (Set Int))
+
+-- | Re-use getIntL from Lecture2.hs and use the list2set from SetOrd.hs
+-- Time spent 10 mins
+getIntS :: Int -> Int -> IO (Set Int)
+getIntS k n = do
+  l <- getIntL k n
+  return(list2set l)
+
 
 -- =============================================================================
 -- Exercise 3 :: Time spent +-
