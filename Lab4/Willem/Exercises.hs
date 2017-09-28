@@ -76,7 +76,13 @@ instance (Arbitrary a, Ord a) => Arbitrary (Set a) where
 -- Exercise 3 :: Time spent +-
 -- =============================================================================
 exercise3 = do
-  print()
+  quickCheck prop_union_subset
+  quickCheck prop_union_associative
+  quickCheck prop_union_diff
+  quickCheck prop_intersect_subset
+  quickCheck prop_intersect_associative
+  quickCheck prop_difference_subset
+  quickCheck prop_difference_notassociative
 
 -- | Use unionSet from SetOrd.hs
 -- Use intersect and \\ from Data.List
@@ -88,6 +94,30 @@ intersectionSet (Set xs) (Set ys) = Set (xs `intersect` ys)
 differenceSet set1 (Set []) = set1
 differenceSet (Set []) _ = emptySet
 differenceSet (Set xs) (Set ys) = Set (xs  \\ ys)
+
+-- | Union props
+prop_union_subset :: Set Int -> Set Int -> Bool
+prop_union_subset a b = a `subSet` s && b `subSet` s where s = a `unionSet` b
+
+prop_union_associative :: Set Int -> Set Int -> Bool
+prop_union_associative a b = a `unionSet` b == b `unionSet`a
+
+prop_union_diff :: Set Int -> Set Int -> Bool
+prop_union_diff a b = (s `differenceSet` b) `subSet` a && (s `differenceSet` a) `subSet` b where s = a `unionSet` b
+
+-- | Intersect props
+prop_intersect_subset :: Set Int -> Set Int -> Bool
+prop_intersect_subset a b = s `subSet` a && s `subSet` b where s = a `intersectionSet` b
+
+prop_intersect_associative :: Set Int -> Set Int -> Bool
+prop_intersect_associative a b = a `intersectionSet` b == b `intersectionSet` a
+
+-- | Difference props
+prop_difference_subset :: Set Int -> Set Int -> Bool
+prop_difference_subset a b = s `subSet` a where s = a `differenceSet` b
+
+prop_difference_notassociative :: Set Int -> Set Int -> Bool
+prop_difference_notassociative a b = isEmpty ((a `differenceSet` b) `intersectionSet` (b `differenceSet` a))
 
 -- =============================================================================
 -- Exercise 4 :: Time spent +-
