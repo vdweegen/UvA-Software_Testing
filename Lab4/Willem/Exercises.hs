@@ -57,6 +57,14 @@ getIntS k n = do
   l <- getIntL k n
   return(list2set l)
 
+-- | Using Arbitrary from Quickcheck, based on Arbitrary instance from list
+-- Using fmap to get a set
+-- Time spent 1 hour, mostly finding out that I needed to add Ord a to the instance
+-- Bonus: this one also works for other types such as String, Char, Bool, Float, etc.
+instance (Arbitrary a, Ord a) => Arbitrary (Set a) where
+  arbitrary = sized $ \n -> do
+    k <- choose (0,n)
+    list2set `fmap` (sequence [ arbitrary | _ <- [1..k] ])
 
 -- =============================================================================
 -- Exercise 3 :: Time spent +-
