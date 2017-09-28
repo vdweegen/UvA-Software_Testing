@@ -56,7 +56,11 @@ exercise2 = do
 getIntS :: Int -> Int -> IO (Set Int)
 getIntS k n = do
   l <- getIntL k n
-  return(Set (sort $ nub l))
+  return(listToSet l)
+
+-- | Helper function to transform a list to a set
+listToSet :: (Eq a, Ord a) => [a] -> Set a
+listToSet l = Set (sort $ nub l)
 
 -- | Using Arbitrary from Quickcheck, based on Arbitrary instance from list
 -- Using fmap to get a set
@@ -65,7 +69,7 @@ getIntS k n = do
 instance (Arbitrary a, Ord a) => Arbitrary (Set a) where
   arbitrary = sized $ \n -> do
     k <- choose (0,n)
-    list2set `fmap` (sequence [ arbitrary | _ <- [1..k] ])
+    listToSet `fmap` (sequence [ arbitrary | _ <- [1..k] ])
 
 -- =============================================================================
 -- Exercise 3 :: Time spent +-
