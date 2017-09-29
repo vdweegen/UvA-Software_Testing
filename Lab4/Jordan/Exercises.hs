@@ -3,6 +3,8 @@ module Lab4 where
 import Data.List
 import System.Random
 
+import Lab4.SetOrd
+
 import Test.QuickCheck
 -- Define Main --
 main = do
@@ -31,7 +33,7 @@ main = do
     exercise10
 
 -- =============================================================================
--- Exercise 1 :: Time spent: +-
+-- Exercise 1 :: Time spent: +- 10 and counting
 -- =============================================================================
 
 exercise1 = do
@@ -43,11 +45,56 @@ exercise1 = do
 exercise2 = do
   print()
 
+
 -- =============================================================================
--- Exercise 3 :: Time spent +-
+-- Exercise 3 :: Time spent +- 20
 -- =============================================================================
 exercise3 = do
   print()
+
+-- Need to make everything work with the Set datatype
+
+diff :: Eq a => [a] -> [a] -> [a]
+diff a b = (\\) a b
+
+member :: Eq a => a -> [a] -> Bool
+member a b = elem a b
+
+notMember :: Eq a => a -> [a] -> Bool
+notMember a b = notElem a b
+
+diff' :: Eq a => [a] -> [a] -> [a]
+diff' a b = filter ( (flip notMember) b ) a
+{-- This one is close to the written notation for a difference set. eg A\B = [x| x E A, x \E B] --}
+diff'' :: Eq a => [a] -> [a] -> [a]
+diff'' a b = [x | x <- a, notMember x b]
+
+inter :: Eq a => [a] -> [a] -> [a]
+inter a b = intersect a b
+
+inter' :: Eq a => [a] -> [a] -> [a]
+inter' a b = [x | x <- a, member x b ]
+
+inter'' :: Eq a => [a] -> [a] -> [a]
+inter'' a b = filter ( (flip member) b ) a
+
+inter''' :: Eq a => [a] -> [a] -> [a]
+inter''' a b = fst $ partition (flip member b) a
+
+uni :: Eq a => [a] -> [a] -> [a]
+uni a b = union a b
+
+-- Does not conform to haskell spec
+uni' :: Eq a => [a] -> [a] -> [a]
+uni' a b = nub $ a ++ b
+
+uni'' :: Eq a => [a] -> [a] -> [a]
+uni'' a b = a ++ (diff b a)
+
+  -- -- symClos [(1,2),(2,3), (3,4)]
+  -- main = print  $ nub $  until (\x -> (nub $ trClos x) == (nub  x)) trClos  [(1,2),(2,3)]
+  
+  
 -- =============================================================================
 -- Exercise 4 :: Time spent +-
 -- =============================================================================
@@ -55,16 +102,49 @@ exercise4 = do
   print()
 
 -- =============================================================================
--- Exercise 5 :: Time spent +-
+-- Exercise 5 :: Time spent +- 15
 -- =============================================================================
 exercise5 = do
   print()
 
+type Rel a = [(a,a)]
+
+swap :: Ord a => (a, a) -> (a, a)
+swap (a, b) = (b, a)
+
+swapped :: Ord a => (a, a) -> [(a, a)]
+swapped (a, b) = [(a, b), (b, a)]
+{-- 
+I solved the symClos in different ways. Union of the flipped values using either list comprehension or map values with a swap function. These methods are the
+closest to the way you would think about the problem or write it down. (OriginalTupleList U FlippedTupleList). 
+The third method a implementation focused solution. Make a function that returns a list of original and swapped values and concatMap the original list with that function.
+--}
+symClos :: Ord a => [(a, a)] -> [(a, a)]
+symClos a = uni a ([(y,x)| (x,y) <- a])
+
+symClos' :: Ord a => [(a, a)] -> [(a, a)]
+symClos' a = (uni a) $ map swap a
+
+-- nub for good measure?
+symClos'' :: Ord a => [(a, a)] -> [(a, a)]
+symClos'' a = concatMap swapped a
+    
 -- =============================================================================
--- Exercise 6 :: Time spent +-
+-- Exercise 6 :: Time spent +- 20 min
 -- =============================================================================
 exercise6 = do
   print()
+
+-- TODO Print out example
+  
+transited :: Ord a => [(a, a)] ->(a, a) -> [(a, a)]
+transited r  (a, c) = (a, c)  : [(a, y)| (x, y) <- r, c == x]
+
+trClos' :: Ord a => [(a, a)] -> [(a, a)]
+trClos' r = nub $ concatMap (transited r ) r
+
+trClos :: Ord a => [(a, a)] -> [(a, a)]
+trClos = nub . until (\x -> (nub $ trClos' x) == (nub  x)) trClos'
 
 -- =============================================================================
 -- Exercise 7 :: Time spent +-
