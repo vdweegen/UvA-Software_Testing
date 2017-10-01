@@ -9,35 +9,35 @@ import Test.QuickCheck.Monadic
 
 -- Define Main --
 main = do
-    putStrLn $ "===================="
-    putStrLn $ "Assignment 4 / Lab 4"
-    putStrLn $ "===================="
-    putStrLn $ "> Exercise 1"
+    putStrLn "===================="
+    putStrLn "Assignment 4 / Lab 4"
+    putStrLn "===================="
+    putStrLn "> Exercise 1"
     exercise1
-    putStrLn $ "> Exercise 2"
+    putStrLn "> Exercise 2"
     exercise2
-    putStrLn $ "> Exercise 3"
+    putStrLn "> Exercise 3"
     exercise3
-    putStrLn $ "> Exercise 4"
+    putStrLn "> Exercise 4"
     exercise4
-    putStrLn $ "> Exercise 5"
+    putStrLn "> Exercise 5"
     exercise5
-    putStrLn $ "> Exercise 6"
+    putStrLn "> Exercise 6"
     exercise6
-    putStrLn $ "> Exercise 7"
+    putStrLn "> Exercise 7"
     exercise7
-    putStrLn $ "> Exercise 8"
+    putStrLn "> Exercise 8"
     exercise8
-    putStrLn $ "> Exercise 9"
+    putStrLn "> Exercise 9"
     exercise9
-    putStrLn $ "> Exercise 10"
+    putStrLn "> Exercise 10"
     exercise10
 
 -- =============================================================================
 -- Exercise 1 :: Time spent: +-
 -- =============================================================================
 
-exercise1 = print $ "Read chapter 4"
+exercise1 = print "Read chapter 4"
 
 -- | Bauke van den Berg
 -- Time spent: 4 hours on reading / constructing the questions
@@ -158,20 +158,20 @@ testMan k n i f r =
     s1 <- i
     s2 <- i
     if r (f s1 s2) s1 s2 then
-      do testMan (k+1) n i f r
-    else error ("[" ++ show s1 ++ "," ++ show s2 ++ "] failed after " ++ (show k) ++ " attempts")
+      testMan (k+1) n i f r
+    else error ("[" ++ show s1 ++ "," ++ show s2 ++ "] failed after " ++ show k ++ " attempts")
 
 prop_CheckSet :: (Set Int -> Set Int -> Bool) -> Positive Int -> Property
 prop_CheckSet p n = monadicIO $ do
   result <- run (checkSet n p)
-  assert (result)
+  assert result
 
 checkSet :: Positive Int -> (Set Int -> Set Int -> Bool) -> IO Bool
 checkSet (Positive n) p = do
   s1 <- randomSetFixed n
   s2 <- randomSetFixed n
   if p s1 s2 then
-    do return True
+    return True
   else return False
 
 -- ===============
@@ -215,7 +215,7 @@ prop_difference_notassociative a b = isEmpty ((a `differenceSet` b) `intersectio
 -- =============================================================================
 -- Exercise 4 :: Time spent +-
 -- =============================================================================
-exercise4 = print $ "Read Chapter 5"
+exercise4 = print "Read Chapter 5"
 
 -- | Bauke van den Berg
 -- Time spent: 3 hours on reading / trying out some haskell programs
@@ -253,7 +253,7 @@ expectedClosure = [(1,2),(1,3),(1,4),(2,3),(2,4),(3,4)]
 
 exercise6 = do
   putStr "Expecting transitive closure to be correct: "
-  print $ expectedClosure == (trClos inputRelation)
+  print $ expectedClosure == trClos inputRelation
 
 infixr 5 @@
 (@@) :: Eq a => Rel a -> Rel a -> Rel a
@@ -331,7 +331,7 @@ simpleCounterExample = do
 
 prop_checkCompare n = monadicIO $ do
   result <- run (checkComparison n)
-  assert (result)
+  assert result
 
 checkComparison :: Int -> IO Bool
 checkComparison n = do
@@ -363,7 +363,7 @@ randomRelation :: Int -> IO (Int, Int)
 randomRelation n = do
             a <- randomInt n
             b <- randomInt n
-            return $ (a,b)
+            return (a,b)
 
 -- | First transitive closure, then symmetric
 symTrClos :: Ord a => Rel a -> Rel a
