@@ -401,7 +401,7 @@ exercise10 = print $ "Hello"
 possibleFinishes n | n == 0 = 0
                    | otherwise = totalFinishes n + totalFinishes (n-1)
 
-totalFinishes n = amountOfSingleFinishes n + amountOfDoubleFinishes n + amountOfTripleFinishes n
+totalFinishes n = finisheable n + amountOfDoubleFinishes n + amountOfTripleFinishes n
 
 amountOfTripleFinishes :: Integer -> Integer
 amountOfTripleFinishes n = genericLength $ nub $ [ (sort [a,b]) ++ [c] | a <- allPossibleValues, b <- allPossibleValues, c <- doubleValues, (a+b+c) == n ]
@@ -412,11 +412,6 @@ amountOfDoubleFinishes n | n == 0 = 0
 
 computeFinishes :: Integer -> Integer
 computeFinishes n = genericLength $ [ [a,b] | a <- allPossibleValues, b <- doubleValues, a + b == n]
-
-
-amountOfSingleFinishes :: Integer -> Integer
-amountOfSingleFinishes n | n == 0 = 0
-                         | otherwise = finisheable n + amountOfSingleFinishes (n-1)
 
 finisheable :: Integer -> Integer
 finisheable n | n `elem` doubleValues = 1
