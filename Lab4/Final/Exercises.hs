@@ -34,7 +34,7 @@ main = do
     exercise10
 
 -- =============================================================================
--- Exercise 1 :: Time spent: +-
+-- Exercise 1 :: Time spent: +- 3 hours
 -- =============================================================================
 
 exercise1 = print "Read chapter 4"
@@ -54,13 +54,12 @@ exercise1 = print "Read chapter 4"
 -- =============================================================================
 exercise2 = do
   set <- getIntS 10 10
-  putStrLn "Manual:"
+  putStrLn "Own generator:"
   print set
   putStrLn "Quickcheck:"
   sample(arbitrary :: Gen (Set Int))
 
 -- | Re-use getIntL from Lecture2.hs and use the list2set from SetOrd.hs
--- Time spent 10 mins
 -- Stop using the list2set and use nub and sort from Haskell
 getIntS :: Int -> Int -> IO (Set Int)
 getIntS k n = do
@@ -69,13 +68,12 @@ getIntS k n = do
 
 
 -- | Helper function to transform a list to a set
--- Time spent 15 mins to remove the list2set
 listToSet :: (Eq a, Ord a) => [a] -> Set a
 listToSet l = Set (sort $ nub l)
 
 -- | Using Arbitrary from Quickcheck, based on Arbitrary instance from list
 -- Using fmap to get a set
--- Time spent 1 hour, mostly finding out that I needed to add Ord a to the instance
+-- Mostly finding out that I needed to add Ord a to the instance
 -- Bonus: this one also works for other types such as String, Char, Bool, Float, etc.
 instance (Arbitrary a, Ord a) => Arbitrary (Set a) where
   arbitrary = sized $ \n -> do
@@ -89,7 +87,7 @@ instance (Arbitrary a, Ord a) => Arbitrary (Set a) where
 --                          + 60 minutes refactoring
 -- =============================================================================
 exercise3 = do
-  putStrLn "Manual:"
+  putStrLn "Own generator:"
   testMan 1 100 randomSet unionSet isUnion
   testMan 1 100 randomSet intersectionSet isIntersection
   testMan 1 100 randomSet differenceSet isDifference
@@ -211,7 +209,7 @@ prop_difference_notassociative :: Set Int -> Set Int -> Bool
 prop_difference_notassociative a b = isEmpty ((a `differenceSet` b) `intersectionSet` (b `differenceSet` a))
 
 -- =============================================================================
--- Exercise 4 :: Time spent +-
+-- Exercise 4 :: Time spent +- 3 hours
 -- =============================================================================
 exercise4 = print "Read Chapter 5"
 
@@ -276,6 +274,9 @@ exercise7 = do
   quickCheck prop_symClos_original
   quickCheck prop_symClos_ordered
   quickCheck prop_symClos_swapped
+
+-- | We directly use QuickCheck to test our functions as it is quite easy to generate the relations.
+-- We define some properties which we can test.
 
 -- | First try to implement my own Arbitrary, however found out that these are
 -- already provided because we have instances for lists and tuples of arbitrary.
