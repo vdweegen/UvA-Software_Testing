@@ -401,7 +401,6 @@ exercise10 = print $ "Hello"
 possibleFinishes n | n == 0 = 0
                    | otherwise = totalFinishes n + totalFinishes (n-1)
 
-<<<<<<< HEAD
 totalFinishes n = amountOfSingleFinishes n + amountOfDoubleFinishes n + amountOfTripleFinishes n
 
 
@@ -432,7 +431,3 @@ doubleValues = [ n + n | n <- [2,4..40]] ++ [50]
 
 allPossibleValues :: [Integer]
 allPossibleValues = [1..20] ++ [2,4..40] ++ [3,6..60] ++ [25] ++ [50]
-=======
-getSum :: Integer -> Integer
-getSum n = sum [ read [c] :: Integer | c <- (show n)]
->>>>>>> d105e295e13cc0ee2b6740e6f461e4107179bc3f
