@@ -48,6 +48,9 @@ exercise1 = print "Read chapter 4"
 -- How to construct the proof / show that certain items are valid?
 -- TODO: Handle the exercises 4.38, proving the Theorems
 
+-- | Willem Jan Glerum
+-- Example 4.52 still fuzzy about the type inference on how that works
+
 -- =============================================================================
 -- Exercise 2 :: Time spent +- 120 minutes
 --                          + 20 minutes discussion
