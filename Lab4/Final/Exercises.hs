@@ -51,6 +51,9 @@ exercise1 = print "Read chapter 4"
 -- | Willem Jan Glerum
 -- Example 4.52 still fuzzy about the type inference on how that works
 
+-- | Cas van der Weegen :: Time spent: 90 minutes reading
+-- how can one test operations on list comprehensions that simulate infinity?
+
 -- =============================================================================
 -- Exercise 2 :: Time spent +- 120 minutes
 --                          + 20 minutes discussion
@@ -223,6 +226,8 @@ exercise4 = print "Read Chapter 5"
 -- Same as for chapter four, how to show / construct proof for the theorems / statements
 -- Additional examples / study into correct notation of sets composed with relations
 -- Study the notation / composition of 'derived' sets, such as inverse / closures
+
+-- | Cas van der Weegen :: Time spent: 120 minutes reading
 
 -- =============================================================================
 -- Exercise 5 :: Time spent +- 10 minutes + 10 minutes discussion
