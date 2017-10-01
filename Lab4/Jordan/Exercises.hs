@@ -228,7 +228,7 @@ exercise9 = do
 instance Show Statement where
   show (Ass x y)   = "var " ++ x ++ " = " ++ show y ++  "\n"
   show (Cond c x y)   = "if (" ++  show c ++ ") then {" ++ show x ++  "} else {" ++ show y ++ "}" 
-  show (While c s)  = "while (" ++ show c ++ ")\n{\n" ++ showtabbed s ++"}"
+  show (While c s)  = "while (" ++ show c ++ ")\n{\n" ++ show s ++"}"
   show (Seq xs) = concatMap (show) xs
 
 
