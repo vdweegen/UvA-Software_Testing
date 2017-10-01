@@ -17,9 +17,9 @@ main = do
     putStrLn $ "> Exercise 2"
     -- exercise2
     putStrLn $ "> Exercise 3"
-    exercise3
+    -- exercise3
     putStrLn $ "> Exercise 4"
-    exercise4
+    -- exercise4
     putStrLn $ "> Exercise 5"
     exercise5
     putStrLn $ "> Exercise 6"
@@ -244,8 +244,16 @@ exercise4 = print $ "Read Chapter 5"
 -- =============================================================================
 -- Exercise 5 :: Time spent +-
 -- =============================================================================
+type Rel a = [(a,a)]
+
 exercise5 = do
-  print()
+  putStr "Example is correct: "
+  print $ [(1,2),(2,1),(2,3),(3,2),(3,4),(4,3)] == symClos [(1,2),(2,3),(3,4)]
+  putStr "No duplicates for equal terms: "
+  print $ [(1,1)] == symClos [(1,1)]
+
+symClos :: Ord a => Rel a -> Rel a
+symClos = sort.nub.foldr (\(x,y) z -> (x,y):(y,x):z) []
 
 -- =============================================================================
 -- Exercise 6 :: Time spent +-
