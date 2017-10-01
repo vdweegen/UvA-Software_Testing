@@ -158,7 +158,13 @@ trClos xs | xs == transitive = sort xs
 -- Exercise 7 :: Time spent +-
 -- =============================================================================
 exercise7 = do
-  print()
+  quickCheck prop_no_duplicates
+
+-- | First try to implement my own Arbitrary, however found out that these are
+-- already provided because we have instances for lists and tuples of arbitrary.
+-- Thus we can simply use them, since we are using the type alias Rel a
+prop_no_duplicates :: Rel Int -> Bool
+prop_no_duplicates a = nub b == b where b = trClos a
 
 -- =============================================================================
 -- Exercise 8 :: Time spent +-
