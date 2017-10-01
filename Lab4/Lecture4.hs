@@ -52,7 +52,7 @@ data Statement = Ass Var Expr
                | Cond Condition Statement Statement
                | Seq [Statement]
                | While Condition Statement
-               deriving (Eq)--,Show)
+               deriving (Eq,Show)
 
 evalc :: Condition -> Env -> Bool
 evalc (Eq e1 e2) env = eval e1 env == eval e2 env
