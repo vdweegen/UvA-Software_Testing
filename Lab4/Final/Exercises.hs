@@ -400,9 +400,9 @@ instance Show Statement where
 -- Exercise 10 :: Time spent +- 30 minutes
 -- =============================================================================
 
--- | Random difficult problem. However we were not able to solve the solution for 10^15
+-- | Random Difficult Problem
 
-exercise10 = print $ "Hello"
+exercise10 = print $ possibleFinishes 99
 
 possibleFinishes n | n == 0 = 0
                    | otherwise = totalFinishes n + totalFinishes (n-1)
@@ -433,4 +433,4 @@ doubleValues :: [Integer]
 doubleValues = [2,4..40] ++ [50]
 
 allPossibleValues :: [Integer]
-allPossibleValues = [1..20] ++ [2,4..40] ++ [3,6..60] ++ [25] ++ [50]
+allPossibleValues = sort $ nub $ [1..20] ++ [2,4..40] ++ [3,6..60] ++ [25] ++ [50]
