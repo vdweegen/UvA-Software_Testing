@@ -40,14 +40,17 @@ exercise1 = do
   print()
 
 -- =============================================================================
--- Exercise 2 :: Time spent +- 3
+-- Exercise 2 :: Time spent +- 3.30 hours
+-- I had a hard time thinking about how to make a random generator. I spent the first 2 hours 
+-- Trying to use the System.Random. Trying to create an instance that would work with the Set DataType
+-- I came very close to solving it but gave up to work on the other exercises.
 -- =============================================================================
 exercise2 = do
-  numberOfSets <- (getStdRandom (randomR (0, 100))) :: IO Int
-  upperBounds <- (getStdRandom (randomR (0, 100))) :: IO Int
-  seed <- (getStdRandom (randomR (0, 100))) :: IO Int
-  print $ length $ take numberOfSets $ (map randomSet (randomInts upperBounds seed))
-
+  numberOfSets <- (getStdRandom (randomR (0, 5))) :: IO Int
+  upperBounds <- (getStdRandom (randomR (0, 40))) :: IO Int
+  seed <- (getStdRandom (randomR (0, 1000))) :: IO Int
+  print $ take numberOfSets $ (map randomSet (randomInts upperBounds seed))
+  sample $ (arbitrary :: Gen (Set Int))
 -- From book  1
 randomInts :: Int -> Int -> [Int]
 randomInts bound seed =
@@ -58,14 +61,27 @@ randomSet n = Set listInts
       where 
       listInts = take n $ randomInts 100 10
 
+instance (Arbitrary a) => Arbitrary (Set a) where
+  arbitrary = do
+              list <- arbitrary
+              return $ Set list
 
 -- =============================================================================
 -- Exercise 3 :: Time spent +- 20
 -- =============================================================================
 exercise3 = do
-  print()
+  print $ diff [1,2,3] [2,3,4]
+  print $ diff' [1,2,3] [2,3,4]
+  print $ diff'' [1,2,3] [2,3,4]
 
--- Need to make everything work with the Set datatype
+  print $ inter [1,2,3] [2,3,4]
+  print $ inter' [1,2,3] [2,3,4]
+  print $ inter'' [1,2,3] [2,3,4]
+  print $ inter''' [1,2,3] [2,3,4]
+
+  print $ uni [1,2,3] [2,3,4]
+  print $ uni' [1,2,3] [2,3,4]
+  print $ uni'' [1,2,3] [2,3,4]
 
 diff :: Eq a => [a] -> [a] -> [a]
 diff a b = (\\) a b
@@ -103,6 +119,27 @@ uni' a b = nub $ a ++ b
 
 uni'' :: Eq a => [a] -> [a] -> [a]
 uni'' a b = a ++ (diff b a)
+
+
+prop_associative_uni xs ys = (uni'' xs ys ) == (uni'' ys xs)
+prop_commutative_uni xs ys zs = uni'' (uni'' xs ys ) zs == uni'' (uni'' xs zs) ys
+
+prop_associative_diff xs ys = (uni'' xs ys ) == (uni'' ys xs)
+prop_commutative_diff xs ys zs = uni'' (uni'' xs ys ) zs == uni'' (uni'' xs zs) ys
+
+{-- 
+associative
+
+--}
+{-- 
+commutative
+
+--}
+
+{-- 
+Identity
+
+--}
 
   -- -- symClos [(1,2),(2,3), (3,4)]
   -- main = print  $ nub $  until (\x -> (nub $ trClos x) == (nub  x)) trClos  [(1,2),(2,3)]
