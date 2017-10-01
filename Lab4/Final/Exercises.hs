@@ -403,19 +403,15 @@ possibleFinishes n | n == 0 = 0
 
 totalFinishes n = amountOfSingleFinishes n + amountOfDoubleFinishes n + amountOfTripleFinishes n
 
-
-amountOfTripleFinishes n | n == 0 = 0
-                         | otherwise = computeTripleFinishes n + amountOfTripleFinishes (n-1)
-
-computeTripleFinishes :: Integer -> Integer
-computeTripleFinishes n = sum $ [ finisheable rest | firstDart <- allPossibleValues, secondDart <- allPossibleValues, let rest = (n - firstDart - secondDart)]
+amountOfTripleFinishes :: Integer -> Integer
+amountOfTripleFinishes n = genericLength $ nub $ [ (sort [a,b]) ++ [c] | a <- allPossibleValues, b <- allPossibleValues, c <- doubleValues, (a+b+c) == n ]
 
 amountOfDoubleFinishes :: Integer -> Integer
 amountOfDoubleFinishes n | n == 0 = 0
                          | otherwise = computeFinishes n + amountOfDoubleFinishes (n-1)
 
 computeFinishes :: Integer -> Integer
-computeFinishes n = sum $ [ finisheable rest | firstDart <- allPossibleValues, let rest = (n - firstDart) ]
+computeFinishes n = genericLength $ [ [a,b] | a <- allPossibleValues, b <- doubleValues, a + b == n]
 
 
 amountOfSingleFinishes :: Integer -> Integer
@@ -427,7 +423,7 @@ finisheable n | n `elem` doubleValues = 1
               | otherwise = 0
 
 doubleValues :: [Integer]
-doubleValues = [ n + n | n <- [2,4..40]] ++ [50]
+doubleValues = [2,4..40] ++ [50]
 
 allPossibleValues :: [Integer]
 allPossibleValues = [1..20] ++ [2,4..40] ++ [3,6..60] ++ [25] ++ [50]
