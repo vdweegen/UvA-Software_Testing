@@ -13,17 +13,17 @@ main = do
     putStrLn $ "Assignment 4 / Lab 4"
     putStrLn $ "===================="
     putStrLn $ "> Exercise 1"
-    -- exercise1
+    exercise1
     putStrLn $ "> Exercise 2"
-    -- exercise2
+    exercise2
     putStrLn $ "> Exercise 3"
-    -- exercise3
+    exercise3
     putStrLn $ "> Exercise 4"
-    -- exercise4
+    exercise4
     putStrLn $ "> Exercise 5"
-    -- exercise5
+    exercise5
     putStrLn $ "> Exercise 6"
-    -- exercise6
+    exercise6
     putStrLn $ "> Exercise 7"
     exercise7
     putStrLn $ "> Exercise 8"
@@ -87,12 +87,16 @@ instance (Arbitrary a, Ord a) => Arbitrary (Set a) where
 -- =============================================================================
 exercise3 = do
   putStrLn "Manual:"
+  testMan 1 100 randomSet unionSet isUnion
   testMan 1 100 randomSet intersectionSet isIntersection
   testMan 1 100 randomSet differenceSet isDifference
-  testMan 1 100 randomSet unionSet isUnion
-  quickCheckResult prop_checkIntersection
-  quickCheckResult prop_checkDifference
-  quickCheckResult prop_checkUnion
+  quickCheckResult (prop_CheckSet prop_union_subset)
+  quickCheckResult (prop_CheckSet prop_union_associative)
+  quickCheckResult (prop_CheckSet prop_union_diff)
+  quickCheckResult (prop_CheckSet prop_intersect_subset)
+  quickCheckResult (prop_CheckSet prop_intersect_associative)
+  quickCheckResult (prop_CheckSet prop_difference_subset)
+  quickCheckResult (prop_CheckSet prop_difference_notassociative)
   putStrLn "quickCheck:"
   quickCheck prop_union_subset
   quickCheck prop_union_associative
@@ -154,39 +158,16 @@ testMan k n i f r =
       do testMan (k+1) n i f r
     else error ("[" ++ show s1 ++ "," ++ show s2 ++ "] failed after " ++ (show k) ++ " attempts")
 
-prop_checkIntersection n = monadicIO $ do
-  result <- run (checkIntersection n)
+prop_CheckSet :: (Set Int -> Set Int -> Bool) -> Positive Int -> Property
+prop_CheckSet p n = monadicIO $ do
+  result <- run (checkSet n p)
   assert (result)
 
-prop_checkDifference n = monadicIO $ do
-  result <- run (checkDifference n)
-  assert (result)
-
-prop_checkUnion n = monadicIO $ do
-  result <- run (checkUnion n)
-  assert (result)
-
-checkUnion :: Positive Int -> IO Bool
-checkUnion (Positive n) = do
+checkSet :: Positive Int -> (Set Int -> Set Int -> Bool) -> IO Bool
+checkSet (Positive n) p = do
   s1 <- randomSetFixed n
   s2 <- randomSetFixed n
-  if isUnion (unionSet s1 s2) s1 s2 then
-    do return True
-  else return False
-
-checkIntersection :: Positive Int -> IO Bool
-checkIntersection (Positive n) = do
-  s1 <- randomSetFixed n
-  s2 <- randomSetFixed n
-  if isIntersection (intersectionSet s1 s2) s1 s2 then
-    do return True
-  else return False
-
-checkDifference :: Positive Int -> IO Bool
-checkDifference (Positive n) = do
-  s1 <- randomSetFixed n
-  s2 <- randomSetFixed n
-  if isDifference (differenceSet s1 s2) s1 s2 then
+  if p s1 s2 then
     do return True
   else return False
 
@@ -246,6 +227,7 @@ exercise4 = print $ "Read Chapter 5"
 -- Simply a recursive concatenation of the lists
 -- Used sample exercise along with one with two equal terms to show no duplicates in a set
 -- =============================================================================
+
 type Rel a = [(a,a)]
 
 exercise5 = do
