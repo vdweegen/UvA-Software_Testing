@@ -4,6 +4,7 @@ import Data.List
 import System.Random
 import Control.Monad
 import Lab4.SetOrd
+import Lab4.Lecture4
 
 import Test.QuickCheck
 -- Define Main --
@@ -223,6 +224,13 @@ exercise8 = do
 -- =============================================================================
 exercise9 = do
   print()
+
+instance Show Statement where
+  show (Ass x y)   = "var " ++ x ++ " = " ++ show y ++  "\n"
+  show (Cond c x y)   = "if (" ++  show c ++ ") then {" ++ show x ++  "} else {" ++ show y ++ "}" 
+  show (While c s)  = "while (" ++ show c ++ ")\n{\n" ++ show s ++"}"
+  show (Seq xs) = concatMap (show) xs
+
 
 -- =============================================================================
 -- Exercise 10 :: Time spent +-
