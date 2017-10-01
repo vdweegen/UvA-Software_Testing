@@ -34,8 +34,16 @@ main = do
 -- Exercise 1 :: Time spent: +-
 -- =============================================================================
 
-exercise1 = do
-  print()
+exercise1 = print $ "Read chapter 4"
+
+-- | Bauke van den Berg
+-- Time spent: 4 hours on reading / constructing the questions
+-- Things unclear after reading the chapter:
+-- Example 4.6 / Exercise 4.7 => Meaning of symbols, and examples
+-- Re-read of paragraph 4.4 required
+-- Generalization of Union and Intersection
+-- How to construct the proof / show that certain items are valid?
+-- TODO: Handle the exercises 4.38, proving the Theorems
 
 -- =============================================================================
 -- Exercise 2 :: Time spent +-
@@ -51,8 +59,15 @@ exercise3 = do
 -- =============================================================================
 -- Exercise 4 :: Time spent +-
 -- =============================================================================
-exercise4 = do
-  print()
+exercise4 = print $ "Read Chapter 5"
+
+-- | Bauke van den Berg
+-- Time spent: 3 hours on reading / trying out some haskell programs
+-- Questions / Thins requiring additional lookup
+-- Definitions with examples for relation types
+-- Same as for chapter four, how to show / construct proof for the theorems / statements
+-- Additional examples / study into correct notation of sets composed with relations
+-- Study the notation / composition of 'derived' sets, such as inverse / closures
 
 -- =============================================================================
 -- Exercise 5 :: Time spent +-
