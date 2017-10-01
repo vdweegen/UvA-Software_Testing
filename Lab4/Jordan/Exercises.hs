@@ -119,14 +119,14 @@ I solved the symClos in different ways. Union of the flipped values using either
 closest to the way you would think about the problem or write it down. (OriginalTupleList U FlippedTupleList). 
 The third method a implementation focused solution. Make a function that returns a list of original and swapped values and concatMap the original list with that function.
 --}
-symClos :: Ord a => [(a, a)] -> [(a, a)]
-symClos a = uni a ([(y,x)| (x,y) <- a])
+symClos :: Ord a =>  Rel a -> Rel a
+symClos a =  sort $ uni a ([(y,x)| (x,y) <- a])
 
-symClos' :: Ord a => [(a, a)] -> [(a, a)]
-symClos' a = (uni a) $ map swap a
+symClos' :: Ord a =>  Rel a -> Rel a
+symClos' a = sort $ (uni a) $ map swap a
 
 -- nub for good measure?
-symClos'' :: Ord a => [(a, a)] -> [(a, a)]
+symClos'' :: Ord a =>  Rel a -> Rel a
 symClos'' a = concatMap swapped a
     
 -- =============================================================================
