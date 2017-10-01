@@ -61,10 +61,10 @@ randomSet n = Set listInts
       where 
       listInts = take n $ randomInts 100 10
 
-instance (Arbitrary a) => Arbitrary (Set a) where
+instance (Eq a, Ord a, Arbitrary a) => Arbitrary (Set a) where
   arbitrary = do
               list <- arbitrary
-              return $ Set list
+              return $ Set (sort $ nub list)
 
 -- =============================================================================
 -- Exercise 3 :: Time spent +- 20
