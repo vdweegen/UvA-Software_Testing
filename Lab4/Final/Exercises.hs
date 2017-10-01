@@ -49,7 +49,8 @@ exercise1 = print $ "Read chapter 4"
 -- TODO: Handle the exercises 4.38, proving the Theorems
 
 -- =============================================================================
--- Exercise 2 :: Time spent +- 120 minutes + 20 minutes discussion
+-- Exercise 2 :: Time spent +- 120 minutes
+--                          + 20 minutes discussion
 -- =============================================================================
 exercise2 = do
   set <- getIntS 10 10
@@ -83,7 +84,9 @@ instance (Arbitrary a, Ord a) => Arbitrary (Set a) where
 
 
 -- =============================================================================
--- Exercise 3 :: Time spent +-
+-- Exercise 3 :: Time spent +- 180 minutes
+--                          + 60 minutes discussion
+--                          + 60 minutes refactoring
 -- =============================================================================
 exercise3 = do
   putStrLn "Manual:"
@@ -240,7 +243,8 @@ symClos :: Ord a => Rel a -> Rel a
 symClos = sort.nub.foldr (\(x,y) z -> (x,y):(y,x):z) []
 
 -- =============================================================================
--- Exercise 6 :: Time spent +- 30 minutes + 15 minutes discussion
+-- Exercise 6 :: Time spent +- 30 minutes
+--                          + 15 minutes discussion
 -- Same loop recursion utilizing the infixr operation
 -- However, this could be solved using the fix / fp' from the workshop!
 -- =============================================================================
@@ -262,43 +266,56 @@ trClos xs | xs == result = sort xs
           where result = sort $ nub $ xs ++ (xs @@ xs)
 
 -- =============================================================================
--- Exercise 7 :: Time spent +- 10 minutes
+-- Exercise 7 :: Time spent +- 120 minutes
+--                          + 30 minutes discussion
 -- Adding a simple (hardly randomized) property to test
 -- =============================================================================
 exercise7 = do
-  quickCheck prop_unchanged
-  quickCheck prop_initialRelations
+  quickCheck prop_trClos_no_duplicates
+  quickCheck prop_trClos_original
+  quickCheck prop_trClos_ordered
+  quickCheck prop_symClos_no_duplicates
+  quickCheck prop_symClos_original
+  quickCheck prop_symClos_ordered
+  quickCheck prop_symClos_swapped
 
--- | All elements in the original set are present in the closure
-prop_initialRelations n = monadicIO $ do
-  result <- run (checkContent n)
-  assert (result)
+-- | First try to implement my own Arbitrary, however found out that these are
+-- already provided because we have instances for lists and tuples of arbitrary.
+-- Thus we can simply use them, since we are using the type alias Rel a
+prop_trClos_no_duplicates :: Rel Int -> Bool
+prop_trClos_no_duplicates a = nub b == b where b = trClos a
 
-checkContent :: Int -> IO Bool
-checkContent n = do
-  rels <- randomRelations n
-  let sym = symClos rels
-  if null $ (\\) rels sym
-  then return True
-  else do
-    putStr "Input set: "
-    print rels
-    putStr "Symmettric closure: "
-    print $ sym
-    putStr "Difference between: "
-    print $ (\\) rels sym
-    return False
+prop_trClos_original :: Rel Int -> Bool
+prop_trClos_original a = all (`elem` b) a where b = trClos a
 
+prop_trClos_ordered :: Rel Int -> Bool
+prop_trClos_ordered a = sort b == b where b = trClos a
 
+prop_symClos_no_duplicates :: Rel Int -> Bool
+prop_symClos_no_duplicates a = nub b == b where b = symClos a
 
--- | For any closure with non-different fields, the output is the same
-prop_unchanged :: Int -> Bool
-prop_unchanged n =
-  (a == trClos a) && (a == symClos a)
-  where a = [(n,n)]
+prop_symClos_original :: Rel Int -> Bool
+prop_symClos_original a = all (`elem` b) a where b = symClos a
+
+prop_symClos_ordered :: Rel Int -> Bool
+prop_symClos_ordered a = sort b == b where b = symClos a
+
+prop_symClos_swapped :: Rel Int -> Bool
+prop_symClos_swapped a = all (\(x,y) -> (y,x) `elem` b) a where b = symClos a
 
 -- =============================================================================
--- Exercise 8 :: Time spent +-
+-- Exercise 8 :: Time spent +- 60 minutes
+-- Didn't even try to manually find counter examples
+-- Relied on the quickCheck generator to generate an example every time
+-- Keyed in the random generators + quickCheck property
+-- Took some time to fix the syntactic sugar of the nested do loops
+-- Note: Intentionally returns TRUE on both occasions, simply to not 'break' the loop on the first error
+-- Looking at the printed counter examples, one can immediately see why the transitive closure of the
+-- symmetric closure returns more items than the symmetric closure of the transitive closure
+-- The symmetric closure of a (a,b) results in both (a,b) and (b,a)
+-- When mapping the transitivity on this result, relations from (a,a) and (b,b) are found.
+-- The transitive closure of (a,b) is still (a,b). Making that symmetric
+-- Will result in only (a,b) and (b,a). This specific example added below
 -- =============================================================================
 exercise8 = do
   quickCheckWith stdArgs {maxSize = 10} prop_checkCompare
