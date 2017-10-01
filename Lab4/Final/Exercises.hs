@@ -242,7 +242,9 @@ exercise4 = print $ "Read Chapter 5"
 -- Study the notation / composition of 'derived' sets, such as inverse / closures
 
 -- =============================================================================
--- Exercise 5 :: Time spent +-
+-- Exercise 5 :: Time spent +- 10 minutes + 10 minutes discussion
+-- Simply a recursive concatenation of the lists
+-- Used sample exercise along with one with two equal terms to show no duplicates in a set
 -- =============================================================================
 type Rel a = [(a,a)]
 
@@ -256,10 +258,23 @@ symClos :: Ord a => Rel a -> Rel a
 symClos = sort.nub.foldr (\(x,y) z -> (x,y):(y,x):z) []
 
 -- =============================================================================
--- Exercise 6 :: Time spent +-
+-- Exercise 6 :: Time spent +- 30 minutes + 15 minutes discussion
+-- Same loop recursion utilizing the infixr operation
+-- However, this could be solved using the fix / fp' from the workshop!
 -- =============================================================================
 exercise6 = do
-  print()
+  putStr "Expecting transitive closure to be correct: "
+  print $ expectedClosure == (trClos inputRelation)
+
+infixr 5 @@
+(@@) :: Eq a => Rel a -> Rel a -> Rel a
+r @@ s =
+  nub [(x,z) | (x,y) <- r, (w,z) <- s, y == w]
+
+trClos :: Ord a => Rel a -> Rel a
+trClos xs | xs == result = sort xs
+          | otherwise = trClos result
+          where result = sort $ nub $ xs ++ (xs @@ xs)
 
 -- =============================================================================
 -- Exercise 7 :: Time spent +-
