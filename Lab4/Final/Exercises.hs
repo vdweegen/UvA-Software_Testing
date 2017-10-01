@@ -262,6 +262,9 @@ symClos = sort.nub.foldr (\(x,y) z -> (x,y):(y,x):z) []
 -- Same loop recursion utilizing the infixr operation
 -- However, this could be solved using the fix / fp' from the workshop!
 -- =============================================================================
+inputRelation = [(1,2),(2,3),(3,4)]
+expectedClosure = [(1,2),(1,3),(1,4),(2,3),(2,4),(3,4)]
+
 exercise6 = do
   putStr "Expecting transitive closure to be correct: "
   print $ expectedClosure == (trClos inputRelation)
@@ -316,7 +319,60 @@ prop_unchanged n =
 -- Exercise 8 :: Time spent +-
 -- =============================================================================
 exercise8 = do
-  print()
+  quickCheckWith stdArgs {maxSize = 10} prop_checkCompare
+  simpleCounterExample
+
+simpleCounterExample :: IO ()
+simpleCounterExample = do
+  let relation = [(0,1)]
+  putStrLn $ "Simple counter example: " ++ show relation
+  let stc = symTrClos relation
+  let rsc = trSymClos relation
+  putStrLn $ show stc ++ " /= " ++ show rsc
+
+prop_checkCompare n = monadicIO $ do
+  result <- run (checkComparison n)
+  assert (result)
+
+checkComparison :: Int -> IO Bool
+checkComparison n = do
+  rels <- randomRelations n
+  let stClos = symTrClos rels
+  let tsClos = trSymClos rels
+  if stClos /= tsClos
+  then do
+    putStr "Error when checking: "
+    print rels
+    putStr "symmetric transitive: "
+    print stClos
+    putStr "transitive symmetric: "
+    print tsClos
+    return True
+  else return True
+
+-- | Generate some random values composing a set of maximum n elements
+randomRelations :: Int -> IO (Rel Int)
+randomRelations n = do
+    rels <- sequence [ randomRelation n | a <- [1..n]]
+    return $ nub rels
+
+randomInt :: Int -> IO Int
+randomInt n = randomRIO (0, n)
+
+-- | Some random mapping from (a,b)
+randomRelation :: Int -> IO (Int, Int)
+randomRelation n = do
+            a <- randomInt n
+            b <- randomInt n
+            return $ (a,b)
+
+-- | First transitive closure, then symmetric
+symTrClos :: Ord a => Rel a -> Rel a
+symTrClos = symClos . trClos
+
+-- | First symmetric, then transitive closure
+trSymClos :: Ord a => Rel a -> Rel a
+trSymClos = trClos . symClos
 
 -- =============================================================================
 -- Exercise 9 :: Time spent +-
