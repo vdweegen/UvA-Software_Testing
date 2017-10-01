@@ -69,8 +69,10 @@ fixedLengthSet n = do
 -- Exercise 3 :: Time spent +-
 -- =============================================================================
 exercise3 = do
+  putStrLn "Manual:"
   test 1 100 set intersectionSet isIntersection
   test 1 100 set differenceSet isDifference
+  putStrLn "quickCheck:"
   quickCheckResult prop_checkIntersection
   -- verboseCheckResult prop_checkIntersection
   quickCheckResult prop_checkDifference
