@@ -76,6 +76,10 @@ exercise3 = do
   quickCheckResult prop_checkDifference
   -- verboseCheckResult prop_checkDifferece
 
+differenceBug = do
+  putStr "Bug is fixed: "
+  print $ (Set []) /= differenceSet (Set [0]) (Set[0,1,2])
+
 -- little helper
 set2list :: Ord a => Set a -> [a]
 set2list (Set []) = []
