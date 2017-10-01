@@ -403,7 +403,7 @@ instance Show Statement where
 -- Added Dart type to have distinction between those
 -- =============================================================================
 
--- | Random Difficult Problem
+-- | Random Difficult Problem - Euler 109 - Difficutly rating 50%
 
 exercise10 = print $ possibleFinishes 99
 
