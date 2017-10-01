@@ -170,9 +170,7 @@ checkSet :: Positive Int -> (Set Int -> Set Int -> Bool) -> IO Bool
 checkSet (Positive n) p = do
   s1 <- randomSetFixed n
   s2 <- randomSetFixed n
-  if p s1 s2 then
-    return True
-  else return False
+  return $ p s1 s2
 
 -- ===============
 -- QuickTest Test
