@@ -181,11 +181,12 @@ checkSet (Positive n) p = do
 -- ===============
 -- | Use unionSet from SetOrd.hs
 -- Use intersect and \\ from Data.List
-intersectionSet, differenceSet :: (Ord a) => Set a -> Set a -> Set a
+intersectionSet :: (Ord a) => Set a -> Set a -> Set a
 intersectionSet (Set []) _ = emptySet
 intersectionSet _ (Set []) = emptySet
 intersectionSet (Set xs) (Set ys) = Set (xs `intersect` ys)
 
+differenceSet :: (Ord a) => Set a -> Set a -> Set a
 differenceSet set1 (Set []) = set1
 differenceSet (Set []) _ = emptySet
 differenceSet (Set xs) (Set ys) = Set (xs  \\ ys)
@@ -336,6 +337,7 @@ simpleCounterExample = do
   let rsc = trSymClos relation
   putStrLn $ show stc ++ " /= " ++ show rsc
 
+prop_checkCompare :: Int -> Property
 prop_checkCompare n = monadicIO $ do
   result <- run (checkComparison n)
   assert result
