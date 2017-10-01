@@ -4,6 +4,7 @@ import Data.List
 import System.Random
 import Lab2.Lecture2
 import Lab4.SetOrd
+import Lab4.Lecture4
 import Test.QuickCheck
 import Test.QuickCheck.Monadic
 
@@ -383,12 +384,17 @@ trSymClos :: Ord a => Rel a -> Rel a
 trSymClos = trClos . symClos
 
 -- =============================================================================
--- Exercise 9 :: Time spent +- 5 minutes
+-- Exercise 9 :: Time spent +- 15 minutes
 -- =============================================================================
-
 -- We only had a quick look and skipped it
 exercise9 = do
-  print()
+  putStr $ show fib
+
+instance Show Statement where
+  show (Ass x y)   = "var " ++ x ++ " = " ++ show y ++  "\n"
+  show (Cond c x y)   = "if (" ++  show c ++ ") then {" ++ show x ++  "} else {" ++ show y ++ "}" 
+  show (While c s)  = "while (" ++ show c ++ ")\n{\n" ++ show s ++"}"
+  show (Seq xs) = concatMap (show) xs
 
 -- =============================================================================
 -- Exercise 10 :: Time spent +- 30 minutes
