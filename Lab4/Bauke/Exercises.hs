@@ -264,7 +264,25 @@ exercise9 = do
   print()
 
 -- =============================================================================
--- Exercise 10 :: Time spent +-
+-- Exercise 10 :: Time spent +- 60 minutes
+-- First generated the brute force implementation
+-- Works well up to approximately 2000 variables
 -- =============================================================================
 exercise10 = do
   print()
+
+summedData :: Integer -> Integer
+summedData n = sumUp n []
+
+sumUp :: Integer -> [Integer] -> Integer
+sumUp n xs | n == 0 = sum xs
+           | otherwise = sumUp (n-1) (nextList xs)
+
+nextList :: [Integer] -> [Integer]
+nextList [] = [1]
+nextList xs = xs ++ splitInt (sum xs)
+
+splitInt :: Integer -> [Integer]
+splitInt n = [ read [c] :: Integer | c <- (show n)]
+
+
