@@ -40,8 +40,10 @@ main = do
 exercise1 = do
   print()
 
+-- | Example 4.52 still fuzzy about the type inference
+
 -- =============================================================================
--- Exercise 2 :: Time spent +-
+-- Exercise 2 :: Time spent +- 2hours
 -- =============================================================================
 exercise2 = do
   set <- getIntS 10 10
@@ -73,7 +75,7 @@ instance (Arbitrary a, Ord a) => Arbitrary (Set a) where
     listToSet `fmap` sequence [ arbitrary | _ <- [1..k] ]
 
 -- =============================================================================
--- Exercise 3 :: Time spent +-
+-- Exercise 3 :: Time spent +- 2hours
 -- =============================================================================
 exercise3 = do
   quickCheck prop_union_subset
@@ -131,11 +133,26 @@ exercise4 = do
 exercise5 = do
   print()
 
+type Rel a = [(a,a)]
+
+symClos :: Ord a => Rel a -> Rel a
+symClos = sort.nub.foldr (\(x,y) z -> (x,y):(y,x):z) []
+
 -- =============================================================================
 -- Exercise 6 :: Time spent +-
 -- =============================================================================
 exercise6 = do
   print()
+
+infixr 5 @@
+(@@) :: Eq a => Rel a -> Rel a -> Rel a
+r @@ s =
+  nub [ (x,z) | (x,y) <- r, (w,z) <- s, y == w ]
+
+trClos :: Ord a => Rel a -> Rel a
+trClos xs | xs == transitive = sort xs
+          | otherwise = trClos transitive
+          where transitive = nub $ xs ++ (xs @@ xs)
 
 -- =============================================================================
 -- Exercise 7 :: Time spent +-
