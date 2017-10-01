@@ -226,6 +226,7 @@ exercise9 = do
 
 -- =============================================================================
 -- Exercise 10 :: Time spent +-
+-- https://projecteuler.net/problem=146
 -- =============================================================================
 exercise10 = do
   print()
@@ -233,9 +234,9 @@ exercise10 = do
 
 primePatterns = [1,3,7,9,13,27]
 
-consecutivePrime x = all prime $  map (+ (x ^ 2)) primePatterns
+consecutivePrime x = (even x) && (not (any (not.prime) $  map (+ (x ^ 2)) primePatterns))
 
-investigatePrimePattern  n =  take n $  [x| x <- [1..], consecutivePrime x] 
+investigatePrimePattern  n = sum $ [x| x <- [4,6.. 1000000], (consecutivePrime x)] 
 
 prime :: Integer -> Bool
 prime n = n > 1 && all (\ x -> rem n x /= 0) xs
@@ -243,3 +244,93 @@ prime n = n > 1 && all (\ x -> rem n x /= 0) xs
 
 primes :: [Integer]
 primes = 2 : filter prime [3..]
+
+
+-- isPrime x=millerRabinPrimality x 2
+-- --isPrime x=all (millerRabinPrimality x) [2,3,7,61,24251]
+-- six=[1,3,7,9,13,27]
+-- allPrime x=all (\a -> isPrime (x^2+a)) six
+-- linkPrime [x]=filterPrime x
+-- linkPrime (x:xs)=[y|
+--     a<-linkPrime xs,
+--     b<-[0..(x-1)],
+--     let y=b*prxs+a,
+--     let c=y`mod`x,
+--     elem c d]
+--     where
+--     prxs=product xs
+--     d=filterPrime x
+ 
+-- filterPrime p=
+--     [a|
+--     a<-[0..(p-1)],
+--     length[b|b<-six,(a^2+b)`mod`p/=0]==6
+--     ]
+-- testPrimes=[2,3,5,7,11,13,17,23]
+-- primes=[2,3,5,7,11,13,17,23,29]
+-- test =
+--     sum[y|
+--     y<-linkPrime testPrimes,
+--     y<1000000,
+--     allPrime (y)
+--     ]==1242490
+-- p146 =[y|y<-linkPrime primes,y<150000000,allPrime y]
+-- problem_146=[a|a<-p146, allNext a]
+-- allNext x=
+--     sum [1|(x,y)<-zip a b,x==y]==6
+--     where
+--     a=[x^2+b|b<-six]
+--     b=head a:map nextPrime a
+-- nextPrime x=head [a|a<-[(x+1)..],isPrime a]
+
+-- -- (eq. to) find2km (2^k * n) = (k,n)
+-- find2km :: Integral a => a -> (a,a)
+-- find2km n = f 0 n
+--     where 
+--         f k m
+--             | r == 1 = (k,m)
+--             | otherwise = f (k+1) q
+--             where (q,r) = quotRem m 2        
+ 
+-- -- n is the number to test; a is the (presumably randomly chosen) witness
+-- millerRabinPrimality :: Integer -> Integer -> Bool
+-- millerRabinPrimality n a
+--     | a <= 1 || a >= n-1 = 
+--         error $ "millerRabinPrimality: a out of range (" 
+--               ++ show a ++ " for "++ show n ++ ")" 
+--     | n < 2 = False
+--     | even n = False
+--     | b0 == 1 || b0 == n' = True
+--     | otherwise = iter (tail b)
+--     where
+--         n' = n-1
+--         (k,m) = find2km n'
+--         b0 = powMod n a m
+--         b = take (fromIntegral k) $ iterate (squareMod n) b0
+--         iter [] = False
+--         iter (x:xs)
+--             | x == 1 = False
+--             | x == n' = True
+--             | otherwise = iter xs
+ 
+-- -- (eq. to) pow' (*) (^2) n k = n^k
+-- pow' :: (Num a, Integral b) => (a->a->a) -> (a->a) -> a -> b -> a
+-- pow' _ _ _ 0 = 1
+-- pow' mul sq x' n' = f x' n' 1
+--     where 
+--         f x n y
+--             | n == 1 = x `mul` y
+--             | r == 0 = f x2 q y
+--             | otherwise = f x2 q (x `mul` y)
+--             where
+--                 (q,r) = quotRem n 2
+--                 x2 = sq x
+ 
+-- mulMod :: Integral a => a -> a -> a -> a
+-- mulMod a b c = (b * c) `mod` a
+-- squareMod :: Integral a => a -> a -> a
+-- squareMod a b = (b * b) `rem` a
+ 
+-- -- (eq. to) powMod m n k = n^k `mod` m
+-- powMod :: Integral a => a -> a -> a -> a
+-- powMod m = pow' (mulMod m) (squareMod m)
