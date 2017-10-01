@@ -63,7 +63,7 @@ fixedLengthSet :: Int -> IO (Set Int)
 fixedLengthSet n = do
   p <- getStdGen                    -- used to randomly pick an item
   x <- getRandomInt 100             -- get a random int
-  return $ list2set $ take n $ nub (randomRs (0, 500) p)
+  return $ list2set $ take n $ take x $ nub (randomRs (0, 500) p)
 
 -- =============================================================================
 -- Exercise 3 :: Time spent +-
