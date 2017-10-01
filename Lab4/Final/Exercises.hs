@@ -34,7 +34,7 @@ main = do
 -- Exercise 1 :: Time spent: +-
 -- =============================================================================
 
-exercise1 = print $ "Read chapter 4"
+exercise1 = putStrLn "Read chapter 4"
 
 -- | Bauke van den Berg
 -- Time spent: 4 hours on reading / constructing the questions
@@ -59,7 +59,7 @@ exercise3 = do
 -- =============================================================================
 -- Exercise 4 :: Time spent +-
 -- =============================================================================
-exercise4 = print $ "Read Chapter 5"
+exercise4 = putStrLn "Read Chapter 5"
 
 -- | Bauke van den Berg
 -- Time spent: 3 hours on reading / trying out some haskell programs
