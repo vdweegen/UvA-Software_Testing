@@ -155,16 +155,40 @@ trClos xs | xs == transitive = sort xs
           where transitive = nub $ xs ++ (xs @@ xs)
 
 -- =============================================================================
--- Exercise 7 :: Time spent +-
+-- Exercise 7 :: Time spent +- 1 hour on properties
 -- =============================================================================
 exercise7 = do
-  quickCheck prop_no_duplicates
+  quickCheck prop_trClos_no_duplicates
+  quickCheck prop_trClos_original
+  quickCheck prop_trClos_ordered
+  quickCheck prop_symClos_no_duplicates
+  quickCheck prop_symClos_original
+  quickCheck prop_symClos_ordered
+  quickCheck prop_symClos_swapped
 
 -- | First try to implement my own Arbitrary, however found out that these are
 -- already provided because we have instances for lists and tuples of arbitrary.
 -- Thus we can simply use them, since we are using the type alias Rel a
-prop_no_duplicates :: Rel Int -> Bool
-prop_no_duplicates a = nub b == b where b = trClos a
+prop_trClos_no_duplicates :: Rel Int -> Bool
+prop_trClos_no_duplicates a = nub b == b where b = trClos a
+
+prop_trClos_original :: Rel Int -> Bool
+prop_trClos_original a = all (`elem` b) a where b = trClos a
+
+prop_trClos_ordered :: Rel Int -> Bool
+prop_trClos_ordered a = sort b == b where b = trClos a
+
+prop_symClos_no_duplicates :: Rel Int -> Bool
+prop_symClos_no_duplicates a = nub b == b where b = symClos a
+
+prop_symClos_original :: Rel Int -> Bool
+prop_symClos_original a = all (`elem` b) a where b = symClos a
+
+prop_symClos_ordered :: Rel Int -> Bool
+prop_symClos_ordered a = sort b == b where b = symClos a
+
+prop_symClos_swapped :: Rel Int -> Bool
+prop_symClos_swapped a = all (\(x,y) -> (y,x) `elem` b) a where b = symClos a
 
 -- =============================================================================
 -- Exercise 8 :: Time spent +-
