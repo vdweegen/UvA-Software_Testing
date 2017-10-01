@@ -162,11 +162,18 @@ exercise7 = do
   quickCheck prop_unchanged
   quickCheck prop_initialRelations
 
+-- | For any closure with non-different fields, the output is the same
+prop_unchanged :: Int -> Bool
+prop_unchanged n =
+  (a == trClos a) && (a == symClos a)
+  where a = [(n,n)]
+
 -- | All elements in the original set are present in the closure
 prop_initialRelations n = monadicIO $ do
   result <- run (checkContent n)
   assert (result)
 
+-- | Validate that all elements of a are present in b
 checkContent :: Int -> IO Bool
 checkContent n = do
   rels <- randomRelations n
@@ -181,14 +188,6 @@ checkContent n = do
     putStr "Difference between: "
     print $ (\\) rels sym
     return False
-
-
-
--- | For any closure with non-different fields, the output is the same
-prop_unchanged :: Int -> Bool
-prop_unchanged n =
-  (a == trClos a) && (a == symClos a)
-  where a = [(n,n)]
 
 -- =============================================================================
 -- Exercise 8 :: Time spent +- 60 minutes
