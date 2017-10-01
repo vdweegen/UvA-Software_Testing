@@ -51,6 +51,9 @@ exercise1 = print "Read chapter 4"
 -- | Willem Jan Glerum
 -- Example 4.52 still fuzzy about the type inference on how that works
 
+-- | Cas van der Weegen :: Time spent: 90 minutes reading
+-- how can one test operations on list comprehensions that simulate infinity?
+
 -- =============================================================================
 -- Exercise 2 :: Time spent +- 120 minutes
 --                          + 20 minutes discussion
@@ -178,11 +181,12 @@ checkSet (Positive n) p = do
 -- ===============
 -- | Use unionSet from SetOrd.hs
 -- Use intersect and \\ from Data.List
-intersectionSet, differenceSet :: (Ord a) => Set a -> Set a -> Set a
+intersectionSet :: (Ord a) => Set a -> Set a -> Set a
 intersectionSet (Set []) _ = emptySet
 intersectionSet _ (Set []) = emptySet
 intersectionSet (Set xs) (Set ys) = Set (xs `intersect` ys)
 
+differenceSet :: (Ord a) => Set a -> Set a -> Set a
 differenceSet set1 (Set []) = set1
 differenceSet (Set []) _ = emptySet
 differenceSet (Set xs) (Set ys) = Set (xs  \\ ys)
@@ -223,6 +227,8 @@ exercise4 = print "Read Chapter 5"
 -- Same as for chapter four, how to show / construct proof for the theorems / statements
 -- Additional examples / study into correct notation of sets composed with relations
 -- Study the notation / composition of 'derived' sets, such as inverse / closures
+
+-- | Cas van der Weegen :: Time spent: 120 minutes reading
 
 -- =============================================================================
 -- Exercise 5 :: Time spent +- 10 minutes + 10 minutes discussion
@@ -331,6 +337,7 @@ simpleCounterExample = do
   let rsc = trSymClos relation
   putStrLn $ show stc ++ " /= " ++ show rsc
 
+prop_checkCompare :: Int -> Property
 prop_checkCompare n = monadicIO $ do
   result <- run (checkComparison n)
   assert result
@@ -394,6 +401,7 @@ exercise10 = print $ "Hello"
 possibleFinishes n | n == 0 = 0
                    | otherwise = totalFinishes n + totalFinishes (n-1)
 
+<<<<<<< HEAD
 totalFinishes n = amountOfSingleFinishes n + amountOfDoubleFinishes n + amountOfTripleFinishes n
 
 
@@ -424,3 +432,7 @@ doubleValues = [ n + n | n <- [2,4..40]] ++ [50]
 
 allPossibleValues :: [Integer]
 allPossibleValues = [1..20] ++ [2,4..40] ++ [3,6..60] ++ [25] ++ [50]
+=======
+getSum :: Integer -> Integer
+getSum n = sum [ read [c] :: Integer | c <- (show n)]
+>>>>>>> d105e295e13cc0ee2b6740e6f461e4107179bc3f
