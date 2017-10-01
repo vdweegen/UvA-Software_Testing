@@ -376,13 +376,15 @@ trSymClos :: Ord a => Rel a -> Rel a
 trSymClos = trClos . symClos
 
 -- =============================================================================
--- Exercise 9 :: Time spent +-
+-- Exercise 9 :: Time spent +- 5 minutes
 -- =============================================================================
+
+-- We only had a quick look and skipped it
 exercise9 = do
   print()
 
 -- =============================================================================
--- Exercise 10 :: Time spent +-
+-- Exercise 10 :: Time spent +- 30 minutes
 -- =============================================================================
 
 -- | Random difficult problem. However we were not able to solve the solution for 10^15
