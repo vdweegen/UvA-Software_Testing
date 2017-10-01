@@ -125,7 +125,7 @@ uni' a b = a ++ (diff b a)
 prop_associative_uni xs ys = (uni' xs ys ) == (uni' ys xs)
 prop_commutative_uni xs ys zs = uni' (uni' xs ys ) zs == uni' (uni' xs zs) ys
 
-prop_associative_diff xs ys = (uni'' xs ys ) == (uni'' ys xs)
+-- prop_associative_diff xs ys = (uni'' xs ys ) == (uni'' ys xs)
 -- prop_commutative_diff xs ys zs = uni'' (uni'' xs ys ) zs == uni' (uni'' xs zs) ys
 
 {-- 
@@ -229,3 +229,17 @@ exercise9 = do
 -- =============================================================================
 exercise10 = do
   print()
+
+
+primePatterns = [1,3,7,9,13,27]
+
+consecutivePrime x = all prime $  map (+ (x ^ 2)) primePatterns
+
+investigatePrimePattern  n =  take n $  [x| x <- [1..], consecutivePrime x] 
+
+prime :: Integer -> Bool
+prime n = n > 1 && all (\ x -> rem n x /= 0) xs
+  where xs = takeWhile (\ y -> y^2 <= n) primes
+
+primes :: [Integer]
+primes = 2 : filter prime [3..]
