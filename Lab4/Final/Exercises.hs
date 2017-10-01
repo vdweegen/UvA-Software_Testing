@@ -434,3 +434,14 @@ doubleValues = [2,4..40] ++ [50]
 
 allPossibleValues :: [Integer]
 allPossibleValues = sort $ nub $ [1..20] ++ [2,4..40] ++ [3,6..60] ++ [25] ++ [50]
+
+type Dart = (Char,Integer)
+
+singleDarts :: [Dart]
+singleDarts = [('S',n) | n <- [1..20]]
+
+doubleDarts :: [Dart]
+doubleDarts = [('D',n) | n <- [2,4..40]] ++ [('D',25)]
+
+tripleDarts :: [Dart]
+tripleDarts = [('T', n) | n <- [3,6..60]] ++ [('D',50)]
