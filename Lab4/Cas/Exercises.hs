@@ -72,10 +72,13 @@ exercise3 = do
   putStrLn "Manual:"
   test 1 100 set intersectionSet isIntersection
   test 1 100 set differenceSet isDifference
+  test 1 100 set unionSet isUnion
   putStrLn "quickCheck:"
   quickCheckResult prop_checkIntersection
   -- verboseCheckResult prop_checkIntersection
   quickCheckResult prop_checkDifference
+  -- verboseCheckResult prop_checkDifferece
+  quickCheckResult prop_checkUnion
   -- verboseCheckResult prop_checkDifferece
 
 -- little helper
@@ -109,6 +112,14 @@ isDifference s (Set (x:xs)) s3
   | not(inSet x s) && inSet x s3 = isDifference s (Set xs) s3
   | otherwise = False
 
+-- test union (all items should be in either a or b)
+isUnion :: Ord a => Set a -> Set a -> Set a -> Bool
+isUnion (Set []) _ _ = True
+isUnion (Set (x:xs)) s2 s3
+  | inSet x s2 = isUnion (Set xs) s2 s3
+  | inSet x s3 = isUnion (Set xs) s2 s3
+  | otherwise = False
+
 -- Own test (adapted from Lab2)
 test :: Integer -> Integer -> IO (Set Int) -> (Set Int -> Set Int -> Set Int)
   -> (Set Int -> Set Int -> Set Int -> Bool) -> IO ()
@@ -131,6 +142,10 @@ prop_checkDifference n = monadicIO $ do
   result <- run (checkDifference n)
   assert (result)
 
+prop_checkUnion n = monadicIO $ do
+  result <- run (checkUnion n)
+  assert (result)
+
 checkIntersection :: Positive Int -> IO Bool
 checkIntersection (Positive n) = do
   s1 <- fixedLengthSet n
@@ -144,6 +159,14 @@ checkDifference (Positive n) = do
   s1 <- fixedLengthSet n
   s2 <- fixedLengthSet n
   if isDifference (differenceSet s1 s2) s1 s2 then
+    do return True
+  else return False
+
+checkUnion :: Positive Int -> IO Bool
+checkUnion (Positive n) = do
+  s1 <- fixedLengthSet n
+  s2 <- fixedLengthSet n
+  if isUnion (unionSet s1 s2) s1 s2 then
     do return True
   else return False
 

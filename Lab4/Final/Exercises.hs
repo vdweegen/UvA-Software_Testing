@@ -5,6 +5,8 @@ import System.Random
 import Lab2.Lecture2
 import Lab4.SetOrd
 import Test.QuickCheck
+import Test.QuickCheck.Monadic
+
 -- Define Main --
 main = do
     putStrLn $ "===================="
@@ -87,6 +89,10 @@ exercise3 = do
   putStrLn "Manual:"
   testMan 1 100 randomSet intersectionSet isIntersection
   testMan 1 100 randomSet differenceSet isDifference
+  testMan 1 100 randomSet unionSet isUnion
+  quickCheckResult prop_checkIntersection
+  quickCheckResult prop_checkDifference
+  quickCheckResult prop_checkUnion
   putStrLn "quickCheck:"
   quickCheck prop_union_subset
   quickCheck prop_union_associative
@@ -115,11 +121,25 @@ isDifference s (Set (x:xs)) s3
   | not(inSet x s) && inSet x s3 = isDifference s (Set xs) s3
   | otherwise = False
 
+-- test union (all items should be in either a or b)
+isUnion :: Ord a => Set a -> Set a -> Set a -> Bool
+isUnion (Set []) _ _ = True
+isUnion (Set (x:xs)) s2 s3
+  | inSet x s2 = isUnion (Set xs) s2 s3
+  | inSet x s3 = isUnion (Set xs) s2 s3
+  | otherwise = False
+
 randomSet :: IO (Set Int)
 randomSet = do
   p <- getStdGen                    -- used to randomly pick an item
   x <- getRandomInt 100             -- get a random int
   return $ list2set $ take x $ nub (randomRs (0, 500) p)
+
+randomSetFixed :: Int -> IO (Set Int)
+randomSetFixed n = do
+  p <- getStdGen                    -- used to randomly pick an item
+  x <- getRandomInt 100             -- get a random int
+  return $ list2set $ take n $ take x $ nub (randomRs (0, 500) p)
 
 -- Own test (adapted from Lab2)
 testMan :: Integer -> Integer -> IO (Set Int) -> (Set Int -> Set Int -> Set Int)
@@ -133,6 +153,42 @@ testMan k n i f r =
     if r (f s1 s2) s1 s2 then
       do testMan (k+1) n i f r
     else error ("[" ++ show s1 ++ "," ++ show s2 ++ "] failed after " ++ (show k) ++ " attempts")
+
+prop_checkIntersection n = monadicIO $ do
+  result <- run (checkIntersection n)
+  assert (result)
+
+prop_checkDifference n = monadicIO $ do
+  result <- run (checkDifference n)
+  assert (result)
+
+prop_checkUnion n = monadicIO $ do
+  result <- run (checkUnion n)
+  assert (result)
+
+checkUnion :: Positive Int -> IO Bool
+checkUnion (Positive n) = do
+  s1 <- randomSetFixed n
+  s2 <- randomSetFixed n
+  if isUnion (unionSet s1 s2) s1 s2 then
+    do return True
+  else return False
+
+checkIntersection :: Positive Int -> IO Bool
+checkIntersection (Positive n) = do
+  s1 <- randomSetFixed n
+  s2 <- randomSetFixed n
+  if isIntersection (intersectionSet s1 s2) s1 s2 then
+    do return True
+  else return False
+
+checkDifference :: Positive Int -> IO Bool
+checkDifference (Positive n) = do
+  s1 <- randomSetFixed n
+  s2 <- randomSetFixed n
+  if isDifference (differenceSet s1 s2) s1 s2 then
+    do return True
+  else return False
 
 -- ===============
 -- QuickTest Test
