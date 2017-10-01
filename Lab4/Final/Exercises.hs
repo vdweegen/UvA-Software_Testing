@@ -11,9 +11,9 @@ main = do
     putStrLn $ "Assignment 4 / Lab 4"
     putStrLn $ "===================="
     putStrLn $ "> Exercise 1"
-    exercise1
+    -- exercise1
     putStrLn $ "> Exercise 2"
-    exercise2
+    -- exercise2
     putStrLn $ "> Exercise 3"
     exercise3
     putStrLn $ "> Exercise 4"
@@ -84,7 +84,94 @@ instance (Arbitrary a, Ord a) => Arbitrary (Set a) where
 -- Exercise 3 :: Time spent +-
 -- =============================================================================
 exercise3 = do
-  print()
+  putStrLn "Manual:"
+  testMan 1 100 randomSet intersectionSet isIntersection
+  testMan 1 100 randomSet differenceSet isDifference
+  putStrLn "quickCheck:"
+  quickCheck prop_union_subset
+  quickCheck prop_union_associative
+  quickCheck prop_union_diff
+  quickCheck prop_intersect_subset
+  quickCheck prop_intersect_associative
+  quickCheck prop_difference_subset
+  quickCheck prop_difference_notassociative
+
+-- ===============
+-- Own Test
+-- ===============
+-- test intersection (all items should be in both sets)
+isIntersection :: Ord a => Set a -> Set a -> Set a -> Bool
+isIntersection (Set []) _ _ = True
+isIntersection (Set (x:xs)) s2 s3
+  | inSet x s2 && inSet x s3 = isIntersection (Set xs) s2 s3
+  | otherwise = False
+
+-- test difference (all items in set a should not be in set b)
+isDifference :: Ord a => Set a -> Set a -> Set a -> Bool
+isDifference _ (Set []) _ = True
+isDifference (Set []) _ _ = True
+isDifference s (Set (x:xs)) s3
+  | inSet x s = isDifference s (Set xs) s3
+  | not(inSet x s) && inSet x s3 = isDifference s (Set xs) s3
+  | otherwise = False
+
+randomSet :: IO (Set Int)
+randomSet = do
+  p <- getStdGen                    -- used to randomly pick an item
+  x <- getRandomInt 100             -- get a random int
+  return $ list2set $ take x $ nub (randomRs (0, 500) p)
+
+-- Own test (adapted from Lab2)
+testMan :: Integer -> Integer -> IO (Set Int) -> (Set Int -> Set Int -> Set Int)
+  -> (Set Int -> Set Int -> Set Int -> Bool) -> IO ()
+testMan k n i f r =
+  if k == n then
+    putStrLn ("+++ OK, passed " ++ show n ++ " tests")
+  else do
+    s1 <- i
+    s2 <- i
+    if r (f s1 s2) s1 s2 then
+      do testMan (k+1) n i f r
+    else error ("[" ++ show s1 ++ "," ++ show s2 ++ "] failed after " ++ (show k) ++ " attempts")
+
+-- ===============
+-- QuickTest Test
+-- ===============
+-- | Use unionSet from SetOrd.hs
+-- Use intersect and \\ from Data.List
+intersectionSet, differenceSet :: (Ord a) => Set a -> Set a -> Set a
+intersectionSet (Set []) _ = emptySet
+intersectionSet _ (Set []) = emptySet
+intersectionSet (Set xs) (Set ys) = Set (xs `intersect` ys)
+
+differenceSet set1 (Set []) = set1
+differenceSet (Set []) _ = emptySet
+differenceSet (Set xs) (Set ys) = Set (xs  \\ ys)
+
+-- | Union props
+prop_union_subset :: Set Int -> Set Int -> Bool
+prop_union_subset a b = a `subSet` s && b `subSet` s where s = a `unionSet` b
+
+prop_union_associative :: Set Int -> Set Int -> Bool
+prop_union_associative a b = a `unionSet` b == b `unionSet`a
+
+prop_union_diff :: Set Int -> Set Int -> Bool
+prop_union_diff a b = (s `differenceSet` b) `subSet` a && (s `differenceSet` a) `subSet` b where s = a `unionSet` b
+
+-- | Intersect props
+prop_intersect_subset :: Set Int -> Set Int -> Bool
+prop_intersect_subset a b = s `subSet` a && s `subSet` b where s = a `intersectionSet` b
+
+prop_intersect_associative :: Set Int -> Set Int -> Bool
+prop_intersect_associative a b = a `intersectionSet` b == b `intersectionSet` a
+
+-- | Difference props
+prop_difference_subset :: Set Int -> Set Int -> Bool
+prop_difference_subset a b = s `subSet` a where s = a `differenceSet` b
+
+prop_difference_notassociative :: Set Int -> Set Int -> Bool
+prop_difference_notassociative a b = isEmpty ((a `differenceSet` b) `intersectionSet` (b `differenceSet` a))
+
 -- =============================================================================
 -- Exercise 4 :: Time spent +-
 -- =============================================================================
