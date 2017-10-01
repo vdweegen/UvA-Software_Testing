@@ -45,13 +45,13 @@ exercise1 = print ()
 -- Exercise 2 :: Time spent +- 15 minutes
 -- Simly took the random form generator from Lab 3 and added the Set part
 -- =============================================================================
-exercise2 = randomInt 100 >>= (\n -> randomIntegers n)
+exercise2 = randomInt 100 >>= (\n -> randomSet n)
 
--- | Set of maximum n items
+-- | Set of maximum n ordered items, no duplicates, sorted
 randomSet :: Int -> IO (Set Int)
 randomSet n = do
                 xs <- randomIntegers n
-                return $ Set (nub xs)
+                return $ Set ((sort . nub) xs)
 
 randomIntegers :: Int -> IO [Int]
 randomIntegers n = sequence [ randomInt 100 | a <- [1..n]]
