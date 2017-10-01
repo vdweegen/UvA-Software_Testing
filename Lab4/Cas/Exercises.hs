@@ -38,7 +38,7 @@ main = do
 -- =============================================================================
 
 exercise1 = do
-  print()
+  putStrLn "Read Chapter 4"
 -- how can one test operations on list comprehensions that simulate infinity?
 --
 
@@ -151,7 +151,7 @@ checkDifference (Positive n) = do
 -- Exercise 4 :: Time spent +-
 -- =============================================================================
 exercise4 = do
-  print()
+  putStrLn "Read Chapter 5"
 
 -- =============================================================================
 -- Exercise 5 :: Time spent +-
