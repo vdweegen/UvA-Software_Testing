@@ -389,12 +389,38 @@ exercise9 = do
 
 -- | Random difficult problem. However we were not able to solve the solution for 10^15
 
-exercise10 = do
-  print(euler551 (10^6) 1)
+exercise10 = print $ "Hello"
 
-euler551 :: Integer -> Integer -> Integer
-euler551 n a | n < 2 = a
-             | otherwise = euler551 (n-1) s where s = a + getSum a
+possibleFinishes n | n == 0 = 0
+                   | otherwise = totalFinishes n + totalFinishes (n-1)
 
-getSum :: Integer -> Integer
-getSum n = sum [ read [c] :: Integer | c <- (show n)]
+totalFinishes n = amountOfSingleFinishes n + amountOfDoubleFinishes n + amountOfTripleFinishes n
+
+
+amountOfTripleFinishes n | n == 0 = 0
+                         | otherwise = computeTripleFinishes n + amountOfTripleFinishes (n-1)
+
+computeTripleFinishes :: Integer -> Integer
+computeTripleFinishes n = sum $ [ finisheable rest | firstDart <- allPossibleValues, secondDart <- allPossibleValues, let rest = (n - firstDart - secondDart)]
+
+amountOfDoubleFinishes :: Integer -> Integer
+amountOfDoubleFinishes n | n == 0 = 0
+                         | otherwise = computeFinishes n + amountOfDoubleFinishes (n-1)
+
+computeFinishes :: Integer -> Integer
+computeFinishes n = sum $ [ finisheable rest | firstDart <- allPossibleValues, let rest = (n - firstDart) ]
+
+
+amountOfSingleFinishes :: Integer -> Integer
+amountOfSingleFinishes n | n == 0 = 0
+                         | otherwise = finisheable n + amountOfSingleFinishes (n-1)
+
+finisheable :: Integer -> Integer
+finisheable n | n `elem` doubleValues = 1
+              | otherwise = 0
+
+doubleValues :: [Integer]
+doubleValues = [ n + n | n <- [2,4..40]] ++ [50]
+
+allPossibleValues :: [Integer]
+allPossibleValues = [1..20] ++ [2,4..40] ++ [3,6..60] ++ [25] ++ [50]
