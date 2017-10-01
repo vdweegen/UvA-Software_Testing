@@ -410,14 +410,20 @@ possibleFinishes n | n == 0 = 0
 totalFinishes n = finisheable n + amountOfDoubleFinishes n + amountOfTripleFinishes n
 
 amountOfTripleFinishes :: Integer -> Integer
-amountOfTripleFinishes n = genericLength $ nub $ [ (sort [a,b]) ++ [c] | a <- allPossibleValues, b <- allPossibleValues, c <- doubleValues, (a+b+c) == n ]
+amountOfTripleFinishes n = genericLength $ tripleFinishes n
+
+tripleFinishes :: Integer -> [[Integer]]
+tripleFinishes n = nub $ [ (sort [a,b]) ++ [c] | a <- allPossibleValues, b <- allPossibleValues, c <- doubleValues, (a+b+c) == n ]
 
 amountOfDoubleFinishes :: Integer -> Integer
 amountOfDoubleFinishes n | n == 0 = 0
                          | otherwise = computeFinishes n + amountOfDoubleFinishes (n-1)
 
 computeFinishes :: Integer -> Integer
-computeFinishes n = genericLength $ [ [a,b] | a <- allPossibleValues, b <- doubleValues, a + b == n]
+computeFinishes n = genericLength $ doubleFinishes n
+
+doubleFinishes :: Integer -> [[Integer]]
+doubleFinishes n = [ [a,b] | a <- allPossibleValues, b <- doubleValues, a + b == n]
 
 finisheable :: Integer -> Integer
 finisheable n | n `elem` doubleValues = 1
