@@ -21,9 +21,9 @@ main = do
     putStrLn $ "> Exercise 4"
     -- exercise4
     putStrLn $ "> Exercise 5"
-    exercise5
+    -- exercise5
     putStrLn $ "> Exercise 6"
-    exercise6
+    -- exercise6
     putStrLn $ "> Exercise 7"
     exercise7
     putStrLn $ "> Exercise 8"
@@ -277,10 +277,40 @@ trClos xs | xs == result = sort xs
           where result = sort $ nub $ xs ++ (xs @@ xs)
 
 -- =============================================================================
--- Exercise 7 :: Time spent +-
+-- Exercise 7 :: Time spent +- 10 minutes
+-- Adding a simple (hardly randomized) property to test
 -- =============================================================================
 exercise7 = do
-  print()
+  quickCheck prop_unchanged
+  quickCheck prop_initialRelations
+
+-- | All elements in the original set are present in the closure
+prop_initialRelations n = monadicIO $ do
+  result <- run (checkContent n)
+  assert (result)
+
+checkContent :: Int -> IO Bool
+checkContent n = do
+  rels <- randomRelations n
+  let sym = symClos rels
+  if null $ (\\) rels sym
+  then return True
+  else do
+    putStr "Input set: "
+    print rels
+    putStr "Symmettric closure: "
+    print $ sym
+    putStr "Difference between: "
+    print $ (\\) rels sym
+    return False
+
+
+
+-- | For any closure with non-different fields, the output is the same
+prop_unchanged :: Int -> Bool
+prop_unchanged n =
+  (a == trClos a) && (a == symClos a)
+  where a = [(n,n)]
 
 -- =============================================================================
 -- Exercise 8 :: Time spent +-
