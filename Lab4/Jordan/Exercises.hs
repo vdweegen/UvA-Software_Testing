@@ -2,7 +2,7 @@ module Lab4 where
 
 import Data.List
 import System.Random
-
+import Control.Monad
 import Lab4.SetOrd
 
 import Test.QuickCheck
@@ -40,10 +40,23 @@ exercise1 = do
   print()
 
 -- =============================================================================
--- Exercise 2 :: Time spent +-
+-- Exercise 2 :: Time spent +- 3
 -- =============================================================================
 exercise2 = do
-  print()
+  numberOfSets <- (getStdRandom (randomR (0, 100))) :: IO Int
+  upperBounds <- (getStdRandom (randomR (0, 100))) :: IO Int
+  seed <- (getStdRandom (randomR (0, 100))) :: IO Int
+  print $ length $ take numberOfSets $ (map randomSet (randomInts upperBounds seed))
+
+-- From book  1
+randomInts :: Int -> Int -> [Int]
+randomInts bound seed =
+  tail (randomRs (0,bound) (mkStdGen seed))
+
+randomSet :: Int -> (Set Int)
+randomSet n = Set listInts
+      where 
+      listInts = take n $ randomInts 100 10
 
 
 -- =============================================================================
@@ -130,20 +143,29 @@ symClos'' :: Ord a =>  Rel a -> Rel a
 symClos'' a = concatMap swapped a
     
 -- =============================================================================
--- Exercise 6 :: Time spent +- 20 min
+-- Exercise 6 :: Time spent +- 30 min
 -- =============================================================================
 exercise6 = do
   print()
 
 -- TODO Print out example
-  
+
+infixr 5 @@
+ 
+(@@) :: Eq a => Rel a -> Rel a -> Rel a
+r @@ s = nub [ (x,z) | (x,y) <- r, (w,z) <- s, y == w ]
+
 transited :: Ord a => [(a, a)] ->(a, a) -> [(a, a)]
 transited r  (a, c) = (a, c)  : [(a, y)| (x, y) <- r, c == x]
 
-trClos' :: Ord a => [(a, a)] -> [(a, a)]
+trClos' :: Ord a => Rel a -> Rel a
 trClos' r = nub $ concatMap (transited r ) r
 
-trClos :: Ord a => [(a, a)] -> [(a, a)]
+-- Does not work for 4,1 ....
+-- trClos'' :: Ord a => Rel a -> Rel a
+-- trClos'' r = nub $ (r @@ r)
+
+trClos :: Ord a => Rel a -> Rel a
 trClos = nub . until (\x -> (nub $ trClos' x) == (nub  x)) trClos'
 
 -- =============================================================================
