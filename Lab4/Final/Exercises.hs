@@ -384,5 +384,15 @@ exercise9 = do
 -- =============================================================================
 -- Exercise 10 :: Time spent +-
 -- =============================================================================
+
+-- | Random difficult problem. However we were not able to solve the solution for 10^15
+
 exercise10 = do
-  print()
+  print(euler551 (10^6) 1)
+
+euler551 :: Integer -> Integer -> Integer
+euler551 n a | n < 2 = a
+             | otherwise = euler551 (n-1) s where s = a + getSum a
+
+getSum :: Integer -> Integer
+getSum n = sum [ read [c] :: Integer | c <- (show n)]
