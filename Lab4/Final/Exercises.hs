@@ -397,51 +397,52 @@ instance Show Statement where
   show (Seq xs) = concatMap (show) xs
 
 -- =============================================================================
--- Exercise 10 :: Time spent +- 30 minutes
+-- Exercise 10 :: Time spent +- 2 hours
+-- First made the mistake of using values instead of real darts.
+-- This lead to issues when cleaning the duplicates
+-- Added Dart type to have distinction between those
 -- =============================================================================
 
 -- | Random Difficult Problem
 
 exercise10 = print $ possibleFinishes 99
 
-possibleFinishes n | n == 0 = 0
-                   | otherwise = totalFinishes n + totalFinishes (n-1)
+possibleFinishes n | n <= 2 = 1
+                   | otherwise = sum $ [ totalFinishes a | a <- [2..n]]
 
+-- | amount of finishes for a distinct value
+totalFinishes :: Integer -> Integer
 totalFinishes n = finisheable n + amountOfDoubleFinishes n + amountOfTripleFinishes n
 
 amountOfTripleFinishes :: Integer -> Integer
 amountOfTripleFinishes n = genericLength $ tripleFinishes n
 
-tripleFinishes :: Integer -> [[Integer]]
-tripleFinishes n = nub $ [ (sort [a,b]) ++ [c] | a <- allPossibleValues, b <- allPossibleValues, c <- doubleValues, (a+b+c) == n ]
+tripleFinishes :: Integer -> [[Dart]]
+tripleFinishes n = nub $ [ (sort [a,b]) ++ [c] | a <- allDarts, b <- allDarts, c <- doubleDarts, (snd a) + (snd b) + (snd c) == n ]
 
 amountOfDoubleFinishes :: Integer -> Integer
-amountOfDoubleFinishes n | n == 0 = 0
-                         | otherwise = computeFinishes n + amountOfDoubleFinishes (n-1)
+amountOfDoubleFinishes n = genericLength $ doubleFinishes n
 
-computeFinishes :: Integer -> Integer
-computeFinishes n = genericLength $ doubleFinishes n
-
-doubleFinishes :: Integer -> [[Integer]]
-doubleFinishes n = [ [a,b] | a <- allPossibleValues, b <- doubleValues, a + b == n]
+doubleFinishes :: Integer -> [[Dart]]
+doubleFinishes n = nub $ [ [a,b] | a <- allDarts, b <- doubleDarts, (snd a) + (snd b) == n]
 
 finisheable :: Integer -> Integer
 finisheable n | n `elem` doubleValues = 1
               | otherwise = 0
 
 doubleValues :: [Integer]
-doubleValues = [2,4..40] ++ [50]
+doubleValues = [snd dart | dart <- doubleDarts]
 
-allPossibleValues :: [Integer]
-allPossibleValues = sort $ nub $ [1..20] ++ [2,4..40] ++ [3,6..60] ++ [25] ++ [50]
+allDarts :: [Dart]
+allDarts = singleDarts ++ doubleDarts ++ tripleDarts
 
 type Dart = (Char,Integer)
 
 singleDarts :: [Dart]
-singleDarts = [('S',n) | n <- [1..20]]
+singleDarts = [('S',n) | n <- [1..20]] ++ [('S', 25)]
 
 doubleDarts :: [Dart]
-doubleDarts = [('D',n) | n <- [2,4..40]] ++ [('D',25)]
+doubleDarts = [('D',n) | n <- [2,4..40]] ++ [('D',50)]
 
 tripleDarts :: [Dart]
-tripleDarts = [('T', n) | n <- [3,6..60]] ++ [('D',50)]
+tripleDarts = [('T', n) | n <- [3,6..60]]
