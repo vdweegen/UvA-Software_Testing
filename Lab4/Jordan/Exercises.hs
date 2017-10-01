@@ -56,10 +56,19 @@ randomInts :: Int -> Int -> [Int]
 randomInts bound seed =
   tail (randomRs (0,bound) (mkStdGen seed))
 
+
+
 randomSet :: Int -> (Set Int)
 randomSet n = Set listInts
       where 
       listInts = take n $ randomInts 100 10
+
+
+-- instance (Eq a, Ord a, Num a) => Random (Set a) where
+--   random g = do 
+--           randomInts
+--           return (Set [], g)
+
 
 instance (Eq a, Ord a, Arbitrary a) => Arbitrary (Set a) where
   arbitrary = do
@@ -75,13 +84,11 @@ exercise3 = do
   print $ diff'' [1,2,3] [2,3,4]
 
   print $ inter [1,2,3] [2,3,4]
-  print $ inter' [1,2,3] [2,3,4]
   print $ inter'' [1,2,3] [2,3,4]
   print $ inter''' [1,2,3] [2,3,4]
 
   print $ uni [1,2,3] [2,3,4]
   print $ uni' [1,2,3] [2,3,4]
-  print $ uni'' [1,2,3] [2,3,4]
 
 diff :: Eq a => [a] -> [a] -> [a]
 diff a b = (\\) a b
@@ -99,10 +106,7 @@ diff'' :: Eq a => [a] -> [a] -> [a]
 diff'' a b = [x | x <- a, notMember x b]
 
 inter :: Eq a => [a] -> [a] -> [a]
-inter a b = intersect a b
-
-inter' :: Eq a => [a] -> [a] -> [a]
-inter' a b = [x | x <- a, member x b ]
+inter a b = [x | x <- a, member x b ]
 
 inter'' :: Eq a => [a] -> [a] -> [a]
 inter'' a b = filter ( (flip member) b ) a
@@ -110,22 +114,19 @@ inter'' a b = filter ( (flip member) b ) a
 inter''' :: Eq a => [a] -> [a] -> [a]
 inter''' a b = fst $ partition (flip member b) a
 
-uni :: Eq a => [a] -> [a] -> [a]
-uni a b = union a b
-
 -- Does not conform to haskell spec
+uni :: Eq a => [a] -> [a] -> [a]
+uni a b =  a ++ b
+
 uni' :: Eq a => [a] -> [a] -> [a]
-uni' a b = nub $ a ++ b
-
-uni'' :: Eq a => [a] -> [a] -> [a]
-uni'' a b = a ++ (diff b a)
+uni' a b = a ++ (diff b a)
 
 
-prop_associative_uni xs ys = (uni'' xs ys ) == (uni'' ys xs)
-prop_commutative_uni xs ys zs = uni'' (uni'' xs ys ) zs == uni'' (uni'' xs zs) ys
+prop_associative_uni xs ys = (uni' xs ys ) == (uni' ys xs)
+prop_commutative_uni xs ys zs = uni' (uni' xs ys ) zs == uni' (uni' xs zs) ys
 
 prop_associative_diff xs ys = (uni'' xs ys ) == (uni'' ys xs)
-prop_commutative_diff xs ys zs = uni'' (uni'' xs ys ) zs == uni'' (uni'' xs zs) ys
+-- prop_commutative_diff xs ys zs = uni'' (uni'' xs ys ) zs == uni' (uni'' xs zs) ys
 
 {-- 
 associative
