@@ -272,17 +272,17 @@ exercise10 = do
   print()
 
 summedData :: Integer -> Integer
-summedData n = sumUp n []
+summedData n = sumUp n 0
 
-sumUp :: Integer -> [Integer] -> Integer
-sumUp n xs | n == 0 = sum xs
-           | otherwise = sumUp (n-1) (nextList xs)
+sumUp :: Integer -> Integer -> Integer
+sumUp n sum | n == 0 = sum
+            | otherwise = sumUp (n-1) (nextSum sum)
 
-nextList :: [Integer] -> [Integer]
-nextList [] = [1]
-nextList xs = xs ++ splitInt (sum xs)
+nextSum :: Integer -> Integer
+nextSum 0 = 1
+nextSum n = n + splitInt n
 
-splitInt :: Integer -> [Integer]
-splitInt n = [ read [c] :: Integer | c <- (show n)]
+splitInt :: Integer -> Integer
+splitInt n = sum $ [ read [c] :: Integer | c <- (show n)]
 
 
