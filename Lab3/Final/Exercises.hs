@@ -479,7 +479,6 @@ exercise5 = do
   quickCheck prop_wiki3
   quickCheck prop_variablesMaintained
   quickCheck prop_conjunctionsMaintained
-  quickCheck w
 
 -- | Manual checks for correct conversion
 prop_wiki1 =
