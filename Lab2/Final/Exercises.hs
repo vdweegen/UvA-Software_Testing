@@ -218,8 +218,7 @@ prop_permutation_validate_against_lib :: [Integer] -> Bool
 prop_permutation_validate_against_lib xs = allOf True (map (isPermutation xs) (permutations xs))
 
 isPermutation :: Eq a => [a] -> [a] -> Bool
-isPermutation xs ys | length xs /= length ys = False
-                    | otherwise = null $ (\\) xs ys
+isPermutation xs ys  =  (length xs == length ys) && null (xs \\ ys)
 
 -- Exercise 5 :: Bauke and Cas' merged versions
 --            :: Time spent: 60 minutes (sum of its parts and refactoring/merging)
@@ -232,6 +231,7 @@ isPermutation xs ys | length xs /= length ys = False
 exercise5 = do
   quickCheck prop_derangement_validate_length
   quickCheck prop_derangement_validate_content
+  quickCheck prop_derangement_permutations -- Try Counterexamples
   quickCheckWith stdArgs {maxSize=10} prop_derangement_validate_against_lib
   quickCheckWith stdArgs {maxSize=10} prop_derangement_empty_lists
 
@@ -250,6 +250,10 @@ prop_derangement_validate_against_lib xs = allOf True (map (isDerangement xs) (d
 prop_derangement_empty_lists :: Positive Integer -> Bool
 prop_derangement_empty_lists (Positive n) =
   [] == deran [ n | a <- [0..n]]
+
+prop_derangement_permutations :: Positive Integer -> Bool
+prop_derangement_permutations (Positive n) =
+  not $ (not (isDerangement [1..n] [2*n..3*n]) && (isPermutation [1..n] [2*n..3*n]))
 
 isDerangement :: Eq a => [a] -> [a] -> Bool
 isDerangement x y = ((length $ findIndices id $ zipWith (==) x y) == 0) && isPermutation x y
