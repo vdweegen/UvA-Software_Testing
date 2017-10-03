@@ -149,7 +149,13 @@ exercise2 = do
 -- Exercise 3 :: Time spent: +-
 -- =============================================================================
 exercise3 = do
-  print()
+  print $ solveAndCountNrc example
+
+solveAndCountNrc :: Grid -> Int
+solveAndCountNrc gr =
+  let
+    x = nrcSolveNs (initNrcNode gr)
+  in length x
 
 -- =============================================================================
 -- Exercise 4 :: Time spent: +-
