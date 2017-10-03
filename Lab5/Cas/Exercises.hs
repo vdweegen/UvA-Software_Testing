@@ -150,6 +150,14 @@ exercise2 = do
 -- =============================================================================
 exercise3 = do
   print $ solveAndCountNrc example
+  
+calculateHints :: Grid -> Int
+calculateHints gr = sum $ map calculateHintsRow gr
+
+calculateHintsRow :: [Value] -> Int
+calculateHintsRow r = sum $ map (\a -> 1) $ filter (> 1) r
+
+
 
 solveAndCountNrc :: Grid -> Int
 solveAndCountNrc gr =
