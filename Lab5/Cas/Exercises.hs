@@ -1,6 +1,9 @@
 module Lab5 where
 
+import System.Random
 import Data.List
+import Data.Maybe (fromJust)
+import Data.Sequence (Seq,fromList)
 import Lecture5
 import Example
 
@@ -10,9 +13,9 @@ main = do
     putStrLn "Assignment 5 / Lab 5"
     putStrLn "===================="
     putStrLn "> Exercise 1"
-    exercise1
+    -- exercise1
     putStrLn "> Exercise 2"
-    exercise2
+    -- exercise2
     putStrLn "> Exercise 3"
     exercise3
     putStrLn "> Exercise 4"
@@ -149,8 +152,31 @@ exercise2 = do
 -- Exercise 3 :: Time spent: +-
 -- =============================================================================
 exercise3 = do
-  print $ solveAndCountNrc example
-  print $ removeHint [0,1,0,0,1,0,0,0]
+  -- print $ calculateHints example
+  -- print $ removeHint [0,1,0,0,1,0,0,0]
+  -- print $ randomRemoveHint example
+  -- x <- randomRemoveHint example
+  -- print $ findRowIndex x example
+  x <- test example
+  print $ calculateHints x
+
+test gr = do
+  x <- randomRow gr
+  return $ replaceAtIndex (findRowIndex x gr) (removeHint x) gr
+
+replaceAtIndex :: Int -> [Int] -> [[Int]] -> [[Int]]
+replaceAtIndex n item ls = a ++ (item:b) where (a, (_:b)) = splitAt n ls
+
+pick :: [a] -> IO a
+pick xs = randomRIO (0, length xs - 1) >>= return . (xs !!)
+
+randomRow :: Grid -> IO [Int]
+randomRow gr = let
+  x = pick gr
+  in x
+
+findRowIndex :: [Int] -> [[Int]] -> Int
+findRowIndex r gr = fromJust $ elemIndex r gr
 
 mapOnce :: (a -> Maybe a) -> [a] -> [a]
 mapOnce _ []     = []
@@ -176,6 +202,18 @@ solveAndCountNrc gr =
   let
     x = nrcSolveNs (initNrcNode gr)
   in length x
+
+
+
+-- solutions5 = [[0,0,0,3,0,0,0,0,0],
+--               [0,0,0,0,0,0,3,0,0],
+--               [2,0,0,0,0,0,0,0,8],
+--               [0,0,6,0,0,5,0,0,0],
+--               [0,9,1,6,0,0,0,0,0],
+--               [3,0,0,0,7,1,2,0,0],
+--               [0,0,0,0,0,0,0,3,1],
+--               [0,8,0,0,4,0,0,0,0],
+--               [0,0,0,0,0,0,0,0,0]]
 
 -- =============================================================================
 -- Exercise 4 :: Time spent: +-
