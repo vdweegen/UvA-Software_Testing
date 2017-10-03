@@ -150,7 +150,19 @@ exercise2 = do
 -- =============================================================================
 exercise3 = do
   print $ solveAndCountNrc example
-  
+  print $ removeHint [0,1,0,0,1,0,0,0]
+
+mapOnce :: (a -> Maybe a) -> [a] -> [a]
+mapOnce _ []     = []
+mapOnce f (x:xs) = case f x of
+  Nothing -> x : mapOnce f xs
+  Just y  -> y : xs
+
+removeHint :: [Int] -> [Int]
+removeHint r = mapOnce check r where
+  check c | c /= 0 = Just 0
+          | otherwise = Nothing
+
 calculateHints :: Grid -> Int
 calculateHints gr = sum $ map calculateHintsRow gr
 
