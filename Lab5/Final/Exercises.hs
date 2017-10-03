@@ -1,5 +1,8 @@
 module Lab5 where
 
+import Lecture5
+import Example
+
 -- Define Main --
 main = do
     putStrLn "===================="
@@ -24,7 +27,7 @@ main = do
 -- Exercise 1 :: Time spent: +-
 -- =============================================================================
 
-exercise1 =
+exercise1 = do
   print()
 
 -- =============================================================================
