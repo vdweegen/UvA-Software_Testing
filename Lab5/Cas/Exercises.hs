@@ -15,9 +15,9 @@ main = do
     putStrLn "> Exercise 1"
     -- exercise1
     putStrLn "> Exercise 2"
-    -- exercise2
+    exercise2
     putStrLn "> Exercise 3"
-    exercise3
+    -- exercise3
     putStrLn "> Exercise 4"
     exercise4
     putStrLn "> Exercise 5"
@@ -232,11 +232,32 @@ exercise4 = do
 -- Exercise 5 :: Time spent: +-
 -- =============================================================================
 exercise5 = do
-  print()
+  x <- nrcGenRandomSudoku
+  showNode x
+  s  <- genProblem x
+  showNode s
+  -- print $ solveAndShowNrc
+  -- if k == n then
+  --   print (show n ++ " tests passed")
+  -- else do
+  --   x <- f i
+  --   if (solveAndCountNrc x) > 1 || (x == i) then
+  --     do test (k+1) n i f
+  --   else print ("failed after " ++ (show k) ++ " attempts. " ++ show (solveAndCountNrc x) ++ " solutions." ++ show x)
+
+nrcGenRandomSudoku :: IO Node
+nrcGenRandomSudoku = do
+  [r] <- nrcRsolveNs [nrcEmptyN]
+  return r
+
+nrcRandomS = nrcGenRandomSudoku >>= showNode
+
+nrcEmptyN :: Node
+nrcEmptyN = (\ _ -> 0, nrcConstraints (\ _ -> 0))
 
 -- =============================================================================
--- Exercise 6 :: Time spent: +-
 -- =============================================================================
+-- Exercise 6 :: Time spent: +-
 exercise6 = do
   print()
 
