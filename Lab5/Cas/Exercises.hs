@@ -28,7 +28,7 @@ main = do
     exercise7
 
 -- =============================================================================
--- Exercise 1 :: Time spent: +-
+-- Exercise 1 :: Time spent: +- 3 hours
 -- =============================================================================
 
 exercise1 = do
@@ -149,26 +149,37 @@ exercise2 = do
   print()
 
 -- =============================================================================
--- Exercise 3 :: Time spent: +-
+-- Exercise 3 :: Time spent: +- 8 hours
 -- =============================================================================
 exercise3 = do
-  -- print $ calculateHints example
-  -- print $ removeHint [0,1,0,0,1,0,0,0]
-  -- print $ randomRemoveHint example
-  -- x <- randomRemoveHint example
-  -- print $ findRowIndex x example
-  x <- test example
-  print $ calculateHints x
+  test 1 100 example testGrid
 
-test gr = do
+test :: Integer -> Integer -> Grid -> (Grid -> IO Grid) -> IO ()
+test k n i f =
+  if k == n then
+    print (show n ++ " tests passed")
+  else do
+    x <- f i
+    if (solveAndCountNrc x) > 1 || (x == i) then
+      do test (k+1) n i f
+    else print ("failed after " ++ (show k) ++ " attempts. " ++ show (solveAndCountNrc x) ++ " solutions." ++ show x)
+
+testGrid :: Grid -> IO Grid
+testGrid gr = do
   x <- randomRow gr
-  return $ replaceAtIndex (findRowIndex x gr) (removeHint x) gr
+  n <- randomRIO (0, length gr -1)
+  return $ replaceAtIndex (findRowIndex x gr) (replaceNth n x) gr
 
 replaceAtIndex :: Int -> [Int] -> [[Int]] -> [[Int]]
 replaceAtIndex n item ls = a ++ (item:b) where (a, (_:b)) = splitAt n ls
 
 pick :: [a] -> IO a
 pick xs = randomRIO (0, length xs - 1) >>= return . (xs !!)
+
+replaceNth :: Int -> [Int] -> [Int]
+replaceNth n (x:xs)
+  | n == 0 = 0:xs
+  | otherwise = x:replaceNth (n-1) xs
 
 randomRow :: Grid -> IO [Int]
 randomRow gr = let
@@ -195,15 +206,11 @@ calculateHints gr = sum $ map calculateHintsRow gr
 calculateHintsRow :: [Value] -> Int
 calculateHintsRow r = sum $ map (\a -> 1) $ filter (> 1) r
 
-
-
 solveAndCountNrc :: Grid -> Int
 solveAndCountNrc gr =
   let
     x = nrcSolveNs (initNrcNode gr)
   in length x
-
-
 
 -- solutions5 = [[0,0,0,3,0,0,0,0,0],
 --               [0,0,0,0,0,0,3,0,0],
