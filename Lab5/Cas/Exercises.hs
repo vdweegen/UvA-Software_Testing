@@ -19,13 +19,13 @@ main = do
     putStrLn "> Exercise 3"
     -- exercise3
     putStrLn "> Exercise 4"
-    exercise4
+    -- exercise4
     putStrLn "> Exercise 5"
-    exercise5
+    -- exercise5
     putStrLn "> Exercise 6"
-    exercise6
+    -- exercise6
     putStrLn "> Exercise 7"
-    exercise7
+    -- exercise7
 
 -- =============================================================================
 -- Exercise 1 :: Time spent: +- 3 hours
@@ -147,6 +147,19 @@ solveAndShowNrc gr = nrcSolveShowNs (initNrcNode gr)
 -- =============================================================================
 exercise2 = do
   print()
+
+type Position = (Row,Column)
+type Constrnt = [[Position]]
+
+rowConstrnt = [[(r,c)| c <- values ] | r <- values ]
+columnConstrnt = [[(r,c)| r <- values ] | c <- values ]
+blockConstrnt = [[(r,c)| r <- b1, c <- b2 ] | b1 <- blocks, b2 <- blocks ]
+
+freeAtPos' :: Sudoku -> Position -> Constrnt -> [Value]
+freeAtPos' s (r,c) xs = let
+  ys = filter (elem (r,c)) xs
+  in
+  foldl1 intersect (map ((values \\) . map s) ys)
 
 -- =============================================================================
 -- Exercise 3 :: Time spent: +- 8 hours
