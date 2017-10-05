@@ -1,4 +1,4 @@
-module Lecture5
+module Lab5.Lecture5
 
 where
 
