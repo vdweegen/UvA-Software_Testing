@@ -121,6 +121,20 @@ sameblockNRC (r,c) (x,y) = blNRC r == blNRC x && blNRC c == blNRC y
 exercise2 = do
   print()
 
+type Position = (Row,Column)
+type Constrnt = [[Position]]
+
+rowConstrnt = [[(r,c)| c <- values ] | r <- values ]
+columnConstrnt = [[(r,c)| r <- values ] | c <- values ]
+blockConstrnt = [[(r,c)| r <- b1, c <- b2 ] | b1 <- blocks, b2 <- blocks ]
+
+freeAtPos' :: Sudoku -> Position -> Constrnt -> [Value]
+freeAtPos' s (r,c) xs = let
+   ys = filter (elem (r,c)) xs
+ in
+   foldl1 intersect (map ((values \\) . map s) ys)
+
+
 -- =============================================================================
 -- Exercise 3 :: Time spent: +-
 -- =============================================================================
@@ -134,10 +148,45 @@ exercise4 = do
   print()
 
 -- =============================================================================
--- Exercise 5 :: Time spent: +-
+-- Exercise 5 :: Time spent: 1+ hour
+-- Same approach as Exercise 1
 -- =============================================================================
-exercise5 = do
-  print()
+exercise5 = do [r] <- rsolveNsNRC [emptyN]
+               showNode r
+               s  <- genProblemNRC r
+               showNode s
+
+rsolveNsNRC :: [Node] -> IO [Node]
+rsolveNsNRC ns = rsearch rsuccNodeNRC solved (return ns)
+
+rsuccNodeNRC :: Node -> IO [Node]
+rsuccNodeNRC (s,cs) = do xs <- getRandomCnstr cs
+                         if null xs
+                           then return []
+                           else return
+                             (extendNodeNRC (s,cs\\xs) (head xs))
+
+
+uniqueSolNRC :: Node -> Bool
+uniqueSolNRC node = singleton (solveNsNRC [node]) where
+  singleton [] = False
+  singleton [x] = True
+  singleton (x:y:zs) = False
+
+eraseNNRC :: Node -> (Row,Column) -> Node
+eraseNNRC n (r,c) = (s, constraintsNRC s)
+  where s = eraseS (fst n) (r,c)
+
+minimalizeNRC :: Node -> [(Row,Column)] -> Node
+minimalizeNRC n [] = n
+minimalizeNRC n ((r,c):rcs) | uniqueSolNRC n' = minimalizeNRC n' rcs
+                            | otherwise    = minimalizeNRC n  rcs
+  where n' = eraseNNRC n (r,c)
+
+genProblemNRC :: Node -> IO Node
+genProblemNRC n = do ys <- randomize xs
+                     return (minimalizeNRC n ys)
+   where xs = filledPositions (fst n)
 
 -- =============================================================================
 -- Exercise 6 :: Time spent: +-
