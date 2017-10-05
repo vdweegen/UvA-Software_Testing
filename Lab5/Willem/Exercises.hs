@@ -116,17 +116,23 @@ sameblockNRC :: (Row,Column) -> (Row,Column) -> Bool
 sameblockNRC (r,c) (x,y) = blNRC r == blNRC x && blNRC c == blNRC y
 
 -- =============================================================================
--- Exercise 2 :: Time spent: +-
+-- Exercise 2 :: Time spent: +- 1.5 hours
+-- Added nrcConstrnt on how simple it is to add a new constraint
 -- =============================================================================
-exercise2 = do
-  print()
+exercise2 = solveAndShow' example
 
 type Position = (Row,Column)
 type Constrnt = [[Position]]
 
+rowConstrnt, columnConstrnt, blockConstrnt, nrcConstrnt, allConstrnt :: Constrnt
 rowConstrnt = [[(r,c)| c <- values ] | r <- values ]
 columnConstrnt = [[(r,c)| r <- values ] | c <- values ]
 blockConstrnt = [[(r,c)| r <- b1, c <- b2 ] | b1 <- blocks, b2 <- blocks ]
+
+-- | Very easy to add some more constraints :)
+nrcConstrnt = [[(r,c)| r <- b1, c <- b2 ] | b1 <- blocksNRC, b2 <- blocksNRC ]
+
+allConstrnt = rowConstrnt ++ columnConstrnt ++ blockConstrnt ++ nrcConstrnt
 
 freeAtPos' :: Sudoku -> Position -> Constrnt -> [Value]
 freeAtPos' s (r,c) xs = let
@@ -134,7 +140,100 @@ freeAtPos' s (r,c) xs = let
  in
    foldl1 intersect (map ((values \\) . map s) ys)
 
+constraints' :: Sudoku -> [Constraint]
+constraints' s = sortBy length3rd
+    [(r,c, freeAtPos' s (r,c) allConstrnt) |
+                       (r,c) <- openPositions s ]
 
+consistent' :: Sudoku -> Bool
+consistent' s = all (constrntInjective s) allConstrnt
+
+-- | Check if a constraint is injective instead of a function per row, column, grid etc
+constrntInjective :: Sudoku -> [(Row,Column)] -> Bool
+constrntInjective s xs = injective xs
+
+emptyN' :: Node
+emptyN' = (\ _ -> 0,constraints' (\ _ -> 0))
+
+getRandomCnstr' :: [Constraint] -> IO [Constraint]
+getRandomCnstr' cs = getRandomItem (f cs)
+  where f [] = []
+        f (x:xs) = takeWhile (sameLen x) (x:xs)
+
+rsuccNode' :: Node -> IO [Node]
+rsuccNode' (s,cs) = do xs <- getRandomCnstr cs
+                       if null xs
+                         then return []
+                         else return
+                           (extendNode' (s,cs\\xs) (head xs))
+
+rsolveNs' :: [Node] -> IO [Node]
+rsolveNs' ns = rsearch rsuccNode' solved (return ns)
+
+genRandomSudoku' :: IO Node
+genRandomSudoku' = do [r] <- rsolveNs' [emptyN']
+                      return r
+
+randomS' = genRandomSudoku' >>= showNode
+
+uniqueSol' :: Node -> Bool
+uniqueSol' node = singleton (solveNs' [node]) where
+  singleton [] = False
+  singleton [x] = True
+  singleton (x:y:zs) = False
+
+eraseN' :: Node -> (Row,Column) -> Node
+eraseN' n (r,c) = (s, constraints' s)
+  where s = eraseS (fst n) (r,c)
+
+minimalize' :: Node -> [(Row,Column)] -> Node
+minimalize' n [] = n
+minimalize' n ((r,c):rcs) | uniqueSol' n' = minimalize' n' rcs
+                          | otherwise     = minimalize' n  rcs
+  where n' = eraseN' n (r,c)
+
+genProblem' :: Node -> IO Node
+genProblem' n = do ys <- randomize xs
+                   return (minimalize' n ys)
+   where xs = filledPositions (fst n)
+
+solveNs' :: [Node] -> [Node]
+solveNs' = search succNode' solved
+
+succNode' :: Node -> [Node]
+succNode' (s,[]) = []
+succNode' (s,p:ps) = extendNode' (s,ps) p
+
+solveAndShow' :: Grid -> IO[()]
+solveAndShow' gr = solveShowNs' (initNode' gr)
+
+solveShowNs' :: [Node] -> IO[()]
+solveShowNs' = sequence . fmap showNode . solveNs'
+
+initNode' :: Grid -> [Node]
+initNode' gr = let s = grid2sud gr in
+               if (not . consistent') s then []
+               else [(s, constraints' s)]
+
+extendNode' :: Node -> Constraint -> [Node]
+extendNode' (s,constraints') (r,c,vs) =
+   [(extend s ((r,c),v),
+     sortBy length3rd $
+         prune' (r,c,v) constraints') | v <- vs ]
+
+prune' :: (Row,Column,Value)
+      -> [Constraint] -> [Constraint]
+prune' _ [] = []
+prune' (r,c,v) ((x,y,zs):rest)
+  | sameConstrnt (r,c) (x,y) =
+        (x,y,zs\\[v]) : prune' (r,c,v) rest
+  | otherwise = (x,y,zs) : prune' (r,c,v) rest
+
+-- | Use sameConstrnt instead of sameblock
+-- First filter the constraints to find the right constraint for the position.
+-- Next check if constraint matches
+sameConstrnt :: (Row,Column) -> (Row,Column) -> Bool
+sameConstrnt (r,c) (x,y) = any (elem (x,y)) $ filter (elem (r,c)) allConstrnt
 -- =============================================================================
 -- Exercise 3 :: Time spent: +-
 -- =============================================================================
@@ -151,10 +250,13 @@ exercise4 = do
 -- Exercise 5 :: Time spent: 1+ hour
 -- Same approach as Exercise 1
 -- =============================================================================
-exercise5 = do [r] <- rsolveNsNRC [emptyN]
+exercise5 = do [r] <- rsolveNsNRC [emptyNNRC]
                showNode r
                s  <- genProblemNRC r
                showNode s
+
+emptyNNRC :: Node
+emptyNNRC = (\ _ -> 0,constraintsNRC (\ _ -> 0))
 
 rsolveNsNRC :: [Node] -> IO [Node]
 rsolveNsNRC ns = rsearch rsuccNodeNRC solved (return ns)
