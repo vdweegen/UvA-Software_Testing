@@ -288,7 +288,15 @@ exercise6 = do
   print $ blocksT
   print $ blocksM
   print $ blocksB
-  print $ combine blocksT blocksT
+  print $ blockTT
+  print $ blockTM
+  print $ blockTB
+  print $ blockMT
+  print $ blockMM
+  print $ blockMB
+  print $ blockBT
+  print $ blockBM
+  print $ blockBB
 
 combine :: [a] -> [a] -> [(a,a)]
 combine x y = liftA2 (,) x y
@@ -296,6 +304,15 @@ combine x y = liftA2 (,) x y
 blocksT = blocks !! 0
 blocksM = blocks !! 1
 blocksB = blocks !! 2
+blockTT = combine blocksT blocksT
+blockTM = combine blocksT blocksM
+blockTB = combine blocksT blocksB
+blockMT = combine blocksM blocksT
+blockMM = combine blocksM blocksM
+blockMB = combine blocksM blocksB
+blockBT = combine blocksB blocksT
+blockBM = combine blocksB blocksM
+blockBB = combine blocksB blocksB
 
 -- =============================================================================
 -- Exercise 7 :: Time spent: +-
