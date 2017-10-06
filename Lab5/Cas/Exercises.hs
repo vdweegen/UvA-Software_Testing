@@ -19,7 +19,7 @@ main = do
     putStrLn "> Exercise 3"
     -- exercise3
     putStrLn "> Exercise 4"
-    -- exercise4
+    exercise4
     putStrLn "> Exercise 5"
     -- exercise5
     putStrLn "> Exercise 6"
@@ -224,12 +224,30 @@ solveAndCountNrc gr =
   let
     x = nrcSolveNs (initNrcNode gr)
   in length x
-  
+
 -- =============================================================================
 -- Exercise 4 :: Time spent: +-
 -- =============================================================================
 exercise4 = do
-  print()
+  solveAndShow emptyblocks4
+  print $ "Sudoku has " ++ show (solveAndCount emptyblocks4) ++ " solutions"
+
+solveAndCount :: Grid -> Int
+solveAndCount gr =
+  let
+    x = solveNs (initNode gr)
+  in length x
+
+emptyblocks4 :: Grid
+emptyblocks4 = [[1,3,4,0,0,0,0,0,0],
+                [8,6,5,0,0,0,0,0,0],
+                [2,7,9,0,0,0,0,0,0],
+                [5,2,6,3,4,7,0,0,0],
+                [7,9,1,8,2,6,0,0,0],
+                [3,4,8,5,9,1,2,0,0],
+                [4,5,7,0,0,0,6,3,1],
+                [6,8,3,0,0,0,9,7,2],
+                [9,1,2,0,0,0,8,5,4]]
 
 -- =============================================================================
 -- Exercise 5 :: Time spent: +- 150 minutes
