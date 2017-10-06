@@ -253,7 +253,7 @@ exercise4 = do
   presetEmptyProblems emptyblocks5
 
 -- Block definitions
-emptyblocks2 = filter(\x -> length x == 7) (powerset blocksALL) -- lenght is 6, 3 blocks are empty
+emptyblocks2 = filter(\x -> length x == 7) (powerset blocksALL) -- lenght is 7, 2 blocks are empty
 emptyblocks3 = filter(\x -> length x == 6) (powerset blocksALL) -- lenght is 6, 3 blocks are empty
 emptyblocks4 = filter(\x -> length x == 5) (powerset blocksALL) -- lenght is 5, 4 blocks are empty
 emptyblocks5 = filter(\x -> length x == 4) (powerset blocksALL) -- lenght is 4, 5 blocks are empty
