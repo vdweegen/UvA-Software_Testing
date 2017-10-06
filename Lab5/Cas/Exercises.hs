@@ -14,17 +14,17 @@ main = do
     putStrLn "Assignment 5 / Lab 5"
     putStrLn "===================="
     putStrLn "> Exercise 1"
-    -- exercise1
+    exercise1
     putStrLn "> Exercise 2"
     -- exercise2
     putStrLn "> Exercise 3"
-    -- exercise3
+    exercise3
     putStrLn "> Exercise 4"
-    -- exercise4
+    exercise4
     putStrLn "> Exercise 5"
-    -- exercise5
+    exercise5
     putStrLn "> Exercise 6"
-    exercise6
+    -- exercise6
     putStrLn "> Exercise 7"
     -- exercise7
 
@@ -227,28 +227,104 @@ solveAndCountNrc gr =
   in length x
 
 -- =============================================================================
--- Exercise 4 :: Time spent: +-
+-- Exercise 4 :: Time spent: +- 180 minutezs
+--
+-- Chose the following approach:
+-- 1. define all blocks (by combing the blocks, row, and colums)
+-- 2. calculate the powerset (all subsets, including itself and empty)
+-- 3. filter the number of sets, if we choose x, then the number of blocks
+--    that are ignored is 9 - x
+-- 4. use modified version of genProblem (that takes a grid as argument) to
+--    calculate the posibilities given that the other blocks are already fileld
+--    (i.e. they are ignore and can be left empty)
 -- =============================================================================
 exercise4 = do
-  solveAndShow emptyblocks4
-  print $ "Sudoku has " ++ show (solveAndCount emptyblocks4) ++ " solutions"
+  presetEmptyProblems emptyblocks2
+  presetEmptyProblems emptyblocks3
+  presetEmptyProblems emptyblocks4
+  presetEmptyProblems emptyblocks5
 
+-- Block definitions
+emptyblocks2 = filter(\x -> length x == 7) (powerset blocksALL) -- lenght is 6, 3 blocks are empty
+emptyblocks3 = filter(\x -> length x == 6) (powerset blocksALL) -- lenght is 6, 3 blocks are empty
+emptyblocks4 = filter(\x -> length x == 5) (powerset blocksALL) -- lenght is 5, 4 blocks are empty
+emptyblocks5 = filter(\x -> length x == 4) (powerset blocksALL) -- lenght is 4, 5 blocks are empty
+
+-- Walk through the possibilities using presetEmptyProblem
+presetEmptyProblems :: [[[(Row,Column)]]] -> IO ()
+presetEmptyProblems [] = print $ "done"
+presetEmptyProblems (x:xs) = do
+  presetEmptyProblem (concat x)
+  presetEmptyProblems xs
+
+-- Generate a single problem with a preset
+presetEmptyProblem :: [(Row,Column)] -> IO ()
+presetEmptyProblem gr = do
+  [r] <- rsolveNs [emptyN]
+  showNode r
+  s  <- presetGenProblem r gr
+  showNode s
+
+-- modified genproblem to specify a node with filled coordinates
+presetGenProblem :: Node -> [(Row, Column)] -> IO Node
+presetGenProblem n gr = do
+  ys <- randomize xs
+  return (minimalize n ys)
+  where xs = gr
+
+-- Fancy combine function
+combine :: [Row] -> [Column] -> [(Row,Column)]
+combine x y = liftA2 (,) x y
+
+-- Rows of 3 blocks
+blocksT,blocksM,blocksB :: [Int]
+blocksT = blocks !! 0
+blocksM = blocks !! 1
+blocksB = blocks !! 2
+
+-- Individual blocks
+blockTT,blockTM,blockTB :: [(Row,Column)]
+blockMT,blockMM,blockMB :: [(Row,Column)]
+blockBT,blockBM,blockBB :: [(Row,Column)]
+blockTT = combine blocksT blocksT
+blockTM = combine blocksT blocksM
+blockTB = combine blocksT blocksB
+blockMT = combine blocksM blocksT
+blockMM = combine blocksM blocksM
+blockMB = combine blocksM blocksB
+blockBT = combine blocksB blocksT
+blockBM = combine blocksB blocksM
+blockBB = combine blocksB blocksB
+
+-- List of all blocks
+blocksALL :: [[(Row,Column)]]
+blocksALL = [blockTT,blockTM,blockTB,
+             blockMT,blockMM,blockMB,
+             blockBT,blockBM,blockBB]
+
+-- Powerset definition (borrowed from haskell.org)
+powerset       :: [a] -> [[a]]
+powerset []     = [[]]
+powerset (x:xs) = powerset xs ++ map (x:) (powerset xs)
+
+-- Modified version to count
 solveAndCount :: Grid -> Int
 solveAndCount gr =
   let
     x = solveNs (initNode gr)
   in length x
 
-emptyblocks4 :: Grid
-emptyblocks4 = [[1,3,4,0,0,0,0,0,0],
-                [8,6,5,0,0,0,0,0,0],
-                [2,7,9,0,0,0,0,0,0],
-                [5,2,6,3,4,7,0,0,0],
-                [7,9,1,8,2,6,0,0,0],
-                [3,4,8,5,9,1,2,0,0],
-                [4,5,7,0,0,0,6,3,1],
-                [6,8,3,0,0,0,9,7,2],
-                [9,1,2,0,0,0,8,5,4]]
+-- Used this to prove it was actually possible
+-- emptyblocks4 :: Grid
+-- emptyblocks4 = [[1,3,4,0,0,0,0,0,0],
+--                 [8,6,5,0,0,0,0,0,0],
+--                 [2,7,9,0,0,0,0,0,0],
+--                 [5,2,6,3,4,7,0,0,0],
+--                 [7,9,1,8,2,6,0,0,0],
+--                 [3,4,8,5,9,1,2,0,0],
+--                 [4,5,7,0,0,0,6,3,1],
+--                 [6,8,3,0,0,0,9,7,2],
+--                 [9,1,2,0,0,0,8,5,4]]
 
 -- =============================================================================
 -- Exercise 5 :: Time spent: +- 150 minutes
@@ -285,56 +361,7 @@ nrcGenProblem n = do
 -- =============================================================================
 -- Exercise 6 :: Time spent: +-
 exercise6 = do
-  print $ blocksT
-  print $ blocksM
-  print $ blocksB
-  print $ blockTT
-  print $ blockTM
-  print $ blockTB
-  print $ blockMT
-  print $ blockMM
-  print $ blockMB
-  print $ blockBT
-  print $ blockBM
-  print $ blockBB
-  print $ blocksALL
-  print $ filter(\x -> length x == 5) (powerset blocksALL) -- lenght is 5, 4 blocks are empty
-  print $ filter(\x -> length x == 4) (powerset blocksALL) -- lenght is 4, 5 blocks are empty
-
--- Fancy combine function
-combine :: [a] -> [a] -> [(a,a)]
-combine x y = liftA2 (,) x y
-
--- Rows of 3 blocks
-blocksT,blocksM,blocksB :: [Int]
-blocksT = blocks !! 0
-blocksM = blocks !! 1
-blocksB = blocks !! 2
-
--- Individual blocks
-blockTT,blockTM,blockTB :: [(Int,Int)]
-blockMT,blockMM,blockMB :: [(Int,Int)]
-blockBT,blockBM,blockBB :: [(Int,Int)]
-blockTT = combine blocksT blocksT
-blockTM = combine blocksT blocksM
-blockTB = combine blocksT blocksB
-blockMT = combine blocksM blocksT
-blockMM = combine blocksM blocksM
-blockMB = combine blocksM blocksB
-blockBT = combine blocksB blocksT
-blockBM = combine blocksB blocksM
-blockBB = combine blocksB blocksB
-
--- List of all blocks
-blocksALL :: [[(Int,Int)]]
-blocksALL = [blockTT,blockTM,blockTB,
-             blockMT,blockMM,blockMB,
-             blockBT,blockBM,blockBB]
-
--- Powerset definition (borrowed from haskell.org)
-powerset       :: [a] -> [[a]]
-powerset []     = [[]]
-powerset (x:xs) = powerset xs ++ map (x:) (powerset xs)
+  print()
 
 -- =============================================================================
 -- Exercise 7 :: Time spent: +-
