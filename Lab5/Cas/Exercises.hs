@@ -298,6 +298,8 @@ exercise6 = do
   print $ blockBM
   print $ blockBB
   print $ blocksALL
+  print $ filter(\x -> length x == 5) (powerset blocksALL) -- lenght is 5, 4 blocks are empty
+  print $ filter(\x -> length x == 4) (powerset blocksALL) -- lenght is 4, 5 blocks are empty
 
 -- Fancy combine function
 combine :: [a] -> [a] -> [(a,a)]
