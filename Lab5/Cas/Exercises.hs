@@ -13,7 +13,7 @@ main = do
     putStrLn "Assignment 5 / Lab 5"
     putStrLn "===================="
     putStrLn "> Exercise 1"
-    exercise1
+    -- exercise1
     putStrLn "> Exercise 2"
     -- exercise2
     putStrLn "> Exercise 3"
@@ -21,14 +21,14 @@ main = do
     putStrLn "> Exercise 4"
     -- exercise4
     putStrLn "> Exercise 5"
-    exercise5
+    -- exercise5
     putStrLn "> Exercise 6"
     -- exercise6
     putStrLn "> Exercise 7"
     -- exercise7
 
 -- =============================================================================
--- Exercise 1 :: Time spent: +- 3 hours
+-- Exercise 1 :: Time spent: +- 180 minutes
 -- =============================================================================
 
 exercise1 = do
@@ -162,7 +162,7 @@ freeAtPos' s (r,c) xs = let
   foldl1 intersect (map ((values \\) . map s) ys)
 
 -- =============================================================================
--- Exercise 3 :: Time spent: +- 8 hours
+-- Exercise 3 :: Time spent: +- 480 minutes
 -- =============================================================================
 exercise3 = do
   test 1 100 example testGrid
@@ -242,7 +242,7 @@ exercise4 = do
   print()
 
 -- =============================================================================
--- Exercise 5 :: Time spent: +-
+-- Exercise 5 :: Time spent: +- 150 minutes
 -- =============================================================================
 exercise5 = do
   [r] <- nrcRsolveNs [emptyN]
