@@ -40,7 +40,7 @@ exercise1 = do
   -- all the same base files (i.e. Example.hs and Lecture5.hs) I needed to find
   -- a solution that didn't require me modifying Lecture5.hs (which would have
   -- been alot easier)
-  nrcSolveAndShow example
+  solveAndShowNrc example
 
 nrcBlock :: [[Int]]
 nrcBlock = [[2..4],[6..8]]
@@ -51,13 +51,13 @@ nrcBl x = concat $ filter (elem x) nrcBlock
 subBlock :: Sudoku -> (Row,Column) -> [Value]
 subBlock s (r, c) = [ s (r',c')| r' <- nrcBl r ,c' <- nrcBl c]
 
-nrcFreeInSubgrid :: Sudoku -> (Row,Column) -> [Value]
-nrcFreeInSubgrid s (r,c) = freeInSeq (subBlock s (r,c))
+freeInNrcgrid :: Sudoku -> (Row,Column) -> [Value]
+freeInNrcgrid s (r,c) = freeInSeq (subBlock s (r,c))
 
-nrcFree :: Sudoku -> (Row,Column) -> [Value]
-nrcFree s (r, c) =
+freeNrc :: Sudoku -> (Row,Column) -> [Value]
+freeNrc s (r, c) =
   if r `elem` (concat nrcBlock) && c `elem` (concat nrcBlock) then
-    (nrcFreeInSubgrid s (r,c))
+    (freeInNrcgrid s (r,c))
   else values
 
 nrcGridInjective :: Sudoku -> (Row,Column) -> Bool
@@ -68,7 +68,7 @@ nrcFreeAtPos :: Sudoku -> (Row,Column) -> [Value]
 nrcFreeAtPos s (r,c) = (freeInRow s r)
       `intersect` (freeInColumn s c)
       `intersect` (freeInSubgrid s (r,c))
-      `intersect` (nrcFree s (r,c))
+      `intersect` (freeNrc s (r,c))
 
 nrcConstraints :: Sudoku -> [Constraint]
 nrcConstraints s = sortBy length3rd
@@ -85,8 +85,8 @@ nrcConsistent s = and $
   ++
   [ nrcGridInjective s (r,c) | r <- [2, 6], c <- [2, 6]]
 
-nrcInitNode :: Grid -> [Node]
-nrcInitNode gr = let s = grid2sud gr in
+initNrcNode :: Grid -> [Node]
+initNrcNode gr = let s = grid2sud gr in
                 if (not . nrcConsistent) s then []
                 else [(s, nrcConstraints s)]
 
@@ -128,8 +128,8 @@ nrcSameblock (r,c) (x,y) = nrcBl r == nrcBl x && nrcBl c == nrcBl y
 nrcSolveShowNs :: [Node] -> IO[()]
 nrcSolveShowNs = sequence . fmap showNode . nrcSolveNs
 
-nrcSolveAndShow :: Grid -> IO[()]
-nrcSolveAndShow gr = nrcSolveShowNs (nrcInitNode gr)
+solveAndShowNrc :: Grid -> IO[()]
+solveAndShowNrc gr = nrcSolveShowNs (initNrcNode gr)
 
 --- SOLUTION
 -- +-------+-------+-------+
@@ -182,9 +182,9 @@ test k n i f =
     print (show n ++ " tests passed")
   else do
     x <- f i
-    if (nrcSolveAndCount x) > 1 || (x == i) then
+    if (solveAndCountNrc x) > 1 || (x == i) then
       do test (k+1) n i f
-    else print ("failed after " ++ (show k) ++ " attempts. " ++ show (nrcSolveAndCount x) ++ " solutions." ++ show x)
+    else print ("failed after " ++ (show k) ++ " attempts. " ++ show (solveAndCountNrc x) ++ " solutions." ++ show x)
 
 testGrid :: Grid -> IO Grid
 testGrid gr = do
@@ -228,10 +228,10 @@ calculateHints gr = sum $ map calculateHintsRow gr
 calculateHintsRow :: [Value] -> Int
 calculateHintsRow r = sum $ map (\a -> 1) $ filter (> 1) r
 
-nrcSolveAndCount :: Grid -> Int
-nrcSolveAndCount gr =
+solveAndCountNrc :: Grid -> Int
+solveAndCountNrc gr =
   let
-    x = nrcSolveNs (nrcInitNode gr)
+    x = nrcSolveNs (initNrcNode gr)
   in length x
 
 -- =============================================================================
@@ -243,7 +243,7 @@ nrcSolveAndCount gr =
 -- 3. filter the number of sets, if we choose x, then the number of blocks
 --    that are ignored is 9 - x
 -- 4. use modified version of genProblem (that takes a grid as argument) to
---    calculate the posibilities given that the other blocks are already fileld
+--    calculate the posibilities given that the other blocks are already filled
 --    (i.e. they are ignore and can be left empty)
 -- =============================================================================
 exercise4 = do
@@ -253,7 +253,7 @@ exercise4 = do
   presetEmptyProblems emptyblocks5
 
 -- Block definitions
-emptyblocks2 = filter(\x -> length x == 7) (powerset blocksALL) -- lenght is 6, 3 blocks are empty
+emptyblocks2 = filter(\x -> length x == 7) (powerset blocksALL) -- lenght is 7, 2 blocks are empty
 emptyblocks3 = filter(\x -> length x == 6) (powerset blocksALL) -- lenght is 6, 3 blocks are empty
 emptyblocks4 = filter(\x -> length x == 5) (powerset blocksALL) -- lenght is 5, 4 blocks are empty
 emptyblocks5 = filter(\x -> length x == 4) (powerset blocksALL) -- lenght is 4, 5 blocks are empty
