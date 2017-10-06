@@ -19,11 +19,11 @@ main = do
     putStrLn "> Exercise 3"
     -- exercise3
     putStrLn "> Exercise 4"
-    exercise4
+    -- exercise4
     putStrLn "> Exercise 5"
     -- exercise5
     putStrLn "> Exercise 6"
-    -- exercise6
+    exercise6
     putStrLn "> Exercise 7"
     -- exercise7
 
@@ -284,7 +284,13 @@ nrcGenProblem n = do
 -- =============================================================================
 -- Exercise 6 :: Time spent: +-
 exercise6 = do
-  print()
+  print $ blocksT
+  print $ blocksM
+  print $ blocksB
+
+blocksT = blocks !! 0
+blocksM = blocks !! 1
+blocksB = blocks !! 2
 
 -- =============================================================================
 -- Exercise 7 :: Time spent: +-
