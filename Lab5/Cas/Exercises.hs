@@ -238,9 +238,9 @@ solveAndCountNrc gr =
 -- Exercise 4 :: Time spent: +- 180 minutes
 --
 -- Chose the following approach:
--- 1. define all blocks (by combing the blocks, row, and colums)
--- 2. calculate the powerset (all subsets, including itself and empty)
--- 3. filter the number of sets, if we choose x, then the number of blocks
+-- 1. define all blocks (by combining the blocks, row, and colums)
+-- 2. calculate the powerset (all subsets, including itself and the empty set)
+-- 3. filter the number of blocks, if we choose x, then the number of blocks
 --    that are ignored is 9 - x
 -- 4. use modified version of genProblem (that takes a grid as argument) to
 --    calculate the posibilities given that the other blocks are already filled
