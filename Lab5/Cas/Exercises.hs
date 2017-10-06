@@ -30,6 +30,9 @@ main = do
 
 -- =============================================================================
 -- Exercise 1 :: Time spent: +- 180 minutes
+--
+-- Basically modified the provided code to take the additional constraints into
+-- account.
 -- =============================================================================
 
 exercise1 = do
@@ -164,6 +167,11 @@ freeAtPos' s (r,c) xs = let
 
 -- =============================================================================
 -- Exercise 3 :: Time spent: +- 480 minutes
+--
+-- Added code that will randomly change coordinates in a grid to 0, modified
+-- the testcode from Lab2 and run the 'null-coordinates' function x times. If
+-- a Sudoku is found that ALSO has 1 solution, and it is NOT the same Sudoku as
+-- the original (i.e. a 0 has been changed to 0) than the Sudoku is not minimal
 -- =============================================================================
 exercise3 = do
   test 1 100 example testGrid
@@ -227,7 +235,7 @@ solveAndCountNrc gr =
   in length x
 
 -- =============================================================================
--- Exercise 4 :: Time spent: +- 180 minutezs
+-- Exercise 4 :: Time spent: +- 180 minutes
 --
 -- Chose the following approach:
 -- 1. define all blocks (by combing the blocks, row, and colums)
@@ -328,6 +336,9 @@ solveAndCount gr =
 
 -- =============================================================================
 -- Exercise 5 :: Time spent: +- 150 minutes
+--
+-- Basically modified the provided generator to take the additional constraints
+-- into account
 -- =============================================================================
 exercise5 = do
   [r] <- nrcRsolveNs [emptyN]
