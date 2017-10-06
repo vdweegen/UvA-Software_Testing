@@ -297,13 +297,22 @@ exercise6 = do
   print $ blockBT
   print $ blockBM
   print $ blockBB
+  print $ blocksALL
 
+-- Fancy combine function
 combine :: [a] -> [a] -> [(a,a)]
 combine x y = liftA2 (,) x y
 
+-- Rows of 3 blocks
+blocksT,blocksM,blocksB :: [Int]
 blocksT = blocks !! 0
 blocksM = blocks !! 1
 blocksB = blocks !! 2
+
+-- Individual blocks
+blockTT,blockTM,blockTB :: [(Int,Int)]
+blockMT,blockMM,blockMB :: [(Int,Int)]
+blockBT,blockBM,blockBB :: [(Int,Int)]
 blockTT = combine blocksT blocksT
 blockTM = combine blocksT blocksM
 blockTB = combine blocksT blocksB
@@ -313,6 +322,17 @@ blockMB = combine blocksM blocksB
 blockBT = combine blocksB blocksT
 blockBM = combine blocksB blocksM
 blockBB = combine blocksB blocksB
+
+-- List of all blocks
+blocksALL :: [[(Int,Int)]]
+blocksALL = [blockTT,blockTM,blockTB,
+             blockMT,blockMM,blockMB,
+             blockBT,blockBM,blockBB]
+
+-- Powerset definition (borrowed from haskell.org)
+powerset       :: [a] -> [[a]]
+powerset []     = [[]]
+powerset (x:xs) = powerset xs ++ map (x:) (powerset xs)
 
 -- =============================================================================
 -- Exercise 7 :: Time spent: +-
