@@ -15,13 +15,13 @@ main = do
     putStrLn "> Exercise 1"
     exercise1
     putStrLn "> Exercise 2"
-    exercise2
+    -- exercise2
     putStrLn "> Exercise 3"
     -- exercise3
     putStrLn "> Exercise 4"
     -- exercise4
     putStrLn "> Exercise 5"
-    -- exercise5
+    exercise5
     putStrLn "> Exercise 6"
     -- exercise6
     putStrLn "> Exercise 7"
@@ -245,28 +245,32 @@ exercise4 = do
 -- Exercise 5 :: Time spent: +-
 -- =============================================================================
 exercise5 = do
-  x <- nrcGenRandomSudoku
-  showNode x
-  s  <- genProblem x
+  [r] <- nrcRsolveNs [emptyN]
+  showNode r
+  s  <- nrcGenProblem r
   showNode s
-  -- print $ solveAndShowNrc
-  -- if k == n then
-  --   print (show n ++ " tests passed")
-  -- else do
-  --   x <- f i
-  --   if (solveAndCountNrc x) > 1 || (x == i) then
-  --     do test (k+1) n i f
-  --   else print ("failed after " ++ (show k) ++ " attempts. " ++ show (solveAndCountNrc x) ++ " solutions." ++ show x)
 
-nrcGenRandomSudoku :: IO Node
-nrcGenRandomSudoku = do
-  [r] <- nrcRsolveNs [nrcEmptyN]
-  return r
+nrcEraseN :: Node -> (Row,Column) -> Node
+nrcEraseN n (r,c) = (s, nrcConstraints s)
+  where s = eraseS (fst n) (r,c)
 
-nrcRandomS = nrcGenRandomSudoku >>= showNode
+nrcUniqueSol :: Node -> Bool
+nrcUniqueSol node = singleton (nrcSolveNs [node]) where
+  singleton [] = False
+  singleton [x] = True
+  singleton (x:y:zs) = False
 
-nrcEmptyN :: Node
-nrcEmptyN = (\ _ -> 0, nrcConstraints (\ _ -> 0))
+nrcMinimalize :: Node -> [(Row,Column)] -> Node
+nrcMinimalize n [] = n
+nrcMinimalize n ((r,c):rcs) | nrcUniqueSol n' = nrcMinimalize n' rcs
+                            | otherwise    = nrcMinimalize n  rcs
+  where n' = nrcEraseN n (r,c)
+
+nrcGenProblem :: Node -> IO Node
+nrcGenProblem n = do
+  ys <- randomize xs
+  return (nrcMinimalize n ys)
+  where xs = filledPositions (fst n)
 
 -- =============================================================================
 -- =============================================================================
