@@ -13,7 +13,7 @@ main = do
     putStrLn "Assignment 5 / Lab 5"
     putStrLn "===================="
     putStrLn "> Exercise 1"
-    -- exercise1
+    exercise1
     putStrLn "> Exercise 2"
     exercise2
     putStrLn "> Exercise 3"
@@ -90,7 +90,7 @@ nrcSolveNs :: [Node] -> [Node]
 nrcSolveNs = search nrcSuccNode solved
 
 nrcRsolveNs :: [Node] -> IO [Node]
-nrcRsolveNs ns = rsearch rsuccNode solved (return ns)
+nrcRsolveNs ns = rsearch nrcRsuccNode solved (return ns)
 
 nrcSuccNode :: Node -> [Node]
 nrcSuccNode (s,[]) = []
