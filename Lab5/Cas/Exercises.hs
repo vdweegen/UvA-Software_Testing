@@ -6,6 +6,7 @@ import Data.Maybe (fromJust)
 import Data.Sequence (Seq,fromList)
 import Lecture5
 import Example
+import Control.Applicative
 
 -- Define Main --
 main = do
@@ -287,6 +288,10 @@ exercise6 = do
   print $ blocksT
   print $ blocksM
   print $ blocksB
+  print $ combine blocksT blocksT
+
+combine :: [a] -> [a] -> [(a,a)]
+combine x y = liftA2 (,) x y
 
 blocksT = blocks !! 0
 blocksM = blocks !! 1
