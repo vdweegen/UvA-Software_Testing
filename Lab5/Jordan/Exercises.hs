@@ -1,5 +1,6 @@
 module Lab5 where
-
+import Lab5.Jordan.Lecture5
+import Data.List
 -- Define Main --
 main = do
     putStrLn "===================="
@@ -20,12 +21,97 @@ main = do
     putStrLn "> Exercise 7"
     exercise7
 
+
+
+
+example :: Grid
+example = [[0,0,0,3,0,0,0,0,0],
+            [0,0,0,7,0,0,3,0,0],
+            [2,0,0,0,0,0,0,0,8],
+            [0,0,6,0,0,5,0,0,0],
+            [0,9,1,6,0,0,0,0,0],
+            [3,0,0,0,7,1,2,0,0],
+            [0,0,0,0,0,0,0,3,1],
+            [0,8,0,0,4,0,0,0,0],
+            [0,0,2,0,0,0,0,0,0]]
+
+
+
+
 -- =============================================================================
--- Exercise 1 :: Time spent: +-
+-- Exercise 1 :: Time spent: +- 30 minutes
 -- =============================================================================
 
-exercise1 =
-  print()
+exercise1 = solveAndShow example
+{--
+
+freeInNRCSubgrid :: Sudoku -> (Row,Column) -> [Value]
+freeInNRCSubgrid s (r,c) = freeInSeq (getNrcGrid s (r,c))
+
+freeAtPos' :: Sudoku -> (Row,Column) -> [Value]
+freeAtPos' s (r,c) = 
+  (freeInRow s r) 
+   `intersect` (freeInColumn s c) 
+   `intersect` (freeInNRCSubgrid s (r,c))
+   `intersect` (freeInSubgrid s (r,c)) 
+
+nrcGridInjective :: Sudoku -> (Row,Column) -> Bool
+nrcGridInjective s (r,c) = injective vs where 
+  vs = filter (/= 0) (getNrcGrid s (r,c))
+
+bl' :: Int -> [Int]
+bl' x = concat $ filter (elem x) blocks' 
+
+blocks' :: [[Int]]
+blocks' = [[2,3,4],[6,7,8]]
+
+getNrcGrid :: Sudoku -> (Row,Column) -> [Value]
+getNrcGrid s (r,c) = 
+  [ s (r',c') | r' <- bl' r, c' <- bl' c ]
+   
+consistent :: Sudoku -> Bool
+consistent s = and $
+                [ rowInjective s r |  r <- positions ]
+                ++
+                [ colInjective s c |  c <- positions ]
+                ++
+                [ subgridInjective s (r,c) | 
+                    r <- [1,4,7], c <- [1,4,7]]
+                ++
+                [ nrcGridInjective s (r,c) | 
+                r <- [2,6], c <- [2, 6]]
+
+sameblock' :: (Row,Column) -> (Row,Column) -> Bool
+sameblock' (r,c) (x,y) = bl' r == bl' x && bl' c == bl' y 
+
+prune' :: (Row,Column,Value) -> [Constraint] -> [Constraint]
+prune' _ [] = []
+prune' (r,c,v) ((x,y,zs):rest)
+  | r == x = (x,y,zs\\[v]) : prune' (r,c,v) rest
+  | c == y = (x,y,zs\\[v]) : prune' (r,c,v) rest
+  | sameblock (r,c) (x,y) = 
+    (x,y,zs\\[v]) : prune' (r,c,v) rest
+  | sameblock' (r,c) (x,y) = 
+      (x,y,zs\\[v]) : prune' (r,c,v) rest
+  | otherwise = (x,y,zs) : prune' (r,c,v) rest
+
++-------+-------+-------+
+| 4 7 8 | 3 9 2 | 6 1 5 |
+| 6 1 9 | 7 5 8 | 3 2 4 |
+| 2 3 5 | 4 1 6 | 9 7 8 |
++-------+-------+-------+
+| 7 2 6 | 8 3 5 | 1 4 9 |
+| 8 9 1 | 6 2 4 | 7 5 3 |
+| 3 5 4 | 9 7 1 | 2 8 6 |
++-------+-------+-------+
+| 5 6 7 | 2 8 9 | 4 3 1 |
+| 9 8 3 | 1 4 7 | 5 6 2 |
+| 1 4 2 | 5 6 3 | 8 9 7 |
++-------+-------+-------+
+
+
+--}
+
 
 -- =============================================================================
 -- Exercise 2 :: Time spent: +-
