@@ -2,6 +2,13 @@ module Lab5 where
 import Lab5.Jordan.Lecture5
 import Data.List
 import Control.Monad
+import System.Random
+import System.Random (randomRIO)
+
+pick :: [a] -> IO a
+pick xs = fmap (xs !!) $ randomRIO (0, length xs - 1)
+
+
 -- Define Main --
 main' = do
     putStrLn "===================="
@@ -170,9 +177,10 @@ exercise4 = do
 checkerBlocks :: IO Bool
 checkerBlocks = do
   [r] <- rsolveNs [emptyN]
-  -- showNode r
+  showNode r
+  z <- takeM r
   s  <- genProblem r
-  -- showNode s
+  showNode z
   -- [r] <- rsolveNs [s]
   -- print $ uniqueSol s
   x <- randomize ( filledPositions (fst s))
@@ -182,6 +190,23 @@ checkerBlocks = do
   -- putStrLn "Is the problem still unique?"
   return $ not $ uniqueSol s'
 
+minimizebyBlock ::  Node -> [(Row,Column)] -> Node
+minimizebyBlock n [] = n
+minimizebyBlock n ((r,c):rcs) | uniqueSol n' = minimizebyBlock n' rcs
+                              | otherwise    = minimizebyBlock n  rcs
+      where n' = eraseN n (r,c)
+
+    
+takeM n  = do 
+    ys <-  takeMn
+    return (minimalize n ys)
+  
+takeMn = do
+  let xs = blockConstrnt
+  ys <- pick blockConstrnt
+  xz <- pick ((\\) blockConstrnt [ys])
+  zx <- pick ((\\) blockConstrnt [ys,xz])
+  return $ ys ++ zx ++ xz
 
 checkerBlocksMulti :: Int -> IO [Bool]
 checkerBlocksMulti n = do
