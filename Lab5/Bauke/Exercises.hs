@@ -23,7 +23,14 @@ main = do
     exercise7
 
 -- =============================================================================
--- Exercise 1 :: Time spent: +-
+-- Exercise 1 :: Time spent: 2 hours on the validator, 2 hours on the solution.
+-- Spent some time on copying the data from the
+-- original lecture, trying to grasp what's going on. The order of functions are really
+-- of no help, neither is the absence of proper naming / comments.
+-- Used the 
+-- Merged partial solutions from team members with some 'own findings'.
+-- Included the automatic grid checker to verify the solver against my own constaints
+-- Restructured the original lecture's solution to 'use first, define later structure'
 -- =============================================================================
 
 puzzle1 :: Grid
@@ -34,7 +41,7 @@ puzzle1 = [[0,0,0,3,0,0,0,0,0],
            [0,9,1,6,0,0,0,0,0],
            [3,0,0,0,7,1,2,0,0],
            [0,0,0,0,0,0,0,3,1],
-           [0,8,0,0,0,4,0,0,0],
+           [0,8,0,0,4,0,0,0,0],
            [0,0,2,0,0,0,0,0,0]]
 
 exercise1 = do
@@ -57,8 +64,9 @@ positions, values :: [Int]
 positions = [1..9]
 values    = [1..9]
 
-blocks :: [[Int]]
-blocks = [[1..3],[4..6],[7..9]]
+defaultBlocks, nrcBlocks :: [[Int]]
+defaultBlocks = [[1..3],[4..6],[7..9]]
+nrcBlocks = [[2..4], [6..8]]
 
 -- | Solver
 solveAndShow :: Grid -> IO[()]
@@ -84,6 +92,13 @@ consistent s = and $
                 ++
                [ subgridInjective s (r,c) |
                     r <- [1,4,7], c <- [1,4,7]]
+                ++
+               [ nrcSubgridInjective s (r,c) |
+                   r <- [2,6], c <- [2,6] ]
+
+nrcSubgridInjective :: Sudoku -> (Row,Column) -> Bool
+nrcSubgridInjective s (r,c) = injective vs where
+   vs = filter (/= 0) (nrcSubGrid s (r,c))
 
 rowInjective :: Sudoku -> Row -> Bool
 rowInjective s r = injective vs where
@@ -97,9 +112,12 @@ subgridInjective :: Sudoku -> (Row,Column) -> Bool
 subgridInjective s (r,c) = injective vs where
    vs = filter (/= 0) (subGrid s (r,c))
 
+subGrid :: Sudoku -> (Row,Column) -> [Value]
+subGrid s (r,c) =
+  [ s (r',c') | r' <- bl r, c' <- bl c ]
+
 injective :: Eq a => [a] -> Bool
 injective xs = nub xs == xs
-
 
 constraints :: Sudoku -> [Constraint]
 constraints s = sortBy length3rd
@@ -114,6 +132,7 @@ freeAtPos s (r,c) =
   (freeInRow s r)
    `intersect` (freeInColumn s c)
    `intersect` (freeInSubgrid s (r,c))
+   `intersect` (freeInNrcSubgrid s (r,c))
 
 freeInRow :: Sudoku -> Row -> [Value]
 freeInRow s r =
@@ -122,16 +141,16 @@ freeInRow s r =
 freeInSubgrid :: Sudoku -> (Row,Column) -> [Value]
 freeInSubgrid s (r,c) = freeInSeq (subGrid s (r,c))
 
+freeInNrcSubgrid :: Sudoku -> (Row,Column) -> [Value]
+freeInNrcSubgrid s (r,c) = freeInSeq (nrcSubGrid s (r,c))
+
+nrcSubGrid :: Sudoku -> (Row,Column) -> [Value]
+nrcSubGrid s (r,c) =
+  [ s (r',c') | r' <- blNrc r, c' <- blNrc c ]
+
 freeInColumn :: Sudoku -> Column -> [Value]
 freeInColumn s c =
   freeInSeq [ s (i,c) | i <- positions ]
-
-subGrid :: Sudoku -> (Row,Column) -> [Value]
-subGrid s (r,c) =
-  [ s (r',c') | r' <- bl r, c' <- bl c ]
-
-bl :: Int -> [Int]
-bl x = concat $ filter (elem x) blocks
 
 freeInSeq :: [Value] -> [Value]
 freeInSeq seq = values \\ seq
@@ -161,6 +180,8 @@ showGrid [as,bs,cs,ds,es,fs,gs,hs,is] =
     putStrLn ("+-------+-------+-------+")
     showRow gs; showRow hs; showRow is
     putStrLn ("+-------+-------+-------+")
+    putStr "Printed grid violates no NRC constraint: "
+    print $ isValid [as,bs,cs,ds,es,fs,gs,hs,is]
 
 showRow :: [Value] -> IO()
 showRow [a1,a2,a3,a4,a5,a6,a7,a8,a9] =
@@ -209,6 +230,7 @@ extend = update
 update :: Eq a => (a -> b) -> (a,b) -> a -> b
 update f (y,z) x = if x == y then z else f x
 
+-- | 'snoeien'
 prune :: (Row,Column,Value)
       -> [Constraint] -> [Constraint]
 prune _ [] = []
@@ -219,14 +241,20 @@ prune (r,c,v) ((x,y,zs):rest)
         (x,y,zs\\[v]) : prune (r,c,v) rest
   | otherwise = (x,y,zs) : prune (r,c,v) rest
 
-sameblock :: (Row,Column) -> (Row,Column) -> Bool
-sameblock (r,c) (x,y) = bl r == bl x && bl c == bl y
 
+-- | Whether two cells are in the same 3x3 block
+sameblock, sameDefaultBlock, sameNrcBlock :: (Row,Column) -> (Row,Column) -> Bool
+sameblock (r,c) (x,y) = sameDefaultBlock (r,c) (x,y) || sameNrcBlock (r,c) (x,y)
+sameDefaultBlock (r,c) (x,y) = bl r == bl x && bl c == bl y
+sameNrcBlock (r,c) (x,y) = blNrc r == blNrc x && blNrc c == blNrc y
+
+bl, blNrc :: Int -> [Int]
+bl x = concat $ filter (elem x) defaultBlocks
+blNrc x = concat $ filter (elem x) nrcB:rlocks
 
 -- | Sudoku is solved when the list of constraints is empty
 solved  :: Node -> Bool
 solved = null . snd
-
 
 search :: (node -> [node])
        -> (node -> Bool) -> [node] -> [node]
