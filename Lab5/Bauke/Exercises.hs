@@ -27,7 +27,7 @@ main = do
 -- Spent some time on copying the data from the
 -- original lecture, trying to grasp what's going on. The order of functions are really
 -- of no help, neither is the absence of proper naming / comments.
--- Used the 
+-- Used the
 -- Merged partial solutions from team members with some 'own findings'.
 -- Included the automatic grid checker to verify the solver against my own constaints
 -- Restructured the original lecture's solution to 'use first, define later structure'
@@ -44,9 +44,9 @@ puzzle1 = [[0,0,0,3,0,0,0,0,0],
            [0,8,0,0,4,0,0,0,0],
            [0,0,2,0,0,0,0,0,0]]
 
-exercise1 = do
-  putStrLn "Solution to the sudoku:"
-  print $ "Fout"
+exercise1 = solveAndShow puzzle1
+
+
 
 -- | Imported code for the solver
 
@@ -250,7 +250,7 @@ sameNrcBlock (r,c) (x,y) = blNrc r == blNrc x && blNrc c == blNrc y
 
 bl, blNrc :: Int -> [Int]
 bl x = concat $ filter (elem x) defaultBlocks
-blNrc x = concat $ filter (elem x) nrcB:rlocks
+blNrc x = concat $ filter (elem x) nrcBlocks
 
 -- | Sudoku is solved when the list of constraints is empty
 solved  :: Node -> Bool
