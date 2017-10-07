@@ -1,8 +1,9 @@
 module Lab5 where
 import Lab5.Jordan.Lecture5
 import Data.List
+import Control.Monad
 -- Define Main --
-main = do
+main' = do
     putStrLn "===================="
     putStrLn "Assignment 5 / Lab 5"
     putStrLn "===================="
@@ -119,17 +120,73 @@ prune' (r,c,v) ((x,y,zs):rest)
 exercise2 = do
   print()
 
+
+
+-- freeAtPos' :: Sudoku -> Position -> Constrnt -> [Value]
+-- freeAtPos' s (r,c) xs = let 
+--     ys = filter (elem (r,c)) xs 
+--     in 
+--     foldl1 intersect (map ((values \\) . map s) ys)
 -- =============================================================================
 -- Exercise 3 :: Time spent: +-
 -- =============================================================================
 exercise3 = do
-  print()
+  putStrLn "Are the generated sudokus minimal?"
+  (checkerMulti 5)
+
+  {-- 
+  This article helped me understand the problem 
+  https://www.technologyreview.com/s/426554/mathematicians-solve-minimum-sudoku-problem/
+  --}
+
+checker :: IO Bool
+checker = do
+  [r] <- rsolveNs [emptyN]
+  -- showNode r
+  s  <- genProblem r
+  -- showNode s
+  -- [r] <- rsolveNs [s]
+  -- print $ uniqueSol s
+  x <- randomize ( filledPositions (fst s))
+  s' <- do
+    return (eraseN s (head x))
+  -- showNode s'
+  -- putStrLn "Is the problem still unique?"
+  return $ not $ uniqueSol s'
+
+
+checkerMulti :: Int -> IO [Bool]
+checkerMulti n = do
+  replicateM n $ checker
+ 
+  
 
 -- =============================================================================
 -- Exercise 4 :: Time spent: +-
 -- =============================================================================
 exercise4 = do
-  print()
+  checkerBlocksMulti 1
+
+checkerBlocks :: IO Bool
+checkerBlocks = do
+  [r] <- rsolveNs [emptyN]
+  -- showNode r
+  s  <- genProblem r
+  -- showNode s
+  -- [r] <- rsolveNs [s]
+  -- print $ uniqueSol s
+  x <- randomize ( filledPositions (fst s))
+  s' <- do
+    return (eraseN s (head x))
+  -- showNode s'
+  -- putStrLn "Is the problem still unique?"
+  return $ not $ uniqueSol s'
+
+
+checkerBlocksMulti :: Int -> IO [Bool]
+checkerBlocksMulti n = do
+  replicateM n $ checkerBlocks
+   
 
 -- =============================================================================
 -- Exercise 5 :: Time spent: +-
