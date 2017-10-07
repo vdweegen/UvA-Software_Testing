@@ -122,7 +122,8 @@ prune' (r,c,v) ((x,y,zs):rest)
 
 
 -- =============================================================================
--- Exercise 2 :: Time spent: +-
+-- Exercise 2 :: Time spent: +- 1 hour
+-- Check the lecture5
 -- =============================================================================
 exercise2 = do
   print()
@@ -173,7 +174,7 @@ checkerMulti n = do
 -- =============================================================================
 {-- 
 
-
+Yes you can do 3 you can even do 4 but not shure if you can do more. Rhymes
 
 --}
 
