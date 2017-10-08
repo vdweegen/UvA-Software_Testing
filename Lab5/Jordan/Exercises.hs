@@ -247,20 +247,30 @@ exercise6 = do
   print()
 
 -- =============================================================================
--- Exercise 7 :: Time spent: +-
+-- Exercise 7 :: Time spent: +- 1 hour
 -- =============================================================================
 exercise7 = do
-  putStrLn "Number of hints"
-  [n] <- Lec5.rsolveNs [Lec5.emptyN]
-  Lec5.showNode n
-  p <- Lec5.genProblem n
-  Lec5.showNode p
-  print $ genericLength$  Lec5.filledPositions (fst p)
+  runTestAvgHints 5
 
-  putStrLn "Number NRC of hints"
+
+runTestAvgHints n = do
+  x <- replicateM n generateAndCountLec
+  y <- replicateM n generateAndCountNRC
+  putStrLn "Average number of hints"
+  let xAvg = sum x `div` (genericLength x)
+  print xAvg
+  putStrLn "Average NRC of hints"
+  let yAvg = sum y `div` (genericLength y)
+  print yAvg
+
+generateAndCountLec :: IO Int
+generateAndCountLec = do
+  [n] <- Lec5.rsolveNs [Lec5.emptyN]
+  p <- Lec5.genProblem n
+  return $ genericLength $  Lec5.filledPositions (fst p)
+
+generateAndCountNRC :: IO Int
+generateAndCountNRC = do
   [n] <- NRC.rsolveNs [NRC.emptyN]
-  NRC.showNode n
   p <- NRC.genProblem n
-  NRC.showNode p
-  print $ genericLength$  NRC.filledPositions (fst p)
-  print()
+  return $ genericLength$  NRC.filledPositions (fst p)
