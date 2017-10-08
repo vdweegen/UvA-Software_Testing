@@ -1,8 +1,16 @@
 module Lab5 where
 import Lab5.Jordan.Lecture5
 import Data.List
+import Control.Monad
+import System.Random
+import System.Random (randomRIO)
+
+pick :: [a] -> IO a
+pick xs = fmap (xs !!) $ randomRIO (0, length xs - 1)
+
+
 -- Define Main --
-main = do
+main' = do
     putStrLn "===================="
     putStrLn "Assignment 5 / Lab 5"
     putStrLn "===================="
@@ -114,22 +122,109 @@ prune' (r,c,v) ((x,y,zs):rest)
 
 
 -- =============================================================================
--- Exercise 2 :: Time spent: +-
+-- Exercise 2 :: Time spent: +- 1 hour
+-- Check the lecture5
 -- =============================================================================
 exercise2 = do
   print()
 
+
+
+-- freeAtPos' :: Sudoku -> Position -> Constrnt -> [Value]
+-- freeAtPos' s (r,c) xs = let 
+--     ys = filter (elem (r,c)) xs 
+--     in 
+--     foldl1 intersect (map ((values \\) . map s) ys)
 -- =============================================================================
 -- Exercise 3 :: Time spent: +-
 -- =============================================================================
 exercise3 = do
-  print()
+  putStrLn "Are the generated sudokus minimal?"
+  (checkerMulti 5)
+
+  {-- 
+  This article helped me understand the problem 
+  https://www.technologyreview.com/s/426554/mathematicians-solve-minimum-sudoku-problem/
+  --}
+
+checker :: IO Bool
+checker = do
+  [r] <- rsolveNs [emptyN]
+  -- showNode r
+  s  <- genProblem r
+  -- showNode s
+  -- [r] <- rsolveNs [s]
+  -- print $ uniqueSol s
+  x <- randomize ( filledPositions (fst s))
+  s' <- do
+    return (eraseN s (head x))
+  -- showNode s'
+  -- putStrLn "Is the problem still unique?"
+  return $ not $ uniqueSol s'
+
+
+checkerMulti :: Int -> IO [Bool]
+checkerMulti n = do
+  replicateM n $ checker
+ 
+  
 
 -- =============================================================================
--- Exercise 4 :: Time spent: +-
+-- Exercise 4 :: Time spent: +- 3 hours
 -- =============================================================================
+{-- 
+
+Yes you can do 3 you can even do 4 but not shure if you can do more. Rhymes
+
+--}
+
 exercise4 = do
-  print()
+  checkerBlocksMulti 1
+
+checkerBlocks :: IO ()
+checkerBlocks = do
+  z <- takeM
+  showNode z
+
+minimizebyBlock ::  Node -> [(Row,Column)] -> Int -> (Node, Int)
+minimizebyBlock n [] steps = (n,steps)
+minimizebyBlock n ((r,c):rcs) steps | uniqueSol n' = minimizebyBlock n' rcs (steps+1)
+                                    | otherwise    = minimizebyBlock n  rcs (steps)
+      where n' = eraseN n (r,c)
+
+minimizeUntil = do 
+  z <- takeM
+  showNode z
+
+takeM = do 
+  [n] <- rsolveNs [emptyN]
+  ys <-  do4blocks
+  let (n', steps) = (minimizebyBlock n ys 0)
+  if steps == (genericLength ys) then 
+    return n'
+  else 
+    takeM
+  
+do3blocks = do
+  let xs = blockConstrnt
+  first <- pick ((\\) blockConstrnt [])
+  second <- pick ((\\) blockConstrnt [first])
+  third <- pick ((\\) blockConstrnt [first, second])
+  return $ first ++ second ++ third
+
+do4blocks = do
+  let xs = blockConstrnt
+  first <- pick ((\\) blockConstrnt [])
+  second <- pick ((\\) blockConstrnt [first])
+  third <- pick ((\\) blockConstrnt [first, second])
+  fourth <- pick ((\\) blockConstrnt [first, second, third])
+  return $ first ++ second ++ third ++ fourth
+  
+
+
+checkerBlocksMulti n = do
+  replicateM n $ checkerBlocks
+   
 
 -- =============================================================================
 -- Exercise 5 :: Time spent: +-
