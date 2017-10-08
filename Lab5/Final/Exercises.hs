@@ -34,7 +34,8 @@ main = do
 -- Exercise 1 :: Time spent: 4+ hours
 -- See Lecture5NRC.hs for code and comments
 -- =============================================================================
-exercise1 = solveAndShowNRC example
+exercise1 = do
+  solveAndShowNRC example
 
 -- | SOLUTION
 -- +-------+-------+-------+
@@ -73,34 +74,34 @@ exercise1 = solveAndShowNRC example
 -- time required to solve a problem.
 -- =============================================================================
 exercise2 = do
-              solveAndShow' example
-              res <- testDiff
-              print res
+  solveAndShow' example
+  res <- testDiff
+  print res
 
 testDiff :: IO (Bool, Bool)
 testDiff = do
-            [r] <- rsolveNs [emptyN]
-            showNode r
-            refactored <- genProblem' r
-            original <- genProblemNRC r
-            testRefactored <- testTime $ showNode refactored
-            testOriginal <- testTime $ showNode original
-            solveRefactored <- testTime $ solveAndShow' (sud2grid $ fst refactored)
-            solveOriginal <- testTime $ solveAndShowNRC (sud2grid $ fst original)
-            putStrLn "Time taken by original:"
-            print testOriginal
-            print solveOriginal
-            putStrLn "Time taken by refactored:"
-            print testRefactored
-            print solveRefactored
-            return (testRefactored > testOriginal, solveRefactored > solveOriginal)
+  [r] <- rsolveNs [emptyN]
+  showNode r
+  refactored <- genProblem' r
+  original <- genProblemNRC r
+  testRefactored <- testTime $ showNode refactored
+  testOriginal <- testTime $ showNode original
+  solveRefactored <- testTime $ solveAndShow' (sud2grid $ fst refactored)
+  solveOriginal <- testTime $ solveAndShowNRC (sud2grid $ fst original)
+  putStrLn "Time taken by original:"
+  print testOriginal
+  print solveOriginal
+  putStrLn "Time taken by refactored:"
+  print testRefactored
+  print solveRefactored
+  return (testRefactored > testOriginal, solveRefactored > solveOriginal)
 
 testTime :: IO a -> IO (TimeSpec)
-testTime f =
-  do start <- getTime Monotonic
-     f
-     end <- getTime Monotonic
-     return (diffTimeSpec start end)
+testTime f = do
+  start <- getTime Monotonic
+  f
+  end <- getTime Monotonic
+  return (diffTimeSpec start end)
 
 -- =============================================================================
 -- Exercise 3 :: Time spent: +- 3 hours
@@ -111,15 +112,15 @@ testTime f =
 -- The problem was minimal if for every removed hint, the solver finds multiple solutions
 -- =============================================================================
 exercise3 = do
-    putStrLn "Are the generated sudokus minimal?"
-    xs <-  (checkerMulti 5)
-    let x = and xs
-    print x
+  putStrLn "Are the generated sudokus minimal?"
+  xs <-  (checkerMulti 5)
+  let x = and xs
+  print x
 
-    {--
-    This article helped me understand the problem
-    https://www.technologyreview.com/s/426554/mathematicians-solve-minimum-sudoku-problem/
-    --}
+  {--
+  This article helped me understand the problem
+  https://www.technologyreview.com/s/426554/mathematicians-solve-minimum-sudoku-problem/
+  --}
 
 checker' :: IO Bool
 checker' = do
