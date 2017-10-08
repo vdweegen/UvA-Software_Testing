@@ -130,11 +130,11 @@ checkerMulti n = do
    
 
 -- =============================================================================
--- Exercise 4 :: Time spent: +-
+-- Exercise 4 :: Time spent: +- 4 hours
 -- =============================================================================
 {-- 
 
-Yes you can do 3 you can even do 4 but not shure if you can do more. Rhymes
+Yes you can do 3 you can even do 4 but not sure if you can do more. Rhymes
 This will generate a minimal sudoku with 3/4 blocks empty. There are some situations
 where the blocks are cannot removed because it will cause the problem to be ambiguous
 If this happens the functions tries again until it finds a problem that only has 1 unique
@@ -150,7 +150,7 @@ checkerBlocks = do
   showNode z
   let vc = minimalize z (filledPositions (fst z))
   showNode vc
-  
+
 minimizebyBlock ::  Node -> [(Row,Column)] -> Int -> (Node, Int)
 minimizebyBlock n [] steps = (n,steps)
 minimizebyBlock n ((r,c):rcs) steps | uniqueSol n' = minimizebyBlock n' rcs (steps+1)
