@@ -3,7 +3,7 @@ module Lab5 where
 import Data.List
 import System.Random
 
-import Lab5.Bauke.Lecture5
+import Lecture5
 
 -- Define Main --
 main = do
@@ -643,6 +643,10 @@ exercise6 = do
   putStr "Solving a beginner sudoku: "
   solve sudokuBeginner []
   putStr "Solving a minimal sudoku:"
+  do
+    minimal <- minimalSudoku
+    solve minimal []
+
 
 minimalSudoku :: IO Sudoku
 minimalSudoku = do
