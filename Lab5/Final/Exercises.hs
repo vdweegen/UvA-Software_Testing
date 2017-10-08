@@ -241,7 +241,8 @@ exercise5 = do
 -- Besides this the average number of exposed cells whilst printing is calculated
 --
 -- Can you modify the Sudoku problem generator so that it can generate problems that are minimal, but easy to solve by hand?
--- We can use the classifications specified in the first problem
+-- We can use the classifications specified in the first problem to generate sudoku's
+-- Until no more 'single steps' are found, it removes positions. However, these are not necessarily minimal problems
 --
 -- Problems that are minimal but hard to solve by hand?
 -- The minimal sudoku generator's examples are hard to solve by hand.
@@ -253,8 +254,9 @@ exercise6 = do
   solve sudokuBeginner []
   putStrLn "Trying to solve a generated minimal sudoku:"
   solveMinimal
+  putStrLn "Simple to solve sudoku:"
+  simpleSudoku
   putStrLn "Some hard to solve sudoku:"
-
 
 -- | Simple beginner sudoku
 sudokuBeginner :: Sudoku
@@ -268,18 +270,23 @@ sudokuBeginner = grid2sud [[9,3,0,1,0,0,0,0,0],
                            [7,5,0,2,6,0,0,9,0],
                            [0,0,0,0,0,4,0,6,2]]
 
+-- | Generate a Sudoku which is simple to solve by hand
 simpleSudoku :: IO Sudoku
 simpleSudoku = do
   someSolution <- randomSolution
   cleaned <- removeCells someSolution
+  showSudoku cleaned
   return cleaned
 
+-- | Minimize sudoku by reverse 'applying' the simple techniques
 removeCells :: Sudoku -> IO Sudoku
-removeCells sud | (length (nextSteps sud)) == 1 = do return $ sud
+removeCells sud | ((length $ openPositions sud ) > (length (nextSteps sud))) && ((length (nextSteps sud)) == 1) = do return $ sud
                 | otherwise = do
                     removed <- removeCell sud
-                    return removed
+                    cleaned <- removeCells removed
+                    return cleaned
 
+-- | Pick a random step, which is erased
 removeCell :: Sudoku -> IO Sudoku
 removeCell sud = do
   let cells = filledPositions sud
@@ -299,6 +306,7 @@ randomSolution = do
   showSudoku (fst sud)
   return $ fst sud
 
+-- | Demonstrates that a minimal sudoku will not solve using the simple techniques
 solveMinimal :: IO ()
 solveMinimal =  do
     minimal <- minimalSudoku
@@ -309,6 +317,7 @@ minimalSudoku :: IO Sudoku
 minimalSudoku = do
   someSudoku <- genRandomSudoku
   minimized <- genProblem someSudoku
+  showSudoku $ fst minimized
   return $ fst minimized
 
 type Step = ((Row,Column), Value)
