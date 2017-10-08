@@ -11,6 +11,7 @@ import System.Random (randomRIO)
 
 
 -- Define Main --
+main :: IO ()
 main = do
     putStrLn "===================="
     putStrLn "Assignment 5 / Lab 5"
@@ -34,6 +35,7 @@ main = do
 -- Exercise 1 :: Time spent: 4+ hours
 -- See Lecture5NRC.hs for code and comments
 -- =============================================================================
+exercise1 :: IO [()]
 exercise1 = do
   solveAndShowNRC example
 
@@ -73,6 +75,7 @@ exercise1 = do
 -- being the time required to generate a problem, the second timespan being the
 -- time required to solve a problem.
 -- =============================================================================
+exercise2 :: IO ()
 exercise2 = do
   solveAndShow' example
   res <- testDiff
@@ -111,6 +114,7 @@ testTime f = do
 -- For each hint, the problem is solved without this hint.
 -- The problem was minimal if for every removed hint, the solver finds multiple solutions
 -- =============================================================================
+exercise3 :: IO ()
 exercise3 = do
   putStrLn "Are the generated sudokus minimal?"
   xs <-  (checkerMulti 5)
@@ -160,7 +164,7 @@ checkerMulti n = do
 -- doing so will cause the problem to become ambiguous. If this occurs, the
 -- functions retries until it finds a problem that only has 1 unique solution.
 -- =============================================================================
-
+exercise4 :: IO [()]
 exercise4 = do
   checkerBlocksMulti 1
 
@@ -177,10 +181,12 @@ minimizebyBlock n ((r,c):rcs) steps | uniqueSol n' = minimizebyBlock n' rcs (ste
                                     | otherwise    = minimizebyBlock n  rcs (steps)
       where n' = eraseN n (r,c)
 
+minimizeUntil :: IO ()
 minimizeUntil = do
   z <- takeM
   showNode z
 
+takeM :: IO Node
 takeM = do
   [n] <- rsolveNs [emptyN]
   ys <-  do4blocks
@@ -190,6 +196,7 @@ takeM = do
   else
     takeM
 
+do3blocks :: IO [(Row,Column)]
 do3blocks = do
   let xs = blockConstrnt
   first <- pick ((\\) blockConstrnt [])
@@ -197,7 +204,7 @@ do3blocks = do
   third <- pick ((\\) blockConstrnt [first, second])
   return $ first ++ second ++ third
 
-
+do4blocks :: IO [(Row,Column)]
 do4blocks = do
   let xs = blockConstrnt
   first <- pick ((\\) blockConstrnt [])
@@ -206,8 +213,7 @@ do4blocks = do
   fourth <- pick ((\\) blockConstrnt [first, second, third])
   return $ first ++ second ++ third ++ fourth
 
-
-
+checkerBlocksMulti :: Int -> IO [()]
 checkerBlocksMulti n = do
   replicateM n $ checkerBlocks
 
@@ -216,11 +222,20 @@ checkerBlocksMulti n = do
 -- Exercise 5 :: Time spent: 1+ hour
 -- See Lecture5NRC.hs for code and comments
 -- =============================================================================
-exercise5 = genProblemAndShowNRC
+exercise5 :: IO ()
+exercise5 = do
+  genProblemAndShowNRC
 
 -- =============================================================================
 -- Exercise 6 :: Time spent: +-
 -- =============================================================================
+exercise6 :: IO ()
+exercise6 = do
+  putStrLn "Trying to solve a beginner sudoku: "
+  solve sudokuBeginner []
+  putStrLn "Trying to solve a generated minimal sudoku:"
+  solveMinimal
+
 -- | Simple beginner sudoku
 sudokuBeginner :: Sudoku
 sudokuBeginner = grid2sud [[9,3,0,1,0,0,0,0,0],
@@ -233,16 +248,9 @@ sudokuBeginner = grid2sud [[9,3,0,1,0,0,0,0,0],
                            [7,5,0,2,6,0,0,9,0],
                            [0,0,0,0,0,4,0,6,2]]
 
-exercise6 = do
-  putStrLn "Trying to solve a beginner sudoku: "
-  solve sudokuBeginner []
-  putStrLn "Trying to solve a generated minimal sudoku:"
-  solveMinimal
-
 removeCell :: Sudoku -> Sudoku
 removeCell sud | (length (nextSteps sud)) == 1 = sud
                | otherwise = undefined
-
 
 -- | Picks a random item from the list
 randomFrom :: Eq a => [a] -> IO a
@@ -266,6 +274,7 @@ randomSolution = do
   showSudoku (fst sud)
   return $ fst sud
 
+solveMinimal :: IO ()
 solveMinimal =  do
     minimal <- minimalSudoku
     solve minimal []
@@ -355,8 +364,11 @@ checkValues (x:xs) | (x > 0) && (x `elem` xs) = False
 -- =============================================================================
 -- Exercise 7 :: Time spent: +- 1 hour
 -- =============================================================================
-exercise7 = runTestAvgHints 5
+exercise7 :: IO ()
+exercise7 = do
+  runTestAvgHints 5
 
+runTestAvgHints :: Int -> IO ()
 runTestAvgHints n = do
   x <- replicateM n generateAndCountLec
   y <- replicateM n generateAndCountNRC
