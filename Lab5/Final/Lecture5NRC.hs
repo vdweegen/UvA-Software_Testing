@@ -1,4 +1,4 @@
-module Lecture5NRC (solveAndShowNRC, genProblemNRC, genProblemAndShowNRC, blocksNRC) where
+module Lecture5NRC (solveAndShowNRC, genProblemNRC, genProblemAndShowNRC, blocksNRC, rsolveNsNRC) where
 
 import Data.List
 import System.Random
@@ -73,6 +73,9 @@ genProblemNRC :: Node -> IO Node
 genProblemNRC n = do ys <- randomize xs
                      return (minimalize n ys)
    where xs = filledPositions (fst n)
+
+rsolveNsNRC :: [Node] -> IO [Node]
+rsolveNsNRC ns = rsolveNs ns
 
 -- | Existing code from Lecture5.hs
 type Row    = Int

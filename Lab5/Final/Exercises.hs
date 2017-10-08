@@ -5,6 +5,8 @@ import Lecture5NRC
 import Lecture5'
 import Example
 import System.Clock
+import Control.Monad
+import Data.List
 
 -- Define Main --
 main = do
@@ -107,7 +109,28 @@ exercise6 = do
   print()
 
 -- =============================================================================
--- Exercise 7 :: Time spent: +-
+-- Exercise 7 :: Time spent: +- 1 hour
 -- =============================================================================
-exercise7 = do
-  print()
+exercise7 = runTestAvgHints 5
+
+runTestAvgHints n = do
+  x <- replicateM n generateAndCountLec
+  y <- replicateM n generateAndCountNRC
+  putStrLn "Average number of hints"
+  let xAvg =  (fromIntegral (sum x)) / (fromIntegral (genericLength x))
+  print xAvg
+  putStrLn "Average NRC of hints"
+  let yAvg =  (fromIntegral (sum y)) / (fromIntegral (genericLength y))
+  print yAvg
+
+generateAndCountLec :: IO Int
+generateAndCountLec = do
+  [n] <- rsolveNs [emptyN]
+  p <- genProblem n
+  return $ genericLength $  filledPositions (fst p)
+
+generateAndCountNRC :: IO Int
+generateAndCountNRC = do
+  [n] <- rsolveNsNRC [emptyN]
+  p <- genProblemNRC n
+  return $ genericLength$  filledPositions (fst p)
