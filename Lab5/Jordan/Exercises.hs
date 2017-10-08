@@ -187,53 +187,53 @@ where the blocks are cannot removed because it will cause the problem to be ambi
 If this happens the functions tries again until it finds a problem that only has 1 unique
 solution.
 --}
-exercise4 = print()
--- exercise4 = do
---   checkerBlocksMulti 1
+-- exercise4 = print()
+exercise4 = do
+  checkerBlocksMulti 1
 
--- checkerBlocks :: IO ()
--- checkerBlocks = do
---   z <- takeM
---   showNode z
+checkerBlocks :: IO ()
+checkerBlocks = do
+  z <- takeM
+  showNode z
 
--- minimizebyBlock ::  Node -> [(Row,Column)] -> Int -> (Node, Int)
--- minimizebyBlock n [] steps = (n,steps)
--- minimizebyBlock n ((r,c):rcs) steps | uniqueSol n' = minimizebyBlock n' rcs (steps+1)
---                                     | otherwise    = minimizebyBlock n  rcs (steps)
---       where n' = eraseN n (r,c)
+minimizebyBlock ::  Node -> [(Row,Column)] -> Int -> (Node, Int)
+minimizebyBlock n [] steps = (n,steps)
+minimizebyBlock n ((r,c):rcs) steps | uniqueSol n' = minimizebyBlock n' rcs (steps+1)
+                                    | otherwise    = minimizebyBlock n  rcs (steps)
+      where n' = eraseN n (r,c)
 
--- minimizeUntil = do 
---   z <- takeM
---   showNode z
+minimizeUntil = do 
+  z <- takeM
+  showNode z
 
--- takeM = do 
---   [n] <- rsolveNs [emptyN]
---   ys <-  do4blocks
---   let (n', steps) = (minimizebyBlock n ys 0)
---   if steps == (genericLength ys) then 
---     return n'
---   else 
---     takeM
+takeM = do 
+  [n] <- rsolveNs [emptyN]
+  ys <-  do4blocks
+  let (n', steps) = (minimizebyBlock n ys 0)
+  if steps == (genericLength ys) then 
+    return n'
+  else 
+    takeM
   
--- do3blocks = do
---   let xs = blockConstrnt
---   first <- pick ((\\) blockConstrnt [])
---   second <- pick ((\\) blockConstrnt [first])
---   third <- pick ((\\) blockConstrnt [first, second])
---   return $ first ++ second ++ third
+do3blocks = do
+  let xs = blockConstrnt
+  first <- pick ((\\) blockConstrnt [])
+  second <- pick ((\\) blockConstrnt [first])
+  third <- pick ((\\) blockConstrnt [first, second])
+  return $ first ++ second ++ third
 
--- do4blocks = do
---   let xs = blockConstrnt
---   first <- pick ((\\) blockConstrnt [])
---   second <- pick ((\\) blockConstrnt [first])
---   third <- pick ((\\) blockConstrnt [first, second])
---   fourth <- pick ((\\) blockConstrnt [first, second, third])
---   return $ first ++ second ++ third ++ fourth
+do4blocks = do
+  let xs = blockConstrnt
+  first <- pick ((\\) blockConstrnt [])
+  second <- pick ((\\) blockConstrnt [first])
+  third <- pick ((\\) blockConstrnt [first, second])
+  fourth <- pick ((\\) blockConstrnt [first, second, third])
+  return $ first ++ second ++ third ++ fourth
   
 
 
--- checkerBlocksMulti n = do
---   replicateM n $ checkerBlocks
+checkerBlocksMulti n = do
+  replicateM n $ checkerBlocks
    
 
 -- =============================================================================
