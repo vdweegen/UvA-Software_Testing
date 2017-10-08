@@ -268,10 +268,17 @@ sudokuBeginner = grid2sud [[9,3,0,1,0,0,0,0,0],
                            [7,5,0,2,6,0,0,9,0],
                            [0,0,0,0,0,4,0,6,2]]
 
+simpleSudoku :: IO Sudoku
+simpleSudoku = do
+  someSolution <- randomSolution
+  cleaned <- removeCells someSolution
+  return cleaned
+
 removeCells :: Sudoku -> IO Sudoku
 removeCells sud | (length (nextSteps sud)) == 1 = do return $ sud
                 | otherwise = do
-                  return $ sud
+                    removed <- removeCell sud
+                    return removed
 
 removeCell :: Sudoku -> IO Sudoku
 removeCell sud = do
