@@ -1,5 +1,5 @@
 module Lab5 where
-import qualified Lab5.Jordan.Lecture5Original as Lec5 (solveAndShow, Grid, rsolveNs, emptyN, showNode, genProblem, filledPositions, randomize, eraseN, uniqueSol)
+import qualified Lab5.Jordan.Lecture5Original as Lec5 (solveAndShow, Grid, rsolveNs, emptyN, showNode, genProblem, filledPositions, randomize, eraseN, uniqueSol, Sudoku, Row, Column, Node)
 import qualified Lab5.Jordan.Lecture5 as NRC (solveAndShow, Grid, rsolveNs, emptyN, showNode, genProblem, filledPositions)
 import Data.List
 import Control.Monad
@@ -150,8 +150,8 @@ exercise3 = do
   https://www.technologyreview.com/s/426554/mathematicians-solve-minimum-sudoku-problem/
   --}
 
-checker :: IO Bool
-checker = do
+checker' :: IO Bool
+checker' = do
   [r] <- Lec5.rsolveNs [Lec5.emptyN]
   s  <- Lec5.genProblem r
   x <- Lec5.randomize ( Lec5.filledPositions (fst s))
@@ -159,6 +159,16 @@ checker = do
     return (Lec5.eraseN s (head x))
   return $ not $ Lec5.uniqueSol s'
 
+checker :: IO Bool
+checker = do
+  [r] <- Lec5.rsolveNs [Lec5.emptyN]
+  s  <- Lec5.genProblem r
+  let x  = (Lec5.filledPositions (fst s))
+  let s' = map (eraseNcheck s) x
+  return $ and s'
+  
+eraseNcheck :: Lec5.Node -> (Lec5.Row, Lec5.Column) ->  Bool
+eraseNcheck s pos = not $ Lec5.uniqueSol (Lec5.eraseN s pos)
 
 checkerMulti :: Int -> IO [Bool]
 checkerMulti n = do
@@ -177,9 +187,8 @@ where the blocks are cannot removed because it will cause the problem to be ambi
 If this happens the functions tries again until it finds a problem that only has 1 unique
 solution.
 --}
-
 exercise4 = print()
-  -- do
+-- exercise4 = do
 --   checkerBlocksMulti 1
 
 -- checkerBlocks :: IO ()
