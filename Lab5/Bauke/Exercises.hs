@@ -305,10 +305,137 @@ extractSquare :: Grid -> (Int, Int) -> [Int]
 extractSquare grid (x,y) = concat $ map (take 3) $ take 3 $ drop (y-1) $ map (drop (x-1)) grid
 
 -- =============================================================================
--- Exercise 2 :: Time spent: +-
+-- Exercise 2 :: Took Willem's exercise 2, to use in the bonus
 -- =============================================================================
-exercise2 = do
-  print()
+exercise2 = solveAndShow' puzzle1
+
+type Position = (Row,Column)
+type Constrnt = [[Position]]
+
+rowConstrnt, columnConstrnt, blockConstrnt, nrcConstrnt, allConstrnt :: Constrnt
+rowConstrnt = [[(r,c)| c <- values ] | r <- values ]
+columnConstrnt = [[(r,c)| r <- values ] | c <- values ]
+blockConstrnt = [[(r,c)| r <- b1, c <- b2 ] | b1 <- defaultBlocks, b2 <- defaultBlocks ]
+nrcConstrnt = [[(r,c)| r <- b1, c <- b2 ] | b1 <- nrcBlocks, b2 <- nrcBlocks ]
+
+allConstrnt = rowConstrnt ++ columnConstrnt ++ blockConstrnt ++ nrcConstrnt
+
+freeAtPos' :: Sudoku -> Position -> Constrnt -> [Value]
+freeAtPos' s (r,c) xs = let
+   ys = filter (elem (r,c)) xs
+ in
+   foldl1 intersect (map ((values \\) . map s) ys)
+
+constraints' :: Sudoku -> [Constraint]
+constraints' s = sortBy length3rd
+    [(r,c, freeAtPos' s (r,c) allConstrnt) |
+                       (r,c) <- openPositions s ]
+
+consistent' :: Sudoku -> Bool
+consistent' s = all (constrntInjective s) allConstrnt
+
+-- | Check if a constraint is injective instead of a function per row, column, grid etc
+constrntInjective :: Sudoku -> [(Row,Column)] -> Bool
+constrntInjective s xs = injective xs
+
+emptyN' :: Node
+emptyN' = (\ _ -> 0,constraints' (\ _ -> 0))
+
+getRandomCnstr' :: [Constraint] -> IO [Constraint]
+getRandomCnstr' cs = getRandomItem (f cs)
+  where f [] = []
+        f (x:xs) = takeWhile (sameLen x) (x:xs)
+
+rsuccNode' :: Node -> IO [Node]
+rsuccNode' (s,cs) = do xs <- getRandomCnstr cs
+                       if null xs
+                         then return []
+                         else return
+                           (extendNode' (s,cs\\xs) (head xs))
+
+rsolveNs' :: [Node] -> IO [Node]
+rsolveNs' ns = rsearch rsuccNode' solved (return ns)
+
+genRandomSudoku' :: IO Node
+genRandomSudoku' = do [r] <- rsolveNs' [emptyN']
+                      return r
+
+randomS' = genRandomSudoku' >>= showNode
+
+uniqueSol' :: Node -> Bool
+uniqueSol' node = singleton (solveNs' [node]) where
+  singleton [] = False
+  singleton [x] = True
+  singleton (x:y:zs) = False
+
+eraseN' :: Node -> (Row,Column) -> Node
+eraseN' n (r,c) = (s, constraints' s)
+  where s = eraseS (fst n) (r,c)
+
+eraseS :: Sudoku -> (Row,Column) -> Sudoku
+eraseS s (r,c) (x,y) | (r,c) == (x,y) = 0
+                     | otherwise      = s (x,y)
+
+minimalize' :: Node -> [(Row,Column)] -> Node
+minimalize' n [] = n
+minimalize' n ((r,c):rcs) | uniqueSol' n' = minimalize' n' rcs
+                          | otherwise     = minimalize' n  rcs
+  where n' = eraseN' n (r,c)
+
+genProblem' :: Node -> IO Node
+genProblem' n = do ys <- randomize xs
+                   return (minimalize' n ys)
+   where xs = filledPositions (fst n)
+
+randomize :: Eq a => [a] -> IO [a]
+randomize xs = do y <- getRandomItem xs
+                  if null y
+                    then return []
+                    else do ys <- randomize (xs\\y)
+                            return (head y:ys)
+
+
+filledPositions :: Sudoku -> [(Row,Column)]
+filledPositions s = [ (r,c) | r <- positions,
+                              c <- positions, s (r,c) /= 0 ]
+
+solveNs' :: [Node] -> [Node]
+solveNs' = search succNode' solved
+
+succNode' :: Node -> [Node]
+succNode' (s,[]) = []
+succNode' (s,p:ps) = extendNode' (s,ps) p
+
+solveAndShow' :: Grid -> IO[()]
+solveAndShow' gr = solveShowNs' (initNode' gr)
+
+solveShowNs' :: [Node] -> IO[()]
+solveShowNs' = sequence . fmap showNode . solveNs'
+
+initNode' :: Grid -> [Node]
+initNode' gr = let s = grid2sud gr in
+               if (not . consistent') s then []
+               else [(s, constraints' s)]
+
+extendNode' :: Node -> Constraint -> [Node]
+extendNode' (s,constraints') (r,c,vs) =
+   [(extend s ((r,c),v),
+     sortBy length3rd $
+         prune' (r,c,v) constraints') | v <- vs ]
+
+prune' :: (Row,Column,Value)
+      -> [Constraint] -> [Constraint]
+prune' _ [] = []
+prune' (r,c,v) ((x,y,zs):rest)
+  | sameConstrnt (r,c) (x,y) =
+        (x,y,zs\\[v]) : prune' (r,c,v) rest
+  | otherwise = (x,y,zs) : prune' (r,c,v) rest
+
+-- | Use sameConstrnt instead of sameblock
+-- First filter the constraints to find the right constraint for the position.
+-- Next check if constraint matches
+sameConstrnt :: (Row,Column) -> (Row,Column) -> Bool
+sameConstrnt (r,c) (x,y) = any (elem (x,y)) $ filter (elem (r,c)) allConstrnt
 
 -- =============================================================================
 -- Exercise 3 :: Time spent: +-
@@ -387,8 +514,7 @@ rsearch succ goal ionodes =
 -- =============================================================================
 exercise4 = undefined
 
-
--- | Uses the provided generator to return a random grid
+-- | Uses the provided generator to return a random NRC solution grid
 genRandomGrid :: IO Grid
 genRandomGrid = do
   node <- genRandomSudoku
@@ -410,9 +536,6 @@ eraseBlock 1 grid = undefined
 -- | Convert rows to blocks
 grid2blocks :: Grid -> Grid
 grid2blocks grid = map (extractSquare grid) (take 9 squares)
-
---extractSquare :: Grid -> (Int, Int) -> [Int]
---extractSquare grid (x,y) = concat $ map (take 3) $ take 3 $ drop (y-1) $ map (drop (x-1)) grid
 
 blocks2grid :: Grid -> Grid
 blocks2grid blocks = [ extractRow blocks n | n <- [1..9] ]
@@ -437,19 +560,29 @@ valid = puzzle1 == (blocks2grid $ grid2blocks puzzle1)
 -- Exercise 5 :: Time spent: +-
 -- =============================================================================
 exercise5 = do
-  print()
+  print ()
 
 -- =============================================================================
 -- Exercise 6 :: Time spent: 1 hour on reading the paper
 -- Based on this paper the difficulty of a sudoku is mainly based on two characteristics
--- 1) The techniques required to find the next step
+-- Re-used the NRC solver from exercise 5
+-- 1) The techniques required to find the next step => Naked single being most simple
 -- 2) The amount of 'next' steps during a moment in the puzzle
+-- 3) The amount of solutions => More solutions = more difficult puzzle
+
+-- The approach uses the 'nextSteps' method, which mimics the 'pencilmarks' technique used
+-- To s
+
 -- =============================================================================
 exercise6 = do
   print()
 
+-- | You give it a grid, and it hands you the position with maximum n values
+nextSteps :: Sudoku -> Int -> [((Int,Int), [Value])]
+nextSteps sud n = [ ((r,c), values) | r <- [1..9], c <- [1..9], let values = freeAtPos' sud (r,c) allConstrnt, let size = length values in (size <= n) && ((r,c) `elem` openPositions sud)]
+
 -- =============================================================================
--- Exercise 7 :: Time spent: +-
+-- Exercise 7 :: Time spent: +- i
 -- =============================================================================
 exercise7 = do
   print()
