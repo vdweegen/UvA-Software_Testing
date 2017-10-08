@@ -73,10 +73,16 @@ testDiff = do
             showNode r
             refactored <- genProblem' r
             original <- genProblemNRC r
-            testRefactored <- (testTime $ showNode refactored)
-            testOriginal <- (testTime $ showNode original)
-            solveRefactored <- (testTime $ solveAndShow' (sud2grid $ fst refactored))
-            solveOriginal <- (testTime $ solveAndShowNRC (sud2grid $ fst original))
+            testRefactored <- testTime $ showNode refactored
+            testOriginal <- testTime $ showNode original
+            solveRefactored <- testTime $ solveAndShow' (sud2grid $ fst refactored)
+            solveOriginal <- testTime $ solveAndShowNRC (sud2grid $ fst original)
+            putStrLn "Time taken by original:"
+            print testOriginal
+            print solveOriginal
+            putStrLn "Time taken by refactored:"
+            print testRefactored
+            print solveRefactored
             return (testRefactored > testOriginal, solveRefactored > solveOriginal)
 
 testTime :: IO a -> IO (TimeSpec)
