@@ -257,6 +257,8 @@ exercise6 = do
   putStrLn "Simple to solve sudoku:"
   simpleSudoku
   putStrLn "Some hard to solve sudoku:"
+  minimalSudoku
+  print ()
 
 -- | Simple beginner sudoku
 sudokuBeginner :: Sudoku
@@ -275,6 +277,7 @@ simpleSudoku :: IO Sudoku
 simpleSudoku = do
   someSolution <- randomSolution
   cleaned <- removeCells someSolution
+  putStrLn "Result exercise:"
   showSudoku cleaned
   return cleaned
 
@@ -303,6 +306,7 @@ randomInteger xs = (randomRIO (0, (length xs)-1))
 randomSolution :: IO Sudoku
 randomSolution = do
   sud <- genRandomSudoku
+  putStrLn "Solution grid:"
   showSudoku (fst sud)
   return $ fst sud
 
