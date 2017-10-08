@@ -3,6 +3,8 @@ module Lab5 where
 import Data.List
 import System.Random
 
+import Lab5.Bauke.Lecture5
+
 -- Define Main --
 main = do
     putStrLn "===================="
@@ -62,6 +64,8 @@ nrcSquare1 = [0,0,7,0,0,0,0,6,0] == (extractSquare puzzle1 (2,2))
 nrcSquare2 = [0,3,0,0,0,0,5,0,0] == (extractSquare puzzle1 (2,6))
 nrcSquare3 = [0,0,0,0,0,0,8,0,0] == (extractSquare puzzle1 (6,2))
 nrcSquare4 = [1,2,0,0,0,3,0,0,0] == (extractSquare puzzle1 (6,6))
+
+{-
 
 exercise1 = undefined
 
@@ -282,6 +286,9 @@ search children goal (x:xs)
   | goal x    = x : search children goal xs
   | otherwise = search children goal ((children x) ++ xs)
 
+
+-}
+
 -- | Simple validator for sudoku grids
 squares :: [(Row, Column)]
 squares = [(1,1), (1,4), (1,7), (4,1), (4,4), (4,7), (7,1), (7,4), (7,7), (2,2), (2,6), (6,2), (6,6)]
@@ -295,7 +302,6 @@ isValid grid | not $ validGrid grid = False
              | not $ validList grid = False
              | not $ validList (flipGrid grid) = False
              | otherwise = validateSquares grid (take 9 squares)
-
 
 validateSquares :: Grid -> [(Row,Column)] -> Bool
 validateSquares grid squares = all (==True) $ map (validSquare grid) squares
@@ -330,6 +336,7 @@ checkValues [] = True
 checkValues (x:xs) | (x > 0) && (x `elem` xs) = False
                    | otherwise = checkValues xs
 
+{-
 -- =============================================================================
 -- Exercise 2 :: Took Willem's exercise 2, to use in the bonus
 -- =============================================================================
@@ -589,7 +596,7 @@ valid = puzzle1 == (blocks2grid $ grid2blocks puzzle1)
 -- =============================================================================
 exercise5 = do
   print ()
-
+-}
 -- =============================================================================
 -- Exercise 6 :: Time spent: 1 hour on reading the paper
 -- Based on this paper the difficulty of a sudoku is mainly based on two characteristics
@@ -617,11 +624,31 @@ sudokuBeginner = grid2sud [[9,3,0,1,0,0,0,0,0],
                            [0,0,0,0,0,4,0,6,2]]
 
 
+exercise1 = do
+  print()
+
+exercise2 = do
+  print ()
+
+exercise3 = do
+  print ()
+
+exercise4 = do
+  print ()
+
+exercise5 = do
+  print ()
 
 exercise6 = do
   putStr "Solving a beginner sudoku: "
   solve sudokuBeginner []
   putStr "Solving a minimal sudoku:"
+
+minimalSudoku :: IO Sudoku
+minimalSudoku = do
+  someSudoku <- genRandomSudoku
+  minimized <- genProblem someSudoku
+  return $ fst minimized
 
 type Step = ((Row,Column), Value)
 
@@ -639,7 +666,7 @@ solve sud nxts  | isSolved sud = do
 
 -- | You give it a grid, and it hands you the columns with single values
 nextSteps :: Sudoku -> [Step]
-nextSteps sud = [ ((r,c), head values) | r <- [1..9], c <- [1..9], let values = freeAtPos' sud (r,c) stdConstrnt, let size = length values in (size == 1) && ((r,c) `elem` openPositions sud)]
+nextSteps sud = [ ((r,c), head values) | r <- [1..9], c <- [1..9], let values = freeAtPos sud (r,c), let size = length values in (size == 1) && ((r,c) `elem` openPositions sud)]
 
 isSolved :: Sudoku -> Bool
 isSolved sud = isValid $ sud2grid sud
