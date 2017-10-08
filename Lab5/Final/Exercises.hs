@@ -142,13 +142,15 @@ solution.
 --}
 -- exercise4 = print()
 exercise4 = do
-  checkerBlocksMulti 4
+  checkerBlocksMulti 1
 
 checkerBlocks :: IO ()
 checkerBlocks = do
   z <- takeM
   showNode z
-
+  let vc = minimalize z (filledPositions (fst z))
+  showNode vc
+  
 minimizebyBlock ::  Node -> [(Row,Column)] -> Int -> (Node, Int)
 minimizebyBlock n [] steps = (n,steps)
 minimizebyBlock n ((r,c):rcs) steps | uniqueSol n' = minimizebyBlock n' rcs (steps+1)
@@ -174,6 +176,7 @@ do3blocks = do
   second <- pick ((\\) blockConstrnt [first])
   third <- pick ((\\) blockConstrnt [first, second])
   return $ first ++ second ++ third
+
 
 do4blocks = do
   let xs = blockConstrnt
