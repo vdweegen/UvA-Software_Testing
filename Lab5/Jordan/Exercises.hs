@@ -1,5 +1,5 @@
 module Lab5 where
-import qualified Lab5.Jordan.Lecture5Original as Lec5 (solveAndShow, Grid, rsolveNs, emptyN, showNode, genProblem, filledPositions)
+import qualified Lab5.Jordan.Lecture5Original as Lec5 (solveAndShow, Grid, rsolveNs, emptyN, showNode, genProblem, filledPositions, randomize, eraseN, uniqueSol)
 import qualified Lab5.Jordan.Lecture5 as NRC (solveAndShow, Grid, rsolveNs, emptyN, showNode, genProblem, filledPositions)
 import Data.List
 import Control.Monad
@@ -139,35 +139,30 @@ exercise2 = do
 -- =============================================================================
 -- Exercise 3 :: Time spent: +- 5 hours
 -- =============================================================================
-exercise3 = print ()
-  -- do
-  -- putStrLn "Are the generated sudokus minimal?"
-  -- (checkerMulti 5)
+exercise3 = do
+  putStrLn "Are the generated sudokus minimal?"
+  xs <-  (checkerMulti 5)
+  let x = and xs
+  print x
 
   {-- 
   This article helped me understand the problem 
   https://www.technologyreview.com/s/426554/mathematicians-solve-minimum-sudoku-problem/
   --}
 
--- checker :: IO Bool
--- checker = do
---   [r] <- rsolveNs [emptyN]
---   -- showNode r
---   s  <- genProblem r
---   -- showNode s
---   -- [r] <- rsolveNs [s]
---   -- print $ uniqueSol s
---   x <- randomize ( filledPositions (fst s))
---   s' <- do
---     return (eraseN s (head x))
---   -- showNode s'
---   -- putStrLn "Is the problem still unique?"
---   return $ not $ uniqueSol s'
+checker :: IO Bool
+checker = do
+  [r] <- Lec5.rsolveNs [Lec5.emptyN]
+  s  <- Lec5.genProblem r
+  x <- Lec5.randomize ( Lec5.filledPositions (fst s))
+  s' <- do
+    return (Lec5.eraseN s (head x))
+  return $ not $ Lec5.uniqueSol s'
 
 
--- checkerMulti :: Int -> IO [Bool]
--- checkerMulti n = do
---   replicateM n $ checker
+checkerMulti :: Int -> IO [Bool]
+checkerMulti n = do
+  replicateM n $ checker
  
   
 
