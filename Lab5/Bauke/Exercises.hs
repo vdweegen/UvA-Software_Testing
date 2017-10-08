@@ -284,12 +284,15 @@ search children goal (x:xs)
 squares :: [(Row, Column)]
 squares = [(1,1), (1,4), (1,7), (4,1), (4,4), (4,7), (7,1), (7,4), (7,7), (2,2), (2,6), (6,2), (6,6)]
 
+isValidNrc :: Grid -> Bool
+isValidNrc grid = (isValid grid) && (validateSquares grid squares)
+
 isValid :: Grid -> Bool
 isValid grid | not $ validGrid grid = False
              | 0 `elem` (concat grid) = False
              | not $ validList grid = False
              | not $ validList (flipGrid grid) = False
-             | otherwise = validateSquares grid squares
+             | otherwise = validateSquares grid (take 9 squares)
 
 
 validateSquares :: Grid -> [(Row,Column)] -> Bool
@@ -601,15 +604,15 @@ exercise5 = do
 
 -- | Simple beginner sudoku
 sudokuBeginner :: Sudoku
-sudokuBeginner = grid2sud [[ 9,3,0,1,0,0,0,0,0],
-                  [0,7,0,0,4,2,0,5,8],
-                  [8,0,0,0,3,7,0,0,0],
-                  [0,9,1,0,0,8,6,4,5],
-                  [0,6,0,0,0,0,0,8,0],
-                  [4,8,7,5,0,0,9,1,0],
-                  [0,0,0,8,5,0,0,0,4],
-                  [7,5,0,2,6,0,0,9,0],
-                  [0,0,0,0,0,4,0,6,2]]
+sudokuBeginner = grid2sud [[9,3,0,1,0,0,0,0,0],
+                           [0,7,0,0,4,2,0,5,8],
+                           [8,0,0,0,3,7,0,0,0],
+                           [0,9,1,0,0,8,6,4,5],
+                           [0,6,0,0,0,0,0,8,0],
+                           [4,8,7,5,0,0,9,1,0],
+                           [0,0,0,8,5,0,0,0,4],
+                           [7,5,0,2,6,0,0,9,0],
+                           [0,0,0,0,0,4,0,6,2]]
 
 
 
@@ -633,7 +636,7 @@ nextSteps :: Sudoku -> [Step]
 nextSteps sud = [ ((r,c), head values) | r <- [1..9], c <- [1..9], let values = freeAtPos' sud (r,c) stdConstrnt, let size = length values in (size == 1) && ((r,c) `elem` openPositions sud)]
 
 isSolved :: Sudoku -> Bool
-isSolved sud = not $ 0 `elem` (concat $ sud2grid sud)
+isSolved sud = isValid $ sud2grid sud
 
 -- =============================================================================
 -- Exercise 7 :: Time spent: +- i
