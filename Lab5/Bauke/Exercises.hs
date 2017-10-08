@@ -38,16 +38,32 @@ puzzle1 :: Grid
 puzzle1 = [[0,0,0,3,0,0,0,0,0],
            [0,0,0,7,0,0,3,0,0],
            [2,0,0,0,0,0,0,0,8],
+
            [0,0,6,0,0,5,0,0,0],
            [0,9,1,6,0,0,0,0,0],
            [3,0,0,0,7,1,2,0,0],
+
            [0,0,0,0,0,0,0,3,1],
            [0,8,0,0,4,0,0,0,0],
            [0,0,2,0,0,0,0,0,0]]
 
-exercise1 = solveAndShow puzzle1
+-- | Just in case, checking the extraction of values
+square1 = [0,0,0,0,0,0,2,0,0] == (extractSquare puzzle1 (1,1))
+square2 = [3,0,0,7,0,0,0,0,0] == (extractSquare puzzle1 (1,4))
+square3 = [0,0,0,3,0,0,0,0,8] == (extractSquare puzzle1 (1,7))
+square4 = [0,0,6,0,9,1,3,0,0] == (extractSquare puzzle1 (4,1))
+square5 = [0,0,5,6,0,0,0,7,1] == (extractSquare puzzle1 (4,4))
+square6 = [0,0,0,0,0,0,2,0,0] == (extractSquare puzzle1 (4,7))
+square7 = [0,0,0,0,8,0,0,0,2] == (extractSquare puzzle1 (7,1))
+square8 = [0,0,0,0,4,0,0,0,0] == (extractSquare puzzle1 (7,4))
+square9 = [0,3,1,0,0,0,0,0,0] == (extractSquare puzzle1 (7,7))
 
+nrcSquare1 = [0,0,7,0,0,0,0,6,0] == (extractSquare puzzle1 (2,2))
+nrcSquare2 = [0,3,0,0,0,0,5,0,0] == (extractSquare puzzle1 (2,6))
+nrcSquare3 = [0,0,0,0,0,0,8,0,0] == (extractSquare puzzle1 (6,2))
+nrcSquare4 = [1,2,0,0,0,3,0,0,0] == (extractSquare puzzle1 (6,6))
 
+exercise1 = undefined
 
 -- | Imported code for the solver
 
@@ -264,45 +280,50 @@ search children goal (x:xs)
   | goal x    = x : search children goal xs
   | otherwise = search children goal ((children x) ++ xs)
 
--- | List of 3x3 squares to check for unique numbers
-squares :: [(Int, Int)]
-squares = [(1,1), (4,1), (7,1), (1,4), (4,4), (4,7), (1,7), (4,7), (7,7), (2,2), (6,2), (2,6), (6,6)]
+-- | Simple validator for sudoku grids
+squares :: [(Row, Column)]
+squares = [(1,1), (1,4), (1,7), (4,1), (4,4), (4,7), (7,1), (7,4), (7,7), (2,2), (2,6), (6,2), (6,6)]
 
 isValid :: Grid -> Bool
 isValid grid | not $ validGrid grid = False
              | 0 `elem` (concat grid) = False
-             | dupesInLines grid = False
-             | any (==False) $ map (validSquare grid) squares = False
-             | otherwise = True
+             | not $ validList grid = False
+             | not $ validList (flipGrid grid) = False
+             | otherwise = validateSquares grid squares
+
+
+validateSquares :: Grid -> [(Row,Column)] -> Bool
+validateSquares grid squares = all (==True) $ map (validSquare grid) squares
 
 validGrid :: Grid -> Bool
 validGrid grid | length grid /= 9 = False
                | (length $ concat grid) /= 81 = False
                | otherwise = True
 
-dupesInLines :: Grid -> Bool
-dupesInLines [] = False
-dupesInLines (x:xs) = checkLine x && dupesInLines xs
-
-checkLine :: [Int] -> Bool
-checkLine [] = True
-checkLine (0:_) = False
-checkLine (x:xs) | x `elem` xs = False
-                 | otherwise = checkLine xs
+validList :: Grid -> Bool
+validList [] = True
+validList (x:xs) = checkValues x && validList xs
 
 -- | Convenience call to flip list of rows to list of columns
 flipGrid :: Grid -> Grid
-flipGrid grid = compose $ [ value | start <- [1..9], step <- [0..8], let value = (concat grid) !! ((start-1) + (9*step)) ]
+flipGrid grid = composeGrid $ [ value | start <- [1..9], step <- [0..8], let value = (concat grid) !! ((start-1) + (9*step)) ]
 
-compose :: [Value] -> Grid
-compose values = [ column | step <- [1..9], let column = drop ((step-1)*9) $ take (step*9) values]
+composeGrid :: [Value] -> Grid
+composeGrid values = [ column | step <- [1..9], let column = drop ((step-1)*9) $ take (step*9) values]
 
 -- | Convenience call to validate a 3x3 grid
-validSquare :: Grid -> (Int,Int) -> Bool
-validSquare grid (x,y) =  checkLine $ extractSquare grid (x,y)
+validSquare :: Grid -> (Row,Column) -> Bool
+validSquare grid (r,c) =  checkValues $ extractSquare grid (r,c)
 
-extractSquare :: Grid -> (Int, Int) -> [Int]
-extractSquare grid (x,y) = concat $ map (take 3) $ take 3 $ drop (y-1) $ map (drop (x-1)) grid
+-- | Takes a 3x3 block from the starting point provided
+extractSquare :: Grid -> (Row, Column) -> [Int]
+extractSquare grid (r,c) = concat $ map (take 3) $ take 3 $ drop (r-1) $ map (drop (c-1)) grid
+
+-- | checks if all are valid => skip empty cells
+checkValues :: [Int] -> Bool
+checkValues [] = True
+checkValues (x:xs) | (x > 0) && (x `elem` xs) = False
+                   | otherwise = checkValues xs
 
 -- =============================================================================
 -- Exercise 2 :: Took Willem's exercise 2, to use in the bonus
@@ -596,7 +617,7 @@ exercise6 = undefined
 
 type Step = ((Row,Column), Value)
 
--- | Solves the sudoku by using
+-- | Solves the sudoku by using the single position technique
 solve :: Sudoku -> IO()
 solve sud | isSolved sud = showSudoku sud
           | (nextSteps sud) == [] = putStr "Unsolvable for beginners.."
@@ -616,7 +637,7 @@ isSolved sud = not $ 0 `elem` (concat $ sud2grid sud)
 
 -- =============================================================================
 -- Exercise 7 :: Time spent: +- i
-
+--
 -- =============================================================================
 exercise7 = do
   print()
