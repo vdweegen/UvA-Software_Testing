@@ -1,4 +1,4 @@
-module Lecture5' (solveAndShow', genProblem') where
+module Lecture5' (solveAndShow', genProblem', blockConstrnt) where
 
 import Data.List
 import System.Random
