@@ -1,5 +1,6 @@
 module Lab5 where
-import Lab5.Jordan.Lecture5
+import qualified Lab5.Jordan.Lecture5Original as Lec5 (solveAndShow, Grid)
+import qualified Lab5.Jordan.Lecture5 as NRC (solveAndShow, Grid)
 import Data.List
 import Control.Monad
 import System.Random
@@ -30,9 +31,7 @@ main' = do
     exercise7
 
 
-
-
-example :: Grid
+example :: NRC.Grid
 example = [[0,0,0,3,0,0,0,0,0],
             [0,0,0,7,0,0,3,0,0],
             [2,0,0,0,0,0,0,0,8],
@@ -50,7 +49,9 @@ example = [[0,0,0,3,0,0,0,0,0],
 -- Exercise 1 :: Time spent: +- 30 minutes
 -- =============================================================================
 
-exercise1 = solveAndShow example
+exercise1 = do
+  NRC.solveAndShow example
+  
 {--
 
 freeInNRCSubgrid :: Sudoku -> (Row,Column) -> [Value]
@@ -136,36 +137,37 @@ exercise2 = do
 --     in 
 --     foldl1 intersect (map ((values \\) . map s) ys)
 -- =============================================================================
--- Exercise 3 :: Time spent: +-
+-- Exercise 3 :: Time spent: +- 5 hours
 -- =============================================================================
-exercise3 = do
-  putStrLn "Are the generated sudokus minimal?"
-  (checkerMulti 5)
+exercise3 = print ()
+  -- do
+  -- putStrLn "Are the generated sudokus minimal?"
+  -- (checkerMulti 5)
 
   {-- 
   This article helped me understand the problem 
   https://www.technologyreview.com/s/426554/mathematicians-solve-minimum-sudoku-problem/
   --}
 
-checker :: IO Bool
-checker = do
-  [r] <- rsolveNs [emptyN]
-  -- showNode r
-  s  <- genProblem r
-  -- showNode s
-  -- [r] <- rsolveNs [s]
-  -- print $ uniqueSol s
-  x <- randomize ( filledPositions (fst s))
-  s' <- do
-    return (eraseN s (head x))
-  -- showNode s'
-  -- putStrLn "Is the problem still unique?"
-  return $ not $ uniqueSol s'
+-- checker :: IO Bool
+-- checker = do
+--   [r] <- rsolveNs [emptyN]
+--   -- showNode r
+--   s  <- genProblem r
+--   -- showNode s
+--   -- [r] <- rsolveNs [s]
+--   -- print $ uniqueSol s
+--   x <- randomize ( filledPositions (fst s))
+--   s' <- do
+--     return (eraseN s (head x))
+--   -- showNode s'
+--   -- putStrLn "Is the problem still unique?"
+--   return $ not $ uniqueSol s'
 
 
-checkerMulti :: Int -> IO [Bool]
-checkerMulti n = do
-  replicateM n $ checker
+-- checkerMulti :: Int -> IO [Bool]
+-- checkerMulti n = do
+--   replicateM n $ checker
  
   
 
@@ -181,56 +183,57 @@ If this happens the functions tries again until it finds a problem that only has
 solution.
 --}
 
-exercise4 = do
-  checkerBlocksMulti 1
+exercise4 = print()
+  -- do
+--   checkerBlocksMulti 1
 
-checkerBlocks :: IO ()
-checkerBlocks = do
-  z <- takeM
-  showNode z
+-- checkerBlocks :: IO ()
+-- checkerBlocks = do
+--   z <- takeM
+--   showNode z
 
-minimizebyBlock ::  Node -> [(Row,Column)] -> Int -> (Node, Int)
-minimizebyBlock n [] steps = (n,steps)
-minimizebyBlock n ((r,c):rcs) steps | uniqueSol n' = minimizebyBlock n' rcs (steps+1)
-                                    | otherwise    = minimizebyBlock n  rcs (steps)
-      where n' = eraseN n (r,c)
+-- minimizebyBlock ::  Node -> [(Row,Column)] -> Int -> (Node, Int)
+-- minimizebyBlock n [] steps = (n,steps)
+-- minimizebyBlock n ((r,c):rcs) steps | uniqueSol n' = minimizebyBlock n' rcs (steps+1)
+--                                     | otherwise    = minimizebyBlock n  rcs (steps)
+--       where n' = eraseN n (r,c)
 
-minimizeUntil = do 
-  z <- takeM
-  showNode z
+-- minimizeUntil = do 
+--   z <- takeM
+--   showNode z
 
-takeM = do 
-  [n] <- rsolveNs [emptyN]
-  ys <-  do4blocks
-  let (n', steps) = (minimizebyBlock n ys 0)
-  if steps == (genericLength ys) then 
-    return n'
-  else 
-    takeM
+-- takeM = do 
+--   [n] <- rsolveNs [emptyN]
+--   ys <-  do4blocks
+--   let (n', steps) = (minimizebyBlock n ys 0)
+--   if steps == (genericLength ys) then 
+--     return n'
+--   else 
+--     takeM
   
-do3blocks = do
-  let xs = blockConstrnt
-  first <- pick ((\\) blockConstrnt [])
-  second <- pick ((\\) blockConstrnt [first])
-  third <- pick ((\\) blockConstrnt [first, second])
-  return $ first ++ second ++ third
+-- do3blocks = do
+--   let xs = blockConstrnt
+--   first <- pick ((\\) blockConstrnt [])
+--   second <- pick ((\\) blockConstrnt [first])
+--   third <- pick ((\\) blockConstrnt [first, second])
+--   return $ first ++ second ++ third
 
-do4blocks = do
-  let xs = blockConstrnt
-  first <- pick ((\\) blockConstrnt [])
-  second <- pick ((\\) blockConstrnt [first])
-  third <- pick ((\\) blockConstrnt [first, second])
-  fourth <- pick ((\\) blockConstrnt [first, second, third])
-  return $ first ++ second ++ third ++ fourth
+-- do4blocks = do
+--   let xs = blockConstrnt
+--   first <- pick ((\\) blockConstrnt [])
+--   second <- pick ((\\) blockConstrnt [first])
+--   third <- pick ((\\) blockConstrnt [first, second])
+--   fourth <- pick ((\\) blockConstrnt [first, second, third])
+--   return $ first ++ second ++ third ++ fourth
   
 
 
-checkerBlocksMulti n = do
-  replicateM n $ checkerBlocks
+-- checkerBlocksMulti n = do
+--   replicateM n $ checkerBlocks
    
 
 -- =============================================================================
--- Exercise 5 :: Time spent: +-
+-- Exercise 5 :: Time spent: +- 2 hours
 -- =============================================================================
 exercise5 = do
   print()
@@ -239,10 +242,13 @@ exercise5 = do
 -- Exercise 6 :: Time spent: +-
 -- =============================================================================
 exercise6 = do
+
+  
   print()
 
 -- =============================================================================
 -- Exercise 7 :: Time spent: +-
 -- =============================================================================
 exercise7 = do
+  putStrLn "Number of hints"
   print()
