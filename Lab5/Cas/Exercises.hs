@@ -51,13 +51,13 @@ nrcBl x = concat $ filter (elem x) nrcBlock
 subBlock :: Sudoku -> (Row,Column) -> [Value]
 subBlock s (r, c) = [ s (r',c')| r' <- nrcBl r ,c' <- nrcBl c]
 
-freeInNrcgrid :: Sudoku -> (Row,Column) -> [Value]
-freeInNrcgrid s (r,c) = freeInSeq (subBlock s (r,c))
+nrcFreeInSubgrid :: Sudoku -> (Row,Column) -> [Value]
+nrcFreeInSubgrid s (r,c) = freeInSeq (subBlock s (r,c))
 
 freeNrc :: Sudoku -> (Row,Column) -> [Value]
 freeNrc s (r, c) =
   if r `elem` (concat nrcBlock) && c `elem` (concat nrcBlock) then
-    (freeInNrcgrid s (r,c))
+    (nrcFreeInSubgrid s (r,c))
   else values
 
 nrcGridInjective :: Sudoku -> (Row,Column) -> Bool
