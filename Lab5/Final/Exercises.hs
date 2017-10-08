@@ -58,9 +58,19 @@ exercise1 = solveAndShowNRC example
 -- The refactored version with the new constraints is more easy to extend, as we
 -- only have to add new constraints, instead of adding new functions everywhere
 -- to add a new constraint, like in Exercise 1.
-
+--
 -- The original version is more efficient at solving problems according to the
 -- TimeSpec tests.
+--
+-- To measure whether the original code, or the refactored code was more
+-- efficient we decided to create a function that measures the time required
+-- to execute a command. We ran the function for both the original and the
+-- refactored code, and arrived at the conclusion that the original code is more
+-- efficient at solving code, as shown by the times printed.
+--
+-- Our functions generate two timespans per algorithm, the first timespan
+-- being the time required to generate a problem, the second timespan being the
+-- time required to solve a problem.
 -- =============================================================================
 exercise2 = do
               solveAndShow' example
@@ -104,12 +114,12 @@ exercise3 = do
     xs <-  (checkerMulti 5)
     let x = and xs
     print x
-  
-    {-- 
-    This article helped me understand the problem 
+
+    {--
+    This article helped me understand the problem
     https://www.technologyreview.com/s/426554/mathematicians-solve-minimum-sudoku-problem/
     --}
-  
+
 checker' :: IO Bool
 checker' = do
   [r] <- rsolveNs [emptyN]
@@ -126,19 +136,19 @@ checker = do
   let x  = (filledPositions (fst s))
   let s' = map (eraseNcheck s) x
   return $ and s'
-  
+
 eraseNcheck :: Node -> (Row, Column) ->  Bool
 eraseNcheck s pos = not $ uniqueSol (eraseN s pos)
 
 checkerMulti :: Int -> IO [Bool]
 checkerMulti n = do
   replicateM n $ checker
-   
+
 
 -- =============================================================================
 -- Exercise 4 :: Time spent: +- 4 hours
 -- =============================================================================
-{-- 
+{--
 
 Yes you can do 3 you can even do 4 but not sure if you can do more. Rhymes
 This will generate a minimal sudoku with 3/4 blocks empty. There are some situations
@@ -163,19 +173,19 @@ minimizebyBlock n ((r,c):rcs) steps | uniqueSol n' = minimizebyBlock n' rcs (ste
                                     | otherwise    = minimizebyBlock n  rcs (steps)
       where n' = eraseN n (r,c)
 
-minimizeUntil = do 
+minimizeUntil = do
   z <- takeM
   showNode z
 
-takeM = do 
+takeM = do
   [n] <- rsolveNs [emptyN]
   ys <-  do4blocks
   let (n', steps) = (minimizebyBlock n ys 0)
-  if steps == (genericLength ys) then 
+  if steps == (genericLength ys) then
     return n'
-  else 
+  else
     takeM
-  
+
 do3blocks = do
   let xs = blockConstrnt
   first <- pick ((\\) blockConstrnt [])
@@ -191,12 +201,12 @@ do4blocks = do
   third <- pick ((\\) blockConstrnt [first, second])
   fourth <- pick ((\\) blockConstrnt [first, second, third])
   return $ first ++ second ++ third ++ fourth
-  
+
 
 
 checkerBlocksMulti n = do
   replicateM n $ checkerBlocks
-   
+
 
 -- =============================================================================
 -- Exercise 5 :: Time spent: 1+ hour
