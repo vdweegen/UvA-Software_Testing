@@ -1,6 +1,7 @@
 module Lab5 where
 
 import Data.List
+import System.Random
 
 -- Define Main --
 main = do
@@ -265,7 +266,7 @@ search children goal (x:xs)
 
 -- | List of 3x3 squares to check for unique numbers
 squares :: [(Int, Int)]
-squares = [(1,1), (4,1), (7,1), (1,4), (4,4), (4,7), (1,7), (4,7), (7,7)]
+squares = [(1,1), (4,1), (7,1), (1,4), (4,4), (4,7), (1,7), (4,7), (7,7), (2,2), (6,2), (2,6), (6,6)]
 
 isValid :: Grid -> Bool
 isValid grid | not $ validGrid grid = False
@@ -298,7 +299,10 @@ compose values = [ column | step <- [1..9], let column = drop ((step-1)*9) $ tak
 
 -- | Convenience call to validate a 3x3 grid
 validSquare :: Grid -> (Int,Int) -> Bool
-validSquare grid (x,y) =  checkLine $ concat $ map (take 3) $ take 3 $ drop (y-1) $ map (drop (x-1)) grid
+validSquare grid (x,y) =  checkLine $ extractSquare grid (x,y)
+
+extractSquare :: Grid -> (Int, Int) -> [Int]
+extractSquare grid (x,y) = concat $ map (take 3) $ take 3 $ drop (y-1) $ map (drop (x-1)) grid
 
 -- =============================================================================
 -- Exercise 2 :: Time spent: +-
@@ -308,15 +312,126 @@ exercise2 = do
 
 -- =============================================================================
 -- Exercise 3 :: Time spent: +-
+-- The paper mentioned in the bonus mentions that computers have enough power to calculate
 -- =============================================================================
 exercise3 = do
   print()
 
 -- =============================================================================
 -- Exercise 4 :: Time spent: +-
+
+
+-- | Sample code for the random generator
+randomS = genRandomSudoku >>= showNode
+
+genRandomSudoku :: IO Node
+genRandomSudoku = do [r] <- rsolveNs [emptyN]
+                     return r
+
+emptyN :: Node
+emptyN = (\ _ -> 0,constraints (\ _ -> 0))
+
+rsuccNode :: Node -> IO [Node]
+rsuccNode (s,cs) = do xs <- getRandomCnstr cs
+                      if null xs
+                        then return []
+                        else return
+                          (extendNode (s,cs\\xs) (head xs))
+
+getRandomCnstr :: [Constraint] -> IO [Constraint]
+getRandomCnstr cs = getRandomItem (f cs)
+  where f [] = []
+        f (x:xs) = takeWhile (sameLen x) (x:xs)
+
+getRandomItem :: [a] -> IO [a]
+getRandomItem [] = return []
+getRandomItem xs = do n <- getRandomInt maxi
+                      return [xs !! n]
+                   where maxi = length xs - 1
+
+getRandomInt :: Int -> IO Int
+getRandomInt n = getStdRandom (randomR (0,n))
+
+sameLen :: Constraint -> Constraint -> Bool
+sameLen (_,_,xs) (_,_,ys) = length xs == length ys
+
+rsolveNs :: [Node] -> IO [Node]
+rsolveNs ns = rsearch rsuccNode solved (return ns)
+
+rsearch :: (node -> IO [node])
+            -> (node -> Bool) -> IO [node] -> IO [node]
+rsearch succ goal ionodes =
+  do xs <- ionodes
+     if null xs
+       then return []
+       else
+         if goal (head xs)
+           then return [head xs]
+           else do ys <- rsearch succ goal (succ (head xs))
+                   if (not . null) ys
+                      then return [head ys]
+                      else if null (tail xs) then return []
+                           else
+                             rsearch
+                               succ goal (return $ tail xs)
+
+
+
+
 -- =============================================================================
-exercise4 = do
-  print()
+-- Time spent: 45 minutes
+-- Took a simple approach => use the random 'total solution generator'
+-- This returns a solution. simply replace three random blocks with zeroes.
+-- Note: The exercise does NOT specify the sudoku to be a minimal solution.
+-- Hence, the generate can even generated sudoku's with no blocks...
+-- =============================================================================
+exercise4 = undefined
+
+
+-- | Uses the provided generator to return a random grid
+genRandomGrid :: IO Grid
+genRandomGrid = do
+  node <- genRandomSudoku
+  return $ sud2grid $ fst node
+
+-- | returns N random blocks to erase
+randomBlocks :: Int -> IO [Int]
+randomBlocks n = do
+  gen <- newStdGen
+  return $ take n $ nub $ (randomRs (1,9) gen :: [Int])
+
+eraseBlocks :: [Int] -> Grid -> Grid
+eraseBlocks [] grid = grid
+eraseBlocks (x:xs) grid = eraseBlocks xs (eraseBlock x grid)
+
+eraseBlock :: Int -> Grid -> Grid
+eraseBlock 1 grid = undefined
+
+-- | Convert rows to blocks
+grid2blocks :: Grid -> Grid
+grid2blocks grid = map (extractSquare grid) (take 9 squares)
+
+--extractSquare :: Grid -> (Int, Int) -> [Int]
+--extractSquare grid (x,y) = concat $ map (take 3) $ take 3 $ drop (y-1) $ map (drop (x-1)) grid
+
+blocks2grid :: Grid -> Grid
+blocks2grid blocks = [ extractRow blocks n | n <- [1..9] ]
+
+-- | Extracts a row from block based grid
+-- extractRow :: Grid -> Int -> [Int]
+extractRow blocks row = concat $ [ take 3 $ drop (((3*(mod (row-1) 3))) + step*9) $ concat (drop (3*(div (row-1) 3)) blocks) | step <- [0..2]]
+
+b :: Grid
+b = grid2blocks puzzle1
+
+row :: Int -> [Int]
+row n = extractRow b n
+
+rowValid :: Int -> Bool
+rowValid n = (puzzle1 !! (n-1)) == (extractRow b n)
+
+valid :: Bool
+valid = puzzle1 == (blocks2grid $ grid2blocks puzzle1)
 
 -- =============================================================================
 -- Exercise 5 :: Time spent: +-
@@ -325,7 +440,10 @@ exercise5 = do
   print()
 
 -- =============================================================================
--- Exercise 6 :: Time spent: +-
+-- Exercise 6 :: Time spent: 1 hour on reading the paper
+-- Based on this paper the difficulty of a sudoku is mainly based on two characteristics
+-- 1) The techniques required to find the next step
+-- 2) The amount of 'next' steps during a moment in the puzzle
 -- =============================================================================
 exercise6 = do
   print()
@@ -335,3 +453,5 @@ exercise6 = do
 -- =============================================================================
 exercise7 = do
   print()
+
+
