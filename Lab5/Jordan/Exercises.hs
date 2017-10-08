@@ -257,10 +257,10 @@ runTestAvgHints n = do
   x <- replicateM n generateAndCountLec
   y <- replicateM n generateAndCountNRC
   putStrLn "Average number of hints"
-  let xAvg = sum x `div` (genericLength x)
+  let xAvg =  (fromIntegral (sum x)) / (fromIntegral (genericLength x))
   print xAvg
   putStrLn "Average NRC of hints"
-  let yAvg = sum y `div` (genericLength y)
+  let yAvg =  (fromIntegral (sum y)) / (fromIntegral (genericLength y))
   print yAvg
 
 generateAndCountLec :: IO Int
