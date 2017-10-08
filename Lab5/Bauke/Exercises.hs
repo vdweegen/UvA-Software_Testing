@@ -318,7 +318,9 @@ columnConstrnt = [[(r,c)| r <- values ] | c <- values ]
 blockConstrnt = [[(r,c)| r <- b1, c <- b2 ] | b1 <- defaultBlocks, b2 <- defaultBlocks ]
 nrcConstrnt = [[(r,c)| r <- b1, c <- b2 ] | b1 <- nrcBlocks, b2 <- nrcBlocks ]
 
-allConstrnt = rowConstrnt ++ columnConstrnt ++ blockConstrnt ++ nrcConstrnt
+
+allConstrnt = stdConstrnt ++ nrcConstrnt
+stdConstrnt = rowConstrnt ++ columnConstrnt ++ blockConstrnt
 
 freeAtPos' :: Sudoku -> Position -> Constrnt -> [Value]
 freeAtPos' s (r,c) xs = let
@@ -571,18 +573,50 @@ exercise5 = do
 -- 3) The amount of solutions => More solutions = more difficult puzzle
 
 -- The approach uses the 'nextSteps' method, which mimics the 'pencilmarks' technique used
--- To s
+-- If, in the initial solution, there are no nextSteps 1, the problem is definently NO easy solution
+-- In order to solve that solution, one must look for places with 2 possibilities and cross one of those.
 
 -- =============================================================================
-exercise6 = do
-  print()
 
--- | You give it a grid, and it hands you the position with maximum n values
-nextSteps :: Sudoku -> Int -> [((Int,Int), [Value])]
-nextSteps sud n = [ ((r,c), values) | r <- [1..9], c <- [1..9], let values = freeAtPos' sud (r,c) allConstrnt, let size = length values in (size <= n) && ((r,c) `elem` openPositions sud)]
+-- | Simple beginner sudoku
+sudokuBeginner :: Sudoku
+sudokuBeginner = grid2sud [[ 9,3,0,1,0,0,0,0,0],
+                  [0,7,0,0,4,2,0,5,8],
+                  [8,0,0,0,3,7,0,0,0],
+                  [0,9,1,0,0,8,6,4,5],
+                  [0,6,0,0,0,0,0,8,0],
+                  [4,8,7,5,0,0,9,1,0],
+                  [0,0,0,8,5,0,0,0,4],
+                  [7,5,0,2,6,0,0,9,0],
+                  [0,0,0,0,0,4,0,6,2]]
+
+
+
+exercise6 = undefined
+
+type Step = ((Row,Column), Value)
+
+-- | Solves the sudoku by using
+solve :: Sudoku -> IO()
+solve sud | isSolved sud = showSudoku sud
+          | (nextSteps sud) == [] = putStr "Unsolvable for beginners.."
+          | otherwise = do
+            let steps = (nextSteps sud)
+            putStr "Steps available: "
+            print $ length steps
+            solve (update sud (head steps))
+
+
+-- | You give it a grid, and it hands you the columns with single values
+nextSteps :: Sudoku -> [Step]
+nextSteps sud = [ ((r,c), head values) | r <- [1..9], c <- [1..9], let values = freeAtPos' sud (r,c) stdConstrnt, let size = length values in (size == 1) && ((r,c) `elem` openPositions sud)]
+
+isSolved :: Sudoku -> Bool
+isSolved sud = not $ 0 `elem` (concat $ sud2grid sud)
 
 -- =============================================================================
 -- Exercise 7 :: Time spent: +- i
+
 -- =============================================================================
 exercise7 = do
   print()
