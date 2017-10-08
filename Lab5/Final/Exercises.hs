@@ -245,6 +245,7 @@ exercise5 = do
 --
 -- Problems that are minimal but hard to solve by hand?
 -- The minimal sudoku generator's examples are hard to solve by hand.
+-- This is due to the fact that no 'easy techniques' can be applied
 -- =============================================================================
 exercise6 :: IO ()
 exercise6 = do
@@ -252,6 +253,8 @@ exercise6 = do
   solve sudokuBeginner []
   putStrLn "Trying to solve a generated minimal sudoku:"
   solveMinimal
+  putStrLn "Some hard to solve sudoku:"
+
 
 -- | Simple beginner sudoku
 sudokuBeginner :: Sudoku
@@ -265,9 +268,16 @@ sudokuBeginner = grid2sud [[9,3,0,1,0,0,0,0,0],
                            [7,5,0,2,6,0,0,9,0],
                            [0,0,0,0,0,4,0,6,2]]
 
-removeCell :: Sudoku -> Sudoku
-removeCell sud | (length (nextSteps sud)) == 1 = sud
-               | otherwise = undefined
+removeCells :: Sudoku -> IO Sudoku
+removeCells sud | (length (nextSteps sud)) == 1 = do return $ sud
+                | otherwise = do
+                  return $ sud
+
+removeCell :: Sudoku -> IO Sudoku
+removeCell sud = do
+  let cells = filledPositions sud
+  someCell <- randomFrom cells
+  return $ (eraseS sud someCell)
 
 -- | Picks a random item from the list
 randomFrom :: Eq a => [a] -> IO a
