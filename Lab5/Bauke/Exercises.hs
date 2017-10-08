@@ -197,8 +197,10 @@ showGrid [as,bs,cs,ds,es,fs,gs,hs,is] =
     putStrLn ("+-------+-------+-------+")
     showRow gs; showRow hs; showRow is
     putStrLn ("+-------+-------+-------+")
-    putStr "Printed grid violates no NRC constraint: "
+    putStr "Printed grid violates no default constraint: "
     print $ isValid [as,bs,cs,ds,es,fs,gs,hs,is]
+    putStr "Valid NRC?: "
+    print $ isValidNrc [as,bs,cs,ds,es,fs,gs,hs,is]
 
 showRow :: [Value] -> IO()
 showRow [a1,a2,a3,a4,a5,a6,a7,a8,a9] =
@@ -596,7 +598,7 @@ exercise5 = do
 -- 2) The amount of 'next' steps during a moment in the puzzle
 -- 3) The amount of solutions => More solutions = more difficult puzzle
 
--- The approach uses the 'nextSteps' method, which mimics the 'pencilmarks' technique used
+-- The approach uses the 'nextSteps' method, which mimics the 'pencilmarks' technique used by human solvers
 -- If, in the initial solution, there are no nextSteps 1, the problem is definently NO easy solution
 -- In order to solve that solution, one must look for places with 2 possibilities and cross one of those.
 
@@ -616,19 +618,23 @@ sudokuBeginner = grid2sud [[9,3,0,1,0,0,0,0,0],
 
 
 
-exercise6 = undefined
+exercise6 = do
+  putStr "Solving a beginner sudoku: "
+  solve sudokuBeginner []
+  putStr "Solving a minimal sudoku:"
 
 type Step = ((Row,Column), Value)
 
 -- | Solves the sudoku by using the single position technique
-solve :: Sudoku -> IO()
-solve sud | isSolved sud = showSudoku sud
-          | (nextSteps sud) == [] = putStr "Unsolvable for beginners.."
-          | otherwise = do
-            let steps = (nextSteps sud)
-            putStr "Steps available: "
-            print $ length steps
-            solve (update sud (head steps))
+solve :: Sudoku -> [Int] -> IO()
+solve sud nxts  | isSolved sud = do
+                  showSudoku sud
+                  putStr "Average number of possibilities per step: "
+                  print $ div (sum nxts) (length nxts)
+                | (nextSteps sud) == [] = putStr "Unsolvable for beginners.."
+                | otherwise = do
+                  let steps = nextSteps sud
+                  solve (update sud (head steps)) (length steps:nxts)
 
 
 -- | You give it a grid, and it hands you the columns with single values
