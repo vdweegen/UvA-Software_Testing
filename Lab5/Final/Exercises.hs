@@ -205,8 +205,27 @@ checkerBlocksMulti n = do
 exercise5 = genProblemAndShowNRC
 
 -- =============================================================================
--- Exercise 6 :: Time spent: +-
+-- Exercise 6 :: Time spent: 1 hour on reading the paper
+-- Based on this paper the difficulty of a sudoku is mainly based on two characteristics
+-- 1) The techniques required to find the next step => Naked single being most simple
+-- 2) The amount of 'next' steps during a moment in the puzzle
+-- 3) The amount of solutions => More solutions = more difficult puzzle
+
+-- Can you find a way of classifying the difficulty of a Sudoku problem?
+-- The approach to classify these problems uses the 'nextSteps' method, which mimics the 'pencilmarks' technique used by human solvers.
+-- If, in the initial solution, there are no nextSteps 1, the problem is definently NO easy solution
+-- In order to solve that solution, one must look for places with 2 possibilities and cross one of those.
+-- If this succeeds, the Sudoku is 'Simple', otherwise the Sudoku is 'Difficult'
+-- Besides this the average number of exposed cells whilst printing is calculated
+--
+-- Can you modify the Sudoku problem generator so that it can generate problems that are minimal, but easy to solve by hand?
+-- We can use the classifications specified in the first problem
+--
+-- Problems that are minimal but hard to solve by hand?
+-- The minimal sudoku generator's examples are hard to solve by hand.
 -- =============================================================================
+-- =============================================================================
+
 -- | Simple beginner sudoku
 sudokuBeginner :: Sudoku
 sudokuBeginner = grid2sud [[9,3,0,1,0,0,0,0,0],
@@ -225,10 +244,14 @@ exercise6 = do
   putStrLn "Trying to solve a generated minimal sudoku:"
   solveMinimal
 
-removeCell :: Sudoku -> Sudoku
-removeCell sud | (length (nextSteps sud)) == 1 = sud
-               | otherwise = undefined
+simpleSudoku :: IO Sudoku
+simpleSudoku = do
+  someSud <- randomSolution
+  return $ removeCells someSud
 
+removeCells :: Sudoku -> Sudoku
+removeCells sud | (length (nextSteps sud)) == 1 = sud
+                | otherwise = sud
 
 -- | Picks a random item from the list
 randomFrom :: Eq a => [a] -> IO a
@@ -236,15 +259,6 @@ randomFrom xs = randomInteger xs >>= (\randIndex -> return (xs !! randIndex))
 
 randomInteger :: Eq a => [a] -> IO Int
 randomInteger xs = (randomRIO (0, (length xs)-1))
-
-simpleSudoku :: IO Sudoku
-simpleSudoku = do
-  sud <- randomSolution
-  return $ clearCells sud
-
-clearCells :: Sudoku -> Sudoku
-clearCells sud | 1 == (length (nextSteps sud)) = sud
-               | otherwise = undefined
 
 randomSolution :: IO Sudoku
 randomSolution = do
@@ -256,6 +270,7 @@ solveMinimal =  do
     minimal <- minimalSudoku
     solve minimal []
 
+-- | Generator for hard to solve problems
 minimalSudoku :: IO Sudoku
 minimalSudoku = do
   someSudoku <- genRandomSudoku
@@ -268,35 +283,32 @@ type Step = ((Row,Column), Value)
 solve :: Sudoku -> [Int] -> IO()
 solve sud nxts  | isSolved sud = do
                   showSudoku sud
-                  putStr "Average number of possibilities per step: "
+                  putStr "Simple sudoku, Average number of possibilities per step: "
                   print $ div (sum nxts) (length nxts)
                 | (nextSteps sud) == [] = do
-                  putStr "Unsolvable for beginners. Trying with medium technique"
-                  print $ candidateLines sud
+                    putStr "Difficult Sudoku, unable to solve..."
                 | otherwise = do
                   let steps = nextSteps sud
                   solve (update sud (head steps)) (length steps:nxts)
 
 
--- | You give it a grid, and it hands you the columns with single values
+-- | You give it a sudoku, and it hands you the columns with single candidates
 nextSteps :: Sudoku -> [Step]
 nextSteps sud = [ ((r,c), head values) | r <- [1..9], c <- [1..9], let values = freeAtPos sud (r,c), let size = length values in (size == 1) && ((r,c) `elem` openPositions sud)]
-
-candidateLines :: Sudoku -> [((Row,Column), [Int])]
-candidateLines sud = [ ((r,c), values) | r <- [1..9], c <- [1..9], let values = freeAtPos sud (r,c), let size = length values in (size == 2) && ((r,c) `elem` openPositions sud)]
 
 -- | Sudoku is solved when contraints are met
 isSolved :: Sudoku -> Bool
 isSolved sud = isValid $ sud2grid sud
 
-
 -- | Simple validator for sudoku grids
 squares :: [(Row, Column)]
 squares = [(1,1), (1,4), (1,7), (4,1), (4,4), (4,7), (7,1), (7,4), (7,7), (2,2), (2,6), (6,2), (6,6)]
 
+-- | Validate against NRC rules
 isValidNrc :: Grid -> Bool
 isValidNrc grid = (isValid grid) && (validateSquares grid squares)
 
+-- | Validate against normal rules
 isValid :: Grid -> Bool
 isValid grid | not $ validGrid grid = False
              | 0 `elem` (concat grid) = False
@@ -311,6 +323,7 @@ validGrid :: Grid -> Bool
 validGrid grid | length grid /= 9 = False
                | (length $ concat grid) /= 81 = False
                | otherwise = True
+
 
 validList :: Grid -> Bool
 validList [] = True
@@ -364,7 +377,6 @@ generateAndCountNRC = do
   [n] <- rsolveNsNRC [emptyN]
   p <- genProblemNRC n
   return $ genericLength$  filledPositions (fst p)
-
 
 pick :: [a] -> IO a
 pick xs = fmap (xs !!) $ randomRIO (0, length xs - 1)
