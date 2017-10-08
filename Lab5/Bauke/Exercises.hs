@@ -645,10 +645,36 @@ exercise6 = do
   putStr "Solving a minimal sudoku:"
   solveMinimal
 
+removeCell :: Sudoku -> Sudoku
+removeCell sud | (length (nextSteps sud)) == 1 = sud
+               | otherwise = undefined
+
+
+-- | Picks a random item from the list
+randomFrom :: Eq a => [a] -> IO a
+randomFrom xs = randomInteger xs >>= (\randIndex -> return (xs !! randIndex))
+
+randomInteger :: Eq a => [a] -> IO Int
+randomInteger xs = (randomRIO (0, (length xs)-1))
+
+simpleSudoku :: IO Sudoku
+simpleSudoku = do
+  sud <- randomSolution
+  return $ clearCells sud
+
+clearCells :: Sudoku -> Sudoku
+clearCells sud | 1 == (length (nextSteps sud)) = sud
+               |
+
+randomSolution :: IO Sudoku
+randomSolution = do
+  sud <- genRandomSudoku
+  showSudoku (fst sud)
+  return $ fst sud
+
 solveMinimal =  do
     minimal <- minimalSudoku
     solve minimal []
-
 
 minimalSudoku :: IO Sudoku
 minimalSudoku = do

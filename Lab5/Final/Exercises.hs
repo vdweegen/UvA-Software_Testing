@@ -207,8 +207,136 @@ exercise5 = genProblemAndShowNRC
 -- =============================================================================
 -- Exercise 6 :: Time spent: +-
 -- =============================================================================
+-- | Simple beginner sudoku
+sudokuBeginner :: Sudoku
+sudokuBeginner = grid2sud [[9,3,0,1,0,0,0,0,0],
+                           [0,7,0,0,4,2,0,5,8],
+                           [8,0,0,0,3,7,0,0,0],
+                           [0,9,1,0,0,8,6,4,5],
+                           [0,6,0,0,0,0,0,8,0],
+                           [4,8,7,5,0,0,9,1,0],
+                           [0,0,0,8,5,0,0,0,4],
+                           [7,5,0,2,6,0,0,9,0],
+                           [0,0,0,0,0,4,0,6,2]]
+
 exercise6 = do
-  print()
+  putStrLn "Trying to solve a beginner sudoku: "
+  solve sudokuBeginner []
+  putStrLn "Trying to solve a generated minimal sudoku:"
+  solveMinimal
+
+removeCell :: Sudoku -> Sudoku
+removeCell sud | (length (nextSteps sud)) == 1 = sud
+               | otherwise = undefined
+
+
+-- | Picks a random item from the list
+randomFrom :: Eq a => [a] -> IO a
+randomFrom xs = randomInteger xs >>= (\randIndex -> return (xs !! randIndex))
+
+randomInteger :: Eq a => [a] -> IO Int
+randomInteger xs = (randomRIO (0, (length xs)-1))
+
+simpleSudoku :: IO Sudoku
+simpleSudoku = do
+  sud <- randomSolution
+  return $ clearCells sud
+
+clearCells :: Sudoku -> Sudoku
+clearCells sud | 1 == (length (nextSteps sud)) = sud
+               | otherwise = undefined
+
+randomSolution :: IO Sudoku
+randomSolution = do
+  sud <- genRandomSudoku
+  showSudoku (fst sud)
+  return $ fst sud
+
+solveMinimal =  do
+    minimal <- minimalSudoku
+    solve minimal []
+
+minimalSudoku :: IO Sudoku
+minimalSudoku = do
+  someSudoku <- genRandomSudoku
+  minimized <- genProblem someSudoku
+  return $ fst minimized
+
+type Step = ((Row,Column), Value)
+
+-- | Solves the sudoku by using the single position technique
+solve :: Sudoku -> [Int] -> IO()
+solve sud nxts  | isSolved sud = do
+                  showSudoku sud
+                  putStr "Average number of possibilities per step: "
+                  print $ div (sum nxts) (length nxts)
+                | (nextSteps sud) == [] = do
+                  putStr "Unsolvable for beginners. Trying with medium technique"
+                  print $ candidateLines sud
+                | otherwise = do
+                  let steps = nextSteps sud
+                  solve (update sud (head steps)) (length steps:nxts)
+
+
+-- | You give it a grid, and it hands you the columns with single values
+nextSteps :: Sudoku -> [Step]
+nextSteps sud = [ ((r,c), head values) | r <- [1..9], c <- [1..9], let values = freeAtPos sud (r,c), let size = length values in (size == 1) && ((r,c) `elem` openPositions sud)]
+
+candidateLines :: Sudoku -> [((Row,Column), [Int])]
+candidateLines sud = [ ((r,c), values) | r <- [1..9], c <- [1..9], let values = freeAtPos sud (r,c), let size = length values in (size == 2) && ((r,c) `elem` openPositions sud)]
+
+-- | Sudoku is solved when contraints are met
+isSolved :: Sudoku -> Bool
+isSolved sud = isValid $ sud2grid sud
+
+
+-- | Simple validator for sudoku grids
+squares :: [(Row, Column)]
+squares = [(1,1), (1,4), (1,7), (4,1), (4,4), (4,7), (7,1), (7,4), (7,7), (2,2), (2,6), (6,2), (6,6)]
+
+isValidNrc :: Grid -> Bool
+isValidNrc grid = (isValid grid) && (validateSquares grid squares)
+
+isValid :: Grid -> Bool
+isValid grid | not $ validGrid grid = False
+             | 0 `elem` (concat grid) = False
+             | not $ validList grid = False
+             | not $ validList (flipGrid grid) = False
+             | otherwise = validateSquares grid (take 9 squares)
+
+validateSquares :: Grid -> [(Row,Column)] -> Bool
+validateSquares grid squares = all (==True) $ map (validSquare grid) squares
+
+validGrid :: Grid -> Bool
+validGrid grid | length grid /= 9 = False
+               | (length $ concat grid) /= 81 = False
+               | otherwise = True
+
+validList :: Grid -> Bool
+validList [] = True
+validList (x:xs) = checkValues x && validList xs
+
+-- | Convenience call to flip list of rows to list of columns
+flipGrid :: Grid -> Grid
+flipGrid grid = composeGrid $ [ value | start <- [1..9], step <- [0..8], let value = (concat grid) !! ((start-1) + (9*step)) ]
+
+composeGrid :: [Value] -> Grid
+composeGrid values = [ column | step <- [1..9], let column = drop ((step-1)*9) $ take (step*9) values]
+
+-- | Convenience call to validate a 3x3 grid
+validSquare :: Grid -> (Row,Column) -> Bool
+validSquare grid (r,c) =  checkValues $ extractSquare grid (r,c)
+
+-- | Takes a 3x3 block from the starting point provided
+extractSquare :: Grid -> (Row, Column) -> [Int]
+extractSquare grid (r,c) = concat $ map (take 3) $ take 3 $ drop (r-1) $ map (drop (c-1)) grid
+
+-- | checks if all are valid => skip empty cells
+checkValues :: [Int] -> Bool
+checkValues [] = True
+checkValues (x:xs) | (x > 0) && (x `elem` xs) = False
+                   | otherwise = checkValues xs
+
 
 -- =============================================================================
 -- Exercise 7 :: Time spent: +- 1 hour
@@ -218,10 +346,10 @@ exercise7 = runTestAvgHints 5
 runTestAvgHints n = do
   x <- replicateM n generateAndCountLec
   y <- replicateM n generateAndCountNRC
-  putStrLn "Average number of hints"
+  putStr "Average number of hints in standard minimal problem: "
   let xAvg =  (fromIntegral (sum x)) / (fromIntegral (genericLength x))
   print xAvg
-  putStrLn "Average NRC of hints"
+  putStr "Average number of hints in NRC minimal problem: "
   let yAvg =  (fromIntegral (sum y)) / (fromIntegral (genericLength y))
   print yAvg
 
