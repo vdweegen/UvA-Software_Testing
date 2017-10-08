@@ -1,6 +1,8 @@
 module Lab5 where
 
 import Lecture5
+import Lecture5NRC
+import Lecture5'
 import Example
 
 -- Define Main --
@@ -24,17 +26,14 @@ main = do
     exercise7
 
 -- =============================================================================
--- Exercise 1 :: Time spent: +-
+-- Exercise 1 :: Time spent: 4+ hours
 -- =============================================================================
-
-exercise1 = do
-  print()
+exercise1 = solveAndShowNRC example
 
 -- =============================================================================
--- Exercise 2 :: Time spent: +-
+-- Exercise 2 :: Time spent: +- 1.5 hours
 -- =============================================================================
-exercise2 = do
-  print()
+exercise2 = solveAndShow' example
 
 -- =============================================================================
 -- Exercise 3 :: Time spent: +-
@@ -49,10 +48,9 @@ exercise4 = do
   print()
 
 -- =============================================================================
--- Exercise 5 :: Time spent: +-
+-- Exercise 5 :: Time spent: 1+ hour
 -- =============================================================================
-exercise5 = do
-  print()
+exercise5 = genProblemNRC
 
 -- =============================================================================
 -- Exercise 6 :: Time spent: +-
