@@ -1,4 +1,4 @@
-module Lecture5NRC (solveAndShowNRC, genProblemNRC, blocksNRC) where
+module Lecture5NRC (solveAndShowNRC, genProblemNRC, genProblemAndShowNRC, blocksNRC) where
 
 import Data.List
 import System.Random
@@ -63,11 +63,16 @@ sameblockNRC (r,c) (x,y) = blNRC r == blNRC x && blNRC c == blNRC y
 solveAndShowNRC :: Grid -> IO[()]
 solveAndShowNRC gr = solveShowNs (initNode gr)
 
-genProblemNRC :: IO ()
-genProblemNRC = do [r] <- rsolveNs [emptyN]
-                   showNode r
-                   s  <- genProblem r
-                   showNode s
+genProblemAndShowNRC :: IO ()
+genProblemAndShowNRC = do [r] <- rsolveNs [emptyN]
+                          showNode r
+                          s  <- genProblemNRC r
+                          showNode s
+
+genProblemNRC :: Node -> IO Node
+genProblemNRC n = do ys <- randomize xs
+                     return (minimalize n ys)
+   where xs = filledPositions (fst n)
 
 -- | Existing code from Lecture5.hs
 type Row    = Int
@@ -377,11 +382,6 @@ minimalize n ((r,c):rcs) | uniqueSol n' = minimalize n' rcs
 filledPositions :: Sudoku -> [(Row,Column)]
 filledPositions s = [ (r,c) | r <- positions,
                               c <- positions, s (r,c) /= 0 ]
-
-genProblem :: Node -> IO Node
-genProblem n = do ys <- randomize xs
-                  return (minimalize n ys)
-   where xs = filledPositions (fst n)
 
 -- main :: IO ()
 -- main = do [r] <- rsolveNs [emptyN]

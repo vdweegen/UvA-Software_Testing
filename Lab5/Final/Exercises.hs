@@ -4,6 +4,7 @@ import Lecture5
 import Lecture5NRC
 import Lecture5'
 import Example
+import System.Clock
 
 -- Define Main --
 main = do
@@ -47,9 +48,39 @@ exercise1 = solveAndShowNRC example
 -- +-------+-------+-------+
 
 -- =============================================================================
--- Exercise 2 :: Time spent: +- 1.5 hours
+-- Exercise 2 :: Time spent: +- 1.5 hours for refactoring, 1 hour to test
+-- See Lecture5NRC'.hs for code and comments
+
+-- The refactored version with the new constraints is more easy to extend, as we
+-- only have to add new constraints, instead of adding new functions everywhere
+-- to add a new constraint, like in Exercise 1.
+
+-- The original version is more efficient at solving problems according to the
+-- TimeSpec tests.
 -- =============================================================================
-exercise2 = solveAndShow' example
+exercise2 = do
+              solveAndShow' example
+              res <- testDiff
+              print res
+
+testDiff :: IO (Bool, Bool)
+testDiff = do
+            [r] <- rsolveNs [emptyN]
+            showNode r
+            refactored <- genProblem' r
+            original <- genProblemNRC r
+            testRefactored <- (testTime $ showNode refactored)
+            testOriginal <- (testTime $ showNode original)
+            solveRefactored <- (testTime $ solveAndShow' (sud2grid $ fst refactored))
+            solveOriginal <- (testTime $ solveAndShowNRC (sud2grid $ fst original))
+            return (testRefactored > testOriginal, solveRefactored > solveOriginal)
+
+testTime :: IO a -> IO (TimeSpec)
+testTime f =
+  do start <- getTime Monotonic
+     f
+     end <- getTime Monotonic
+     return (diffTimeSpec start end)
 
 -- =============================================================================
 -- Exercise 3 :: Time spent: +-
@@ -65,8 +96,9 @@ exercise4 = do
 
 -- =============================================================================
 -- Exercise 5 :: Time spent: 1+ hour
+-- See Lecture5NRC.hs for code and comments
 -- =============================================================================
-exercise5 = genProblemNRC
+exercise5 = genProblemAndShowNRC
 
 -- =============================================================================
 -- Exercise 6 :: Time spent: +-

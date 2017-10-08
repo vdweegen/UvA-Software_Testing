@@ -1,4 +1,4 @@
-module Lecture5' (solveAndShow') where
+module Lecture5' (solveAndShow', genProblem') where
 
 import Data.List
 import System.Random
@@ -49,6 +49,11 @@ sameConstrnt (r,c) (x,y) = any (elem (x,y)) $ filter (elem (r,c)) allConstrnt
 
 solveAndShow' :: Grid -> IO[()]
 solveAndShow' gr = solveShowNs (initNode gr)
+
+genProblem' :: Node -> IO Node
+genProblem' n = do ys <- randomize xs
+                   return (minimalize n ys)
+   where xs = filledPositions (fst n)
 
 -- | Existing code from Lecture5.hs
 type Row    = Int
@@ -350,11 +355,6 @@ minimalize n ((r,c):rcs) | uniqueSol n' = minimalize n' rcs
 filledPositions :: Sudoku -> [(Row,Column)]
 filledPositions s = [ (r,c) | r <- positions,
                               c <- positions, s (r,c) /= 0 ]
-
-genProblem :: Node -> IO Node
-genProblem n = do ys <- randomize xs
-                  return (minimalize n ys)
-   where xs = filledPositions (fst n)
 
 -- main :: IO ()
 -- main = do [r] <- rsolveNs [emptyN]
