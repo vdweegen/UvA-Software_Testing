@@ -643,7 +643,9 @@ exercise6 = do
   putStr "Solving a beginner sudoku: "
   solve sudokuBeginner []
   putStr "Solving a minimal sudoku:"
-  do
+  solveMinimal
+
+solveMinimal =  do
     minimal <- minimalSudoku
     solve minimal []
 
@@ -662,7 +664,9 @@ solve sud nxts  | isSolved sud = do
                   showSudoku sud
                   putStr "Average number of possibilities per step: "
                   print $ div (sum nxts) (length nxts)
-                | (nextSteps sud) == [] = putStr "Unsolvable for beginners.."
+                | (nextSteps sud) == [] = do
+                  putStr "Unsolvable for beginners. Trying with medium technique"
+                  print $ candidateLines sud
                 | otherwise = do
                   let steps = nextSteps sud
                   solve (update sud (head steps)) (length steps:nxts)
@@ -672,6 +676,10 @@ solve sud nxts  | isSolved sud = do
 nextSteps :: Sudoku -> [Step]
 nextSteps sud = [ ((r,c), head values) | r <- [1..9], c <- [1..9], let values = freeAtPos sud (r,c), let size = length values in (size == 1) && ((r,c) `elem` openPositions sud)]
 
+candidateLines :: Sudoku -> [((Row,Column), [Int])]
+candidateLines sud = [ ((r,c), values) | r <- [1..9], c <- [1..9], let values = freeAtPos sud (r,c), let size = length values in (size == 2) && ((r,c) `elem` openPositions sud)]
+
+-- | Sudoku is solved when contraints are met
 isSolved :: Sudoku -> Bool
 isSolved sud = isValid $ sud2grid sud
 
