@@ -175,7 +175,10 @@ checkerMulti n = do
 {-- 
 
 Yes you can do 3 you can even do 4 but not shure if you can do more. Rhymes
-
+This will generate a minimal sudoku with 3/4 blocks empty. There are some situations
+where the blocks are cannot removed because it will cause the problem to be ambiguous
+If this happens the functions tries again until it finds a problem that only has 1 unique
+solution.
 --}
 
 exercise4 = do
