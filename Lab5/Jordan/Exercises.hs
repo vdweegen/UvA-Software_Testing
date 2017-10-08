@@ -1,6 +1,6 @@
 module Lab5 where
-import qualified Lab5.Jordan.Lecture5Original as Lec5 (solveAndShow, Grid)
-import qualified Lab5.Jordan.Lecture5 as NRC (solveAndShow, Grid)
+import qualified Lab5.Jordan.Lecture5Original as Lec5 (solveAndShow, Grid, rsolveNs, emptyN, showNode, genProblem, filledPositions)
+import qualified Lab5.Jordan.Lecture5 as NRC (solveAndShow, Grid, rsolveNs, emptyN, showNode, genProblem, filledPositions)
 import Data.List
 import Control.Monad
 import System.Random
@@ -251,4 +251,16 @@ exercise6 = do
 -- =============================================================================
 exercise7 = do
   putStrLn "Number of hints"
+  [n] <- Lec5.rsolveNs [Lec5.emptyN]
+  Lec5.showNode n
+  p <- Lec5.genProblem n
+  Lec5.showNode p
+  print $ genericLength$  Lec5.filledPositions (fst p)
+
+  putStrLn "Number NRC of hints"
+  [n] <- NRC.rsolveNs [NRC.emptyN]
+  NRC.showNode n
+  p <- NRC.genProblem n
+  NRC.showNode p
+  print $ genericLength$  NRC.filledPositions (fst p)
   print()
