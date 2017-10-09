@@ -34,7 +34,7 @@ exercise1 = do
 exM :: Integer -> Integer -> Integer -> Integer
 exM x 0 n = 1
 exM x y n = t * Lab6.exM ((x * x) `mod` n) (y `div` 2) n `mod` n
-  where t = if (y `div` 2 == 0) then x `mod` n else 1
+  where t = if (not (y `mod` 2 == 0)) then x `mod` n else 1
 
 -- =============================================================================
 -- Exercise 2 :: Time spent: +-
