@@ -95,9 +95,21 @@ primeTests k n = do
 
 -- =============================================================================
 -- Exercise 5 :: Time spent: +-
+--
+-- Feeding the Fermat's checker 500 carmichael number, it was only able to
+-- detect 1 (out of 500) number (on average) as not being a prime.
+--
+-- That's an accuracy of around 0.2 %
+
+-- Fiddling around with the value for K does not change the results
 -- =============================================================================
 exercise5 = do
-  print $ carmichael
+  mapM isNotFooled (take 500 carmichael)
+
+isNotFooled :: Integer -> IO ()
+isNotFooled n = do
+  x <- primeTests 1 n -- 1 is k
+  if (x) then return () else print n
 
 carmichael :: [Integer]
 carmichael = [ (6*k+1)*(12*k+1)*(18*k+1) |
