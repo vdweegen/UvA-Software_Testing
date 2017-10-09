@@ -1,24 +1,24 @@
 
 module Lecture6
 
-where 
+where
 
 import System.Random
 
 factorsNaive :: Integer -> [Integer]
-factorsNaive n0 = factors' n0 2 where 
+factorsNaive n0 = factors' n0 2 where
   factors' 1 _ = []
-  factors' n m 
+  factors' n m
     | n `mod` m == 0 = m : factors' (n `div` m) m
     | otherwise      =     factors' n (m+1)
 
 factors :: Integer -> [Integer]
 factors n0 = let
    ps0 = takeWhile (\ m -> m^2 <= n0) primes
- in factors' n0 ps0 where 
+ in factors' n0 ps0 where
    factors' 1 _  = []
    factors' n [] = [n]
-   factors' n (p:ps) 
+   factors' n (p:ps)
     | n `mod` p == 0 = p: factors' (n `div` p) (p:ps)
     | otherwise      =    factors' n ps
 
@@ -53,28 +53,28 @@ addM :: Integer -> Integer -> Integer -> Integer
 addM x y = rem (x+y)
 
 multM :: Integer -> Integer -> Integer -> Integer
-multM x y = rem (x*y) 
+multM x y = rem (x*y)
 
 invM :: Integer -> Integer -> Integer
-invM x n = let 
+invM x n = let
    (u,v) = fctGcd x n
    copr  = x*u + v*n == 1
-   i     = if signum u == 1 then u else u + n  
- in 
+   i     = if signum u == 1 then u else u + n
+ in
    if copr then i else error "no inverse"
 
 fGcd :: Integer -> Integer -> Integer
 fGcd a b = if b == 0 then a
                      else fGcd b (rem a b)
 
-fctGcd :: Integer -> Integer -> (Integer,Integer) 
-fctGcd a b = 
-  if b == 0 
-  then (1,0) 
-  else 
-     let 
+fctGcd :: Integer -> Integer -> (Integer,Integer)
+fctGcd a b =
+  if b == 0
+  then (1,0)
+  else
+     let
        (q,r) = quotRem a b
-       (s,t) = fctGcd b r 
+       (s,t) = fctGcd b r
      in (t, s - q*t)
 
 coprime :: Integer -> Integer -> Bool
@@ -96,7 +96,7 @@ takeT 0 (T x _) = T x []
 takeT n (T x ts) = T x (map (takeT (n-1)) ts)
 
 coprimeT :: Tree (Integer,Integer)
-coprimeT = grow f (1,1) 
+coprimeT = grow f (1,1)
 
 f :: (Integer,Integer) -> [(Integer,Integer)]
 f (n,m) = [(n+m,m),(n,n+m)]
@@ -110,11 +110,11 @@ coprimes = filter (uncurry coprime) pairs
 expM ::  Integer -> Integer -> Integer -> Integer
 expM x y = rem (x^y)
 
-exM :: Integer -> Integer -> Integer -> Integer
-exM = expM -- to be replaced by a fast version
+-- exM :: Integer -> Integer -> Integer -> Integer
+-- exM = expM -- to be replaced by a fast version
 
 primeTestF :: Integer -> IO Bool
-primeTestF n = do 
+primeTestF n = do
    a <- randomRIO (2, n-1) :: IO Integer
    return (exM a (n-1) n == 1)
 
@@ -130,15 +130,15 @@ decomp n0 = decomp' (0,n0) where
 mrComposite :: Integer -> Integer -> Bool
 mrComposite x n = let
     (r,s) = decomp (n-1)
-    fs     = takeWhile (/= 1) 
+    fs     = takeWhile (/= 1)
        (map (\ j -> exM x (2^j*s) n)  [0..r])
-  in 
+  in
     exM x s n /= 1 && last fs /= (n-1)
 
 primeMR :: Int -> Integer -> IO Bool
 primeMR _ 2 = return True
 primeMR 0 _ = return True
-primeMR k n = do 
+primeMR k n = do
     a <- randomRIO (2, n-1) :: IO Integer
     if exM a (n-1) n /= 1 || mrComposite a n
     then return False else primeMR (k-1) n
@@ -150,24 +150,24 @@ encodeDH :: Integer -> Integer -> Integer -> Integer
 encodeDH p k m = m*k `mod` p
 
 decodeDH :: Integer -> Integer -> Integer -> Integer -> Integer
-decodeDH p ga b c = let 
-    gab' = exM ga ((p-1)-b) p 
-  in 
+decodeDH p ga b c = let
+    gab' = exM ga ((p-1)-b) p
+  in
     rem (c*gab') p
 
 encode :: Integer -> Integer -> Integer -> Integer
-encode p k m = let 
+encode p k m = let
    p' = p-1
    e  = head [ x | x <- [k..], gcd x p' == 1 ]
- in 
+ in
    exM m e p
 
 decode :: Integer -> Integer -> Integer -> Integer
-decode p k m = let 
+decode p k m = let
    p' = p-1
    e  = head [ x | x <- [k..], gcd x p' == 1 ]
-   d  = invM e p' 
- in 
+   d  = invM e p'
+ in
    exM m d p
 
 cipher :: Integer -> Integer
@@ -184,7 +184,7 @@ phi p q = (p - 1) * (q - 1)
 
 select :: Integer -> Integer -> Integer
 select p q = let
-   t = phi p q 
+   t = phi p q
  in
    head [ x | x <- [3..], gcd x t == 1 ]
 
@@ -195,23 +195,22 @@ rsaPublic p q = let
     (e,p*q)
 
 rsaPrivate ::  Integer -> Integer -> (Integer,Integer)
-rsaPrivate p q = let 
+rsaPrivate p q = let
    e = select p q
-   t = phi p q 
+   t = phi p q
    d = invM e t
-  in 
+  in
    (d,p*q)
 
-rsaEncode :: (Integer,Integer) -> Integer -> Integer 
+rsaEncode :: (Integer,Integer) -> Integer -> Integer
 rsaEncode (e,n) m =  exM m e n
 
-rsaDecode :: (Integer,Integer) -> Integer -> Integer 
-rsaDecode = rsaEncode                              
+rsaDecode :: (Integer,Integer) -> Integer -> Integer
+rsaDecode = rsaEncode
 
 trapdoor :: (Integer,Integer) -> Integer -> Integer
-trapdoor = rsaEncode 
+trapdoor = rsaEncode
 
-secret, bound :: Integer                
+secret, bound :: Integer
 secret = mers 18
 bound  = 131
-
