@@ -2,6 +2,9 @@ module Lab6 where
 
 import Lecture6
 
+import System.Random (randomRIO)
+import System.Clock
+
 -- Define Main --
 main = do
     putStrLn "===================="
@@ -40,7 +43,25 @@ exM x y n = t * Lab6.exM ((x * x) `mod` n) (y `div` 2) n `mod` n
 -- Exercise 2 :: Time spent: +-
 -- =============================================================================
 exercise2 = do
-  print()
+  testOriginal <- testTime $ mapM primeTestF (take 100000 primes)
+  testRefactored <- testTime $ mapM primeTest (take 100000 primes)
+  print $ "Testing 100000 primes with original code"
+  print $ testOriginal
+  print $ "Testing 100000 primes with improved code"
+  print $ testRefactored
+
+testTime :: IO a -> IO (TimeSpec)
+testTime f = do
+  start <- getTime Monotonic
+  f
+  end <- getTime Monotonic
+  return (diffTimeSpec start end)
+
+-- Modified version from Lecture6.hs
+primeTest :: Integer -> IO Bool
+primeTest n = do
+   a <- randomRIO (2, n-1) :: IO Integer
+   return (Lab6.exM a (n-1) n == 1)
 
 -- =============================================================================
 -- Exercise 3 :: Time spent: +-
