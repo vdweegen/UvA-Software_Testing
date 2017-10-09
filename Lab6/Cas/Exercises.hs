@@ -67,7 +67,10 @@ primeTest n = do
 -- Exercise 3 :: Time spent: +-
 -- =============================================================================
 exercise3 = do
-  print()
+  print $ Lab6.composites
+
+composites :: [Integer]
+composites = 2 : filter (not . prime) [3..]
 
 -- =============================================================================
 -- Exercise 4 :: Time spent: +-
