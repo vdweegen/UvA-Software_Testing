@@ -97,7 +97,14 @@ primeTests k n = do
 -- Exercise 5 :: Time spent: +-
 -- =============================================================================
 exercise5 = do
-  print()
+  print $ carmichael
+
+carmichael :: [Integer]
+carmichael = [ (6*k+1)*(12*k+1)*(18*k+1) |
+  k <- [2..],
+  prime (6*k+1),
+  prime (12*k+1),
+  prime (18*k+1) ]
 
 -- =============================================================================
 -- Exercise 6 (1) :: Time spent: +-
