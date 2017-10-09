@@ -121,16 +121,44 @@ dividers :: Integer -> [Integer]
 dividers n = [ a | a <- [2..n-1], n `rem` a == 0 ]
 
 -- =============================================================================
--- Exercise 5 :: Time spent: +-
+-- Exercise 5 :: Time spent: +- 10 minutes
+-- Simply copy the list comprehension from the labs
+-- Then feed it to exactly the same function as used in exercise 4
 -- =============================================================================
 exercise5 = do
-  print()
+  putStr "Some carmichael false positives: "
+  carMichaels3 <- falseCarmichaels 3
+  carMichaels5 <- falseCarmichaels 5
+  print $ take 2 carMichaels3
+  print $ take 2 carMichaels5
+
+-- | Create a non-exhaustive list of carmichael false primes
+falseCarmichaels :: Int -> IO [Integer]
+falseCarmichaels n = filterMIO (primeTestsF n) carmichael
+
+carmichael :: [Integer]
+carmichael = [ (6*k+1)*(12*k+1)*(18*k+1)
+              | k <- [2..],
+              prime (6*k+1),
+              prime (12*k+1),
+              prime (18*k+1) ]
 
 -- =============================================================================
--- Exercise 6 (1) :: Time spent: +-
+-- Exercise 6 (1) :: Time spent: +- 5 minutes
+-- Again, the same algorithm to return the list of false positives.
+-- However, this algorithm throws a 'Bus error: 10'.
+-- Due to google this is caused by a large exponentiation.
+-- Perhaps after correct implementation of 1, this issue is gone.
 -- =============================================================================
 exercise6 = do
-  print()
+  putStr "Some miller rabin tests, using carmichael numbers"
+  millerRabin3 <- falseMillerRabin 3
+  millerRabin5 <- falseMillerRabin 5
+  print $ take 2 millerRabin3
+  print $ take 2 millerRabin5
+
+falseMillerRabin :: Int -> IO [Integer]
+falseMillerRabin n = filterMIO (primeMR n) carmichael
 -- =============================================================================
 -- Exercise 6 (2) :: Time spent: +-
 -- =============================================================================
