@@ -17,15 +17,15 @@ main = do
     putStrLn "> Exercise 3"
     -- exercise3
     putStrLn "> Exercise 4"
-    exercise4
+    -- exercise4
     putStrLn "> Exercise 5"
-    exercise5
+    -- exercise5
     putStrLn "> Exercise 6 (1)"
     exercise6
     putStrLn "> Exercise 6 (2)"
-    exercise62
+    -- exercise62
     putStrLn "> Exercise 7 (BONUS)"
-    exercise7
+    -- exercise7
 
 -- =============================================================================
 -- Exercise 1 :: Time spent: +-
@@ -108,7 +108,7 @@ exercise5 = do
 
 isNotFooled :: Integer -> IO ()
 isNotFooled n = do
-  x <- primeTests 1 n -- 1 is k
+  x <- primeTests 4 n -- 1 is k
   if (x) then return () else print n
 
 carmichael :: [Integer]
@@ -120,9 +120,39 @@ carmichael = [ (6*k+1)*(12*k+1)*(18*k+1) |
 
 -- =============================================================================
 -- Exercise 6 (1) :: Time spent: +-
+--
+-- Accuracy: 459 out of 500 detected.
 -- =============================================================================
 exercise6 = do
-  print()
+  mapM isFooledMR (take 500 carmichael)
+
+isFooledMR :: Integer -> IO ()
+isFooledMR n = do
+  x <- Lab6.primeMR 1 n -- 1 is k
+  if (x) then print n else return ()
+
+isNotFooledMR :: Integer -> IO ()
+isNotFooledMR n = do
+  x <- Lab6.primeMR 1 n -- 1 is k
+  if (x) then return () else print n
+
+-- Modified version from Lecture6.hs
+mrComposite :: Integer -> Integer -> Bool
+mrComposite x n = let
+    (r,s) = decomp (n-1)
+    fs     = takeWhile (/= 1)
+       (map (\ j -> Lab6.exM x (2^j*s) n)  [0..r])
+  in
+    Lab6.exM x s n /= 1 && last fs /= (n-1)
+
+-- Modified version from Lecture6.hs
+primeMR :: Int -> Integer -> IO Bool
+primeMR _ 2 = return True
+primeMR 0 _ = return True
+primeMR k n = do
+  a <- randomRIO (2, n-1) :: IO Integer
+  if Lab6.exM a (n-1) n /= 1 || Lab6.mrComposite a n
+    then return False else Lab6.primeMR (k-1) n
 
 -- =============================================================================
 -- Exercise 6 (2) :: Time spent: +-
