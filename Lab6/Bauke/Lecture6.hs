@@ -111,7 +111,7 @@ expM ::  Integer -> Integer -> Integer -> Integer
 expM x y = rem (x^y)
 
 exM :: Integer -> Integer -> Integer -> Integer
-exM = expM -- to be replaced by a fast version
+exM a b c = (a^b) `mod` c
 
 primeTestF :: Integer -> IO Bool
 primeTestF n = do

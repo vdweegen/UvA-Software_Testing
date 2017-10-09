@@ -1,6 +1,8 @@
 module Lab6 where
 
 import Bauke.Lecture6
+import System.Clock
+import System.Random
 
 import System.IO.Unsafe (unsafeInterleaveIO)
 -- Define Main --
@@ -32,14 +34,39 @@ main = do
 exercise1 = do
   print()
 
-
-exM :: Integer -> Integer -> Integer -> Integer
-exM a b c = (a^b) `mod` c
 -- =============================================================================
--- Exercise 2 :: Time spent: +-
+-- Exercise 2 :: Time spent: +- 30 minutes
+-- Notice that using the same computation will result in skewed timing results.
+-- The haskell compiler caches intermediate values and will print with faster results
+-- Todo => Fix the implementation using the squared modulo.
+-- Investigate how.
 -- =============================================================================
 exercise2 = do
-  print()
+  a <- randomRIO (1,100)
+  b <- randomRIO (1,100)
+  c <- randomRIO (1,100)
+  exMTime <- testTime $ calcExM (a,b,c)
+  expMTime <- testTime $ calcExpM (a,b,c)
+  exMTime' <- testTime $ calcExM (a,b,c)
+  putStrLn $ "Processing with fast algorithm: " ++ (show exMTime)
+  putStrLn $ "Processing with slow algorithm: " ++ (show expMTime)
+  putStrLn $ "Re-processing with fast algorithm: " ++ (show exMTime')
+
+calcExM :: (Integer, Integer, Integer) -> IO ()
+calcExM (a,b,c) = do
+  print $ exM a b c
+
+calcExpM :: (Integer, Integer, Integer) -> IO ()
+calcExpM (a,b,c) = do
+  print $ expM a b c
+
+-- | Profiler for a function
+testTime :: IO a -> IO (TimeSpec)
+testTime f = do
+  start <- getTime Monotonic
+  f
+  end <- getTime Monotonic
+  return (diffTimeSpec start end)
 
 -- =============================================================================
 -- Exercise 3 :: Time spent: +- 5 minutes
