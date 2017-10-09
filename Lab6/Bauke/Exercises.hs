@@ -61,20 +61,25 @@ firstComposites = [4, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 22, 24, 25, 26, 2
 -- Took some time to generate a list of items from an infinite list.
 -- Found an example only showing this using a filter.
 -- When the k is increased, the value of the prime increases.
+-- Funny thing is that the issues with the composited are always similar values
 -- =============================================================================
 exercise4 = do
   putStr "Smallest non-prime composite number k=[1..3]: "
   primes <- falsePrimes 3
   let falsePrime = head primes
   print falsePrime
+  putStrLn ((show falsePrime) ++ " can be divided by " ++ (show $ dividers falsePrime))
   putStr "Smalles non-prime composite number k=[1..5]: "
   primes' <- falsePrimes 5
   let falsePrime' = head primes'
   print falsePrime'
+  putStrLn ((show falsePrime') ++ " can be divided by " ++ (show $ dividers falsePrime'))
 
+-- | Create a non-exhaustive list of false positives
 falsePrimes :: Int -> IO [Integer]
 falsePrimes n = filterMIO (primeTestsF n) composites
 
+-- | Custom filter used to create monadic listst
 filterMIO :: (a -> IO Bool) -> [a] -> IO [a]
 filterMIO p = go
   where
@@ -83,6 +88,10 @@ filterMIO p = go
       xs' <- unsafeInterleaveIO (go xs)
       b   <- p x
       return $ if b then (x:xs') else xs'
+
+-- | an empty list is returned for every prime, otherwise the list of dividers
+dividers :: Integer -> [Integer]
+dividers n = [ a | a <- [2..n-1], n `rem` a == 0 ]
 
 -- =============================================================================
 -- Exercise 5 :: Time spent: +-
