@@ -11,11 +11,11 @@ main = do
     putStrLn "Assignment 6 / Lab 6"
     putStrLn "===================="
     putStrLn "> Exercise 1"
-    exercise1
+    -- exercise1
     putStrLn "> Exercise 2"
-    exercise2
+    -- exercise2
     putStrLn "> Exercise 3"
-    exercise3
+    -- exercise3
     putStrLn "> Exercise 4"
     exercise4
     putStrLn "> Exercise 5"
@@ -74,9 +74,24 @@ composites = 2 : filter (not . prime) [3..]
 
 -- =============================================================================
 -- Exercise 4 :: Time spent: +-
+--
+-- When the k is increased, the accuracy decreased (the number of hits on
+-- primes decrease)
 -- =============================================================================
 exercise4 = do
-  print()
+  mapM isFooled (take 100 Lab6.composites)
+
+-- Helper function to print
+isFooled :: Integer -> IO ()
+isFooled n = do
+  x <- primeTests 1 n -- 1 is k
+  if (x) then print n else return ()
+
+-- Modified version from Lecture6.hs
+primeTests :: Int -> Integer -> IO Bool
+primeTests k n = do
+ as <- sequence $ fmap (\_-> randomRIO (2,n-1)) [1..k]
+ return (all (\ a -> Lab6.exM a (n-1) n == 1) as)
 
 -- =============================================================================
 -- Exercise 5 :: Time spent: +-
