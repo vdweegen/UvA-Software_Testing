@@ -31,7 +31,9 @@ main = do
 -- =============================================================================
 -- Exercise 1 :: Time spent: +- 2 hours
 -- First looked up the example on youtube.
--- Then tried to fix a solution, but somehow got stuck on the squaring
+-- Then tried to fix a solution, but somehow got stuck on the squaring part
+-- Splitted into two fucntion, where each index represents the modulo of that part.
+-- Therefore, simply calling squaredMods !! <index> returns the result for that bit
 -- =============================================================================
 
 exercise1 :: IO()
@@ -166,9 +168,11 @@ carmichael = [ (6*k+1)*(12*k+1)*(18*k+1)
 -- However, this algorithm throws a 'Bus error: 10'.
 -- Due to google this is caused by a large exponentiation.
 -- Perhaps after correct implementation of 1, this issue is gone.
+-- After implementation of 1, this version does not produce any false positives
+--
 -- =============================================================================
 exercise6 = do
-  putStr "Some miller rabin tests, using carmichael numbers"
+  putStr "Some miller rabin tests, using carmichael numbers:"
   millerRabin3 <- falseMillerRabin 3
   millerRabin5 <- falseMillerRabin 5
   print $ take 2 millerRabin3
@@ -177,13 +181,75 @@ exercise6 = do
 falseMillerRabin :: Int -> IO [Integer]
 falseMillerRabin n = filterMIO (primeMR n) carmichael
 -- =============================================================================
--- Exercise 6 (2) :: Time spent: +-
--- =============================================================================
-exercise62 = do
-  print()
+-- Exercise 6 (2) :: Time spent: +- 1 hour
+-- Finding a list of mersenneprimes
+-- Using the miller rabin primes, this is much faster than the algorithm using the normal prime
 
 -- =============================================================================
--- Exercise 7 :: Time spent: +-
+exercise62 = do
+  putStr "Comparing first 10 mersenne primes: "
+  primes <- mersennePrimes
+  print $ (take 10 primes) == (take 10 knownMersennePrimes)
+
+-- | Generate a list of values of which 2^p - 1 is a supposed prime
+mersennePrimes :: IO [Integer]
+mersennePrimes = filterMIO (primeMR 5) $ map mersenne primes
+
+mrPrimes :: IO [Integer]
+mrPrimes = filterMIO (primeMR 5) [1..]
+
+-- | Known mersenne Numbers
+knownMersennePrimes :: [Integer]
+knownMersennePrimes = [ mers n | n <- [1..25]]
+
+mersenne = (subtract 1) . (2^)
+
+normalPrimes :: [Integer]
+normalPrimes = [ a | b <- primes, let a = mersenne b, prime a]
+
+-- =============================================================================
+-- Exercise 7 :: Time spent: +- 30 minutes on large prime generator
+-- Find a (large prime pair) with equal bit size.
+-- For RSA encryption, both parties have a public and private key pair.
+-- Consider Alice and bob, both having a 128 bits key.
+-- The modulus is given using the product
 -- =============================================================================
 exercise7 = do
-  print()
+  ((a1,a2),(b1,b2)) <- (largePrimePairs 256)
+  putStrLn $ "Alice's public key: " ++ (show a1)
+  putStrLn $ "Alice's private key: " ++ (show a2)
+  putStrLn $ "Bob's public key: " ++ (show b1)
+  putStrLn $ "Bob's private key: " ++ (show b2)
+  let m1 = (a1*a2)
+  let m2 = (b1*b2)
+  print m1
+  print m2
+
+
+-- | Give is a minimum bit amount, returns prime pair, automatically expanding to larger bits if required
+largePrimePairs :: Integer -> IO ((Integer,Integer), (Integer, Integer))
+largePrimePairs n = do
+  a <- findPrime (2^n)
+  b <- findPrime (a+1)
+  c <- findPrime (b+1)
+  d <- findPrime (c+1)
+  if (bitSize a == bitSize d)
+  then return ((a,b),(c,d))
+  else do largePrimePairs d
+
+-- | Give me a number, and i'll tell you the amount of bits occupied
+bitSize :: Integer -> Integer
+bitSize = genericLength . int2bin
+
+-- | Given a start value, i'll provide the next prime
+findPrime :: Integer -> IO Integer
+findPrime val = do
+  prime <- primeMR 5 val
+  if prime
+  then return val
+  else findPrime (val+1)
+
+encode :: Char -> Int
+encode a = exM (ord a)
+
+
