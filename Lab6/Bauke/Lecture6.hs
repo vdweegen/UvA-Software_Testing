@@ -112,7 +112,7 @@ expM ::  Integer -> Integer -> Integer -> Integer
 expM x y = rem (x^y)
 
 exM :: Integer -> Integer -> Integer -> Integer
-exM b e m = (product [ squaredMods b m !! a | a <- [0..(genericLength bits)-1], bits !! a == 1]) `mod` 50
+exM b e m = (product [ squaredMods b m !! a | a <- [0..(genericLength bits)-1], bits !! a == 1]) `mod` m
   where bits = int2bin e
 
 int2bin :: Integer -> [Integer]
