@@ -3,6 +3,7 @@ module Bauke.Lecture6
 
 where
 
+import Data.List
 import System.Random
 
 factorsNaive :: Integer -> [Integer]
@@ -111,7 +112,21 @@ expM ::  Integer -> Integer -> Integer -> Integer
 expM x y = rem (x^y)
 
 exM :: Integer -> Integer -> Integer -> Integer
-exM a b c = (a^b) `mod` c
+exM b e m = (product [ squaredMods b m !! a | a <- [0..(genericLength bits)-1], bits !! a == 1]) `mod` 50
+  where bits = int2bin e
+
+int2bin :: Integer -> [Integer]
+int2bin 0 = []
+int2bin n = (mod n 2) : (int2bin $ div n 2)
+
+-- | Compose the list of modulos
+squaredMods :: Integer -> Integer -> [Integer]
+squaredMods b m = b : calcMods b m
+
+-- | Utility for generating an infinite list of mods
+calcMods :: Integer -> Integer -> [Integer]
+calcMods b m = nextBase : calcMods nextBase m
+  where nextBase = ((b^2) `mod` m)
 
 primeTestF :: Integer -> IO Bool
 primeTestF n = do

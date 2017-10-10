@@ -1,6 +1,7 @@
 module Lab6 where
 
 import Bauke.Lecture6
+import Data.List
 import System.Clock
 import System.Random
 
@@ -28,11 +29,26 @@ main = do
     exercise7
 
 -- =============================================================================
--- Exercise 1 :: Time spent: +-
+-- Exercise 1 :: Time spent: +- 2 hours
+-- First looked up the example on youtube.
+-- Then tried to fix a solution, but somehow got stuck on the squaring
 -- =============================================================================
 
+exercise1 :: IO()
 exercise1 = do
-  print()
+  putStrLn $ "checking example. 3^200 mod 50: " ++ (show $ exM 3 200 50)
+  putStrLn $ "compare expM and exM. result equal: " ++ (show $ (exM 3 200 50) == (expM 3 200 50))
+
+-- Sample 3 pow 200
+-- First =< Compute first power => 3 mod 50 => 3
+-- Second => sequre => 3^2 -> 9 mod 50 => 9
+-- Third => 3^4 => 9 ^ 2 = 81 => 81 mod 50 => 31
+-- Fouth => 3^8 => 31^2 mod 50 => 961 mod 50 = 11
+-- Fifth => 3^16 => 11^2 mod 50 => 121 mod 50 => 21
+-- Sixth => 3^32 => 21^2 mod 50 => 441 mod 50 => 41
+-- Seventh => 3^64 -> 41^2 mod 50 => 1681 mod 50 = 31
+-- Eight => 3^128 -> 31^2 mod 50 => 961 mod 50 = 11
+-- IF Exceeds => STOP -> Substract, restart
 
 -- =============================================================================
 -- Exercise 2 :: Time spent: +- 30 minutes
@@ -42,9 +58,10 @@ exercise1 = do
 -- Investigate how.
 -- =============================================================================
 exercise2 = do
-  a <- randomRIO (1,100)
-  b <- randomRIO (1,100)
-  c <- randomRIO (1,100)
+  a <- randomRIO (1,5)
+  b <- randomRIO (300,512)
+  c <- randomRIO (10,50)
+  putStrLn $ "Base: " ++ show a ++ ", Exp: " ++ show b ++ ", Mod: " ++ show c
   exMTime <- testTime $ calcExM (a,b,c)
   expMTime <- testTime $ calcExpM (a,b,c)
   exMTime' <- testTime $ calcExM (a,b,c)
