@@ -38,10 +38,14 @@ exercise2 = do
   print()
 
 -- =============================================================================
--- Exercise 3 :: Time spent: +-
+-- Exercise 3 :: Time spent: 15 min
 -- =============================================================================
-exercise3 = do
-  print()
+-- | Simply filter out the primes
+composites :: [Integer]
+composites = filter (not.prime) [3..]
+
+-- | Show composite numbers up to 150, checked according to Wikipedia
+exercise3 = putStrLn $ show (take 114 Lab6.composites)
 
 -- =============================================================================
 -- Exercise 4 :: Time spent: +-
