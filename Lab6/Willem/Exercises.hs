@@ -1,6 +1,7 @@
 module Lab6 where
 
 import Lecture6
+import System.Clock
 
 -- Define Main --
 main = do
@@ -35,7 +36,21 @@ exercise1 = do
 -- Exercise 2 :: Time spent: +-
 -- =============================================================================
 exercise2 = do
+  expMTime <- testTime $ return $ expM 123 33 5
+  exMTime  <- testTime $ return $ exM  123 33 5
+  putStrLn "Time taken by original:"
+  print expMTime
+  putStrLn "Time taken by refactored:"
+  print exMTime
   print()
+
+-- | testTime function developed in Lab5 by me
+testTime :: IO a -> IO (TimeSpec)
+testTime f = do
+  start <- getTime Monotonic
+  f
+  end <- getTime Monotonic
+  return (diffTimeSpec start end)
 
 -- =============================================================================
 -- Exercise 3 :: Time spent: 15 min
