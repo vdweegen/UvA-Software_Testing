@@ -1,9 +1,12 @@
 module Lab6 where
 
 import Bauke.Lecture6
+import Numeric
+import Data.Char
 import Data.List
 import System.Clock
 import System.Random
+
 
 import System.IO.Unsafe (unsafeInterleaveIO)
 -- Define Main --
@@ -209,47 +212,60 @@ normalPrimes = [ a | b <- primes, let a = mersenne b, prime a]
 
 -- =============================================================================
 -- Exercise 7 :: Time spent: +- 30 minutes on large prime generator
--- Find a (large prime pair) with equal bit size.
--- For RSA encryption, both parties have a public and private key pair.
--- Consider Alice and bob, both having a 128 bits key.
--- The modulus is given using the product
+-- Additional 2 hours on implementing and refactoring.
+-- First I wrote down all methods myself, to completely understand how it's working.
+-- Then refactored out the methods, replacing them by the ones provided in the lecture code
+-- How does it work:
+-- Encode a message to a single integer
+-- Find a (large prime pair) with equal bit size as this integer
+-- One can encode the data using the public key, but one can only decode it knowing the private key
+-- When the single integer is encoded, the encoded value is sent to the private key keeper
+-- Only the recipient, knowing the private key, can decrypt this back to the original information.
 -- =============================================================================
 exercise7 = do
-  ((a1,a2),(b1,b2)) <- (largePrimePairs 256)
-  putStrLn $ "Alice's public key: " ++ (show a1)
-  putStrLn $ "Alice's private key: " ++ (show a2)
-  putStrLn $ "Bob's public key: " ++ (show b1)
-  putStrLn $ "Bob's private key: " ++ (show b2)
-  let m1 = (a1*a2)
-  let m2 = (b1*b2)
-  print m1
-  print m2
+  let message = "Hello, World!"
+  putStrLn $"Encrypting a message: " ++ message
+  encryptionExample message
 
+-- | composes a message in one hexadeximal value
+composeMessage :: String -> Integer
+composeMessage msg = read $ "0x" ++ (concat $ [ showHex (ord a) ""| a <- msg]) :: Integer
 
--- | Give is a minimum bit amount, returns prime pair, automatically expanding to larger bits if required
-largePrimePairs :: Integer -> IO ((Integer,Integer), (Integer, Integer))
-largePrimePairs n = do
+-- | decomposes message back to string
+decomposeMessage :: Integer -> String
+decomposeMessage n = convert (showHex n "")
+
+-- | Convert hex number to Ascii String
+convert :: String -> String
+convert [] = []
+convert (x1:x2:xs) = [(chr $ (read ("0x" ++ [x1] ++ [x2]) :: Int))] ++ convert xs
+
+encryptionExample :: String -> IO()
+encryptionExample str = do
+  let inputNumber = composeMessage str
+  putStrLn $ "Composed message to single hex number: " ++ (show inputNumber)
+  (p,q) <- largePrimePair $ bitSize inputNumber
+  let encrypted = rsaEncode (rsaPublic p q) inputNumber
+  putStrLn $ "Encrypted message: " ++ (show encrypted)
+  let decrypted = rsaDecode (rsaPrivate p q) encrypted
+  putStrLn $ "Received an encrypted message, decoding result in: " ++ (show decrypted)
+  putStrLn $ "Composed back to ASCII:" ++ decomposeMessage decrypted
+
+-- | returns a large prime pair based on the bit size
+largePrimePair :: Integer -> IO (Integer,Integer)
+largePrimePair n = do
   a <- findPrime (2^n)
   b <- findPrime (a+1)
-  c <- findPrime (b+1)
-  d <- findPrime (c+1)
-  if (bitSize a == bitSize d)
-  then return ((a,b),(c,d))
-  else do largePrimePairs d
+  return (a,b)
 
--- | Give me a number, and i'll tell you the amount of bits occupied
+-- | find required prime size
 bitSize :: Integer -> Integer
 bitSize = genericLength . int2bin
 
--- | Given a start value, i'll provide the next prime
+-- | Given a start value, finds the closest prime above
 findPrime :: Integer -> IO Integer
 findPrime val = do
   prime <- primeMR 5 val
   if prime
   then return val
   else findPrime (val+1)
-
-encode :: Char -> Int
-encode a = exM (ord a)
-
-
