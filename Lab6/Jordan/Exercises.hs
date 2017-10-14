@@ -1,6 +1,8 @@
 module Lab6 where
 
+import Control.Monad 
 import Lecture6
+import  Data.List
 
 -- Define Main --
 main = do
@@ -50,10 +52,35 @@ exercise3 = do
 composites' :: [Integer]
 composites' = filter (not.prime) [4..]
 -- =============================================================================
--- Exercise 4 :: Time spent: +-
+-- Exercise 4 :: Time spent: +- 1 hour
+-- The smallest composite number that passes the test is 9
+-- If k = 1 it runs fast if k = 2 then takes a little longer but comes to the same conclusion. Running k = 3
+-- takes a lot longer and got as low as 15 in one test.
 -- =============================================================================
 exercise4 = do
-  print()
+  k1 <- testFer (testFermatKn 1)
+  k2 <- testFer (testFermatKn 2)
+  k3 <- testFer (testFermatKn 3)
+  print k1
+  print k2
+  print k3
+  
+testFer tk = do
+  x <- replicateM  100 tk
+  let sorted = sort x 
+  return $ head sorted
+
+testFermatKn n= foolFermat' n composites
+
+foolFermat' :: Int -> [Integer] -> IO Integer
+foolFermat' k (x:xs) = do
+    z <- primeTestsF k x
+    if z then
+      return x
+    else
+      foolFermat' k xs
+
+
 
 -- =============================================================================
 -- Exercise 5 :: Time spent: +-
