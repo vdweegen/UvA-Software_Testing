@@ -4,6 +4,7 @@ module Lecture6
 where
 
 import System.Random
+import Data.Bits
 
 factorsNaive :: Integer -> [Integer]
 factorsNaive n0 = factors' n0 2 where
@@ -110,8 +111,19 @@ coprimes = filter (uncurry coprime) pairs
 expM ::  Integer -> Integer -> Integer -> Integer
 expM x y = rem (x^y)
 
+-- This the implimentation found in the crypto-numbers package -- Using exponentiation by squaring
 exM :: Integer -> Integer -> Integer -> Integer
-exM = expM -- to be replaced by a fast version
+exM 0 0 m = 1 `mod` m
+exM b e m = loop e b 1
+    where sq x          = (x * x) `mod` m
+          loop 0 _  a = a `mod` m
+          loop i s a = loop (i `shiftR` 1) (sq s) (if odd i then a * s else a)
+
+exMr :: Integer -> Integer -> Integer -> Integer
+exMr b e m =  f 1 0
+     where
+       f c e' | e' < e = f ((c * b) `mod` m) (e'+1)
+              | otherwise = c
 
 primeTestF :: Integer -> IO Bool
 primeTestF n = do
