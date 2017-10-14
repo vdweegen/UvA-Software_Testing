@@ -37,12 +37,18 @@ exercise1 = do
 exercise2 = do
   print()
 
+
+
 -- =============================================================================
--- Exercise 3 :: Time spent: +-
+-- Exercise 3 :: Time spent: +- 20 minutes
+-- Since every whole number over 1 is either a composite number or a prime number
+-- I can check if the number is not a prime number
 -- =============================================================================
 exercise3 = do
-  print()
+  print $ take 100 composites'
 
+composites' :: [Integer]
+composites' = filter (not.prime) [4..]
 -- =============================================================================
 -- Exercise 4 :: Time spent: +-
 -- =============================================================================
