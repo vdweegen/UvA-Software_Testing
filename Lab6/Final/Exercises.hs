@@ -1,6 +1,8 @@
 module Lab6 where
 
 import Lecture6
+import Formatting
+import Formatting.Clock
 import Numeric
 
 import Control.Monad
@@ -62,78 +64,50 @@ prop_exm :: (Positive Integer, Positive Integer, Positive Integer) -> Bool
 prop_exm (Positive b, Positive e, Positive m) = exM' b e m == expM b e m
 
 -- =============================================================================
--- Exercise 2 :: Time spent: +- 3 hours
---
--- Initial attempt:
--- Original code 100000 primes: TimeSpec {sec = 48, nsec = 252859097}
--- Improved code 100000 primes: TimeSpec {sec = 44, nsec = 955916568}
---
--- 2nd attempt:
---
--- Finally figured out how to compile with profiling enabled:
--- ghc -O2 -rtsopts -prof --make Exercises.hs -main-is Lab6.main -o Exercises
---
--- and then execute: ./Exercises +RTS -p
---
--- This yields the following output:
+-- Exercise 2 :: Time spent: +- 2 hours
+-- A fair test should apply the same inputs to each function
+-- It first generate 3 list of input and use them with both functions
+-- Our own implementation is roughly twice as fast as the standard implementation.
+-- A slightly faster implementation is available from the Crypto.Numbers package.
+-- See exercises of Jordan Maduro
 -- =============================================================================
--- 	Tue Oct 10 21:11 2017 Time and Allocation Profiling Report  (Final)
---
--- 	   Exercises +RTS -p -RTS
---
--- 	total time  =        2.40 secs   (2397 ticks @ 1000 us, 1 processor)
--- 	total alloc = 1,989,224,136 bytes  (excludes profiling overheads)
---
--- COST CENTRE  MODULE        SRC                                %time %alloc
---
--- CAF          Lecture6      <entire-module>                     97.0   96.2
--- getStdRandom System.Random System/Random.hs:(586,1)-(587,26)    2.4    2.8
---
---                                                                                          individual      inherited
--- COST CENTRE   MODULE                SRC                               no.     entries  %time %alloc   %time %alloc
---
--- MAIN          MAIN                  <built-in>                         58          0    0.3    0.8   100.0  100.0
---  getStdRandom System.Random         System/Random.hs:(586,1)-(587,26) 117     100000    2.4    2.8     2.4    2.8
---  diffTimeSpec System.Clock          System/Clock.hsc:283:1-38         118          1    0.0    0.0     0.0    0.0
---  CAF          Lab6                  <entire-module>                   115          0    0.3    0.3     0.3    0.3
---   getTime     System.Clock          System/Clock.hsc:185:1-64         116          1    0.0    0.0     0.0    0.0
---  CAF          Lecture6              <entire-module>                   114          0   97.0   96.2    97.0   96.2
---  CAF          System.Random         <entire-module>                   113          0    0.0    0.0     0.0    0.0
---  CAF          Data.Time.Clock.POSIX <entire-module>                   111          0    0.0    0.0     0.0    0.0
---  CAF          System.Clock          <entire-module>                   110          0    0.0    0.0     0.0    0.0
---  CAF          GHC.Conc.Signal       <entire-module>                    99          0    0.0    0.0     0.0    0.0
---  CAF          GHC.IO.Encoding       <entire-module>                    97          0    0.0    0.0     0.0    0.0
---  CAF          GHC.IO.Handle.FD      <entire-module>                    96          0    0.0    0.0     0.0    0.0
---  CAF          GHC.IO.Handle.Text    <entire-module>                    95          0    0.0    0.0     0.0    0.0
---  CAF          GHC.IO.Encoding.Iconv <entire-module>                    85          0    0.0    0.0     0.0    0.0
---
---
--- Profiling results gave me a line that I needed to fix, which resulted into the
--- following results:
--- Improved code 100000 primes: TimeSpec {sec = 2, nsec = 651626570}
--- =============================================================================
+type Interval = (TimeSpec, TimeSpec)
+
 exercise2 = do
-  let n = 20000
-  testOriginal <- testTime $ mapM primeTest (take n primes)
-  print $ "Testing " ++ (show n) ++ " primes with original code"
-  print $ testOriginal
-  testRefactored <- testTime $ mapM primeTestF (take n primes)
-  print $ "Testing " ++ (show n) ++ " primes with improved code"
-  print $ testRefactored
+    bs <- randomValues
+    es <- randomValues
+    ms <- randomValues
+    ownImplementation <- profile (doCalculation' exM bs es ms)
+    standardImplementation <- profile (doCalculation' expM bs es ms)
+    reportTime "optimized variant" ownImplementation
+    reportTime "standard implementation" standardImplementation
 
--- | Profile execution time of f
-testTime :: IO a -> IO (TimeSpec)
-testTime f = do
+reportTime :: String -> Interval -> IO ()
+reportTime str (start,end) = do
+  fprint (timeSpecs) start end
+  putStrLn $ " when using the " ++ str
+
+profile :: Show a => a -> IO Interval
+profile f = do
   start <- getTime Monotonic
-  f
+  print f
   end <- getTime Monotonic
-  return (diffTimeSpec start end)
+  return (start,end)
 
--- | Uses the expM, instead of the exM
-primeTest :: Integer -> IO Bool
-primeTest n = do
-   a <- randomRIO (2, n-1) :: IO Integer
-   return $ (expM a (n-1) n) == 1
+doCalculation' :: (Integer -> Integer -> Integer -> Integer) -> [Integer] -> [Integer] -> [ Integer] ->[[Integer]]
+doCalculation' fn bs es ms = do
+  let z = zip3 bs es ms
+  let ys = map (runFn) z
+  return ys
+  where
+    runFn (b, e , m) = fn b e m
+
+randomValues :: IO [Integer]
+randomValues = replicateM 10 randomInt
+
+randomInt = do
+    x <- randomRIO (400, 10000 :: Integer)
+    return x
 
 -- =============================================================================
 -- Exercise 3 :: Time spent: +- 5 minutes
@@ -270,18 +244,11 @@ testMR k (x:xs) = do
 -- Using the miller rabin primes, this is much faster than the algorithm using the normal prime
 -- =============================================================================
 exercise62 = do
- let n = 10
- putStr $ "Comparing first " ++ (show n) ++ " mersenne primes: "
- calculatedPrimes <- findMersenneNumbers
- let primeValues = take n calculatedPrimes
- let mersenneValues = map (mersenne) primeValues
- print $ mersenneValues == (take n knownMersennePrimes)
- putStrLn $ "Primes: " ++ (show primeValues)
- putStrLn $ "Mersennes: " ++ (show mersenneValues)
-
--- | Finds the primes yielding a mersenne primes
-findMersenneNumbers :: IO [Integer]
-findMersenneNumbers = filterM ((primeMR 1).(\x -> mersenne x)) $ takeWhile (<2000) primes
+ putStr "Comparing first 10 mersenne primes: "
+ calculatedPrimes <- filterM ((primeMR 1).(\x -> ((2^x) - 1 ))) $ take 150 primes
+ let primeValues = map (mersenne) calculatedPrimes
+ print $ (take 10 primeValues) == (take 10 knownMersennePrimes)
+ putStrLn $ ""
 
 -- | Known mersenne Numbers
 knownMersennePrimes :: [Integer]
@@ -329,7 +296,7 @@ encryptionExample str = do
   putStrLn $ "Encrypted message: " ++ (show encrypted)
   let decrypted = rsaDecode (rsaPrivate p q) encrypted
   putStrLn $ "Received an encrypted message, decoding results in: " ++ (show decrypted)
-  putStrLn $ "Composed back to ASCII: " ++ decomposeMessage decrypted
+  putStrLn $ "Composed back to ASCII:" ++ decomposeMessage decrypted
 
 -- | returns a large prime pair based on the bit size
 largePrimePair :: Integer -> IO (Integer,Integer)
