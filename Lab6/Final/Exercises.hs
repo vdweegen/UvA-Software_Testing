@@ -275,7 +275,7 @@ exercise62 = do
  calculatedPrimes <- findMersenneNumbers
  let primeValues = take n calculatedPrimes
  let mersenneValues = map (mersenne) calculatedPrimes
- print $ primeValues == (take n knownMersennePrimes)
+ print $ mersenneValues == (take n knownMersennePrimes)
  putStrLn $ "Primes: " ++ (show primeValues)
  putStrLn $ "Mersennes: " ++ (show mersenneValues)
 
