@@ -56,13 +56,17 @@ exM' b e m = loop e b 1
 -- It first generate 3 list of input and use them with both functions
 -- =============================================================================
 exercise2 = do
-    bs <- replicateM  1000000 (randomRIO (600, 10000 :: Integer))
-    es <- replicateM  1000000 (randomRIO (600, 10000 :: Integer))
-    ms <- replicateM  1000000 (randomRIO (600, 10000 :: Integer))
+    bs <- replicateM  10000 (randomRIO (400, 10000 :: Integer))
+    es <- replicateM  10000 (randomRIO (400, 10000 :: Integer))
+    ms <- replicateM  10000 (randomRIO (400, 10000 :: Integer))
     start <- getTime Monotonic
-    void (evaluate $ doCalculation' expM bs es ms )
+    print $ doCalculation' exM' bs es ms
     end <- getTime Monotonic
     fprint (timeSpecs) start end
+    start' <- getTime Monotonic
+    print $ doCalculation' expM bs es ms
+    end' <- getTime Monotonic
+    fprint (timeSpecs) start' end'
 
 
 doCalculation = do
