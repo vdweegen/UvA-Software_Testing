@@ -329,7 +329,7 @@ encryptionExample str = do
   putStrLn $ "Encrypted message: " ++ (show encrypted)
   let decrypted = rsaDecode (rsaPrivate p q) encrypted
   putStrLn $ "Received an encrypted message, decoding results in: " ++ (show decrypted)
-  putStrLn $ "Composed back to ASCII:" ++ decomposeMessage decrypted
+  putStrLn $ "Composed back to ASCII: " ++ decomposeMessage decrypted
 
 -- | returns a large prime pair based on the bit size
 largePrimePair :: Integer -> IO (Integer,Integer)
