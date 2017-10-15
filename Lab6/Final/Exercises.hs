@@ -168,7 +168,8 @@ firstComposites = [4, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 22, 24, 25, 26, 2
 -- The smallest composite number that passes the test is 9
 -- If k = 1 it runs fast if k = 2 then takes a little longer but comes to the same conclusion. Running k = 5
 -- takes a lot longer and got as low as 15 in one test.
--- When increasing the k-value, the algorithm gets less false positives. The value of the found values decreases
+-- When increasing the k-value, the algorithm gets less false positives.
+-- The value of the found values decreases, as can be seen from the calculated average 'prime' value
 -- =============================================================================
 exercise4 = do
   k1 <- testFer (testFermatKn 1)
@@ -181,7 +182,7 @@ exercise4 = do
   report 5 k5
 
 report :: Integer -> (Integer, Integer) -> IO()
-report n (min,avg) = putStrLn $ "K = " ++ (show n) ++ ", minimum 'prime': " ++ (show min) ++ " can be divied by " ++ (show $ dividers min) ++ ", average value of primes found: " ++ (show avg)
+report n (min,avg) = putStrLn $ "K = " ++ (show n) ++ ", minimum 'prime': " ++ (show min) ++ " can be divided by " ++ (show $ dividers min) ++ ", average value of primes found: " ++ (show avg)
 
 testFer :: IO Integer -> IO (Integer, Integer)
 testFer x = do
