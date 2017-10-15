@@ -183,7 +183,7 @@ testMR k (x:xs) = do
 
 -- =============================================================================
 -- Exercise 6 (2) :: Time spent: +- 15 minutes
--- I manage to get to 31 easily but then the program hangs. I confirmed online that 31 is a Mersenne prime
+-- I manage to get to 607 easily but then the program hangs.
 -- =============================================================================
 exercise62 = do
   let mp =  take 8 [x | x <- primes, prime ((2^x)-1)]
