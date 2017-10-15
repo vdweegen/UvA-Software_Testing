@@ -13,11 +13,11 @@ main = do
     putStrLn "> Exercise 1"
     -- exercise1
     putStrLn "> Exercise 2"
-    exercise2
+    -- exercise2
     putStrLn "> Exercise 3"
     -- exercise3
     putStrLn "> Exercise 4"
-    -- exercise4
+    exercise4
     putStrLn "> Exercise 5"
     -- exercise5
     putStrLn "> Exercise 6 (1)"
@@ -119,7 +119,7 @@ exercise3 = do
   print $ Lab6.composites
 
 composites :: [Integer]
-composites = 2 : filter (not . prime) [3..]
+composites = 4 : filter (not . prime) [3..]
 
 -- =============================================================================
 -- Exercise 4 :: Time spent: +-
