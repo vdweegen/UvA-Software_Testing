@@ -36,8 +36,9 @@ main = do
 -- =============================================================================
 
 exercise1 = do
-  putStrLn $ "checking example. 3^200 mod 50: " ++ (show $ exM 3 200 50)
-  putStrLn $ "compare expM and exM. result equal: " ++ (show $ (exM 3 200 50) == (expM 3 200 50))
+  putStrLn $ "Checking example. 3^200 mod 50: " ++ (show $ exM 3 200 50)
+  putStrLn $ "Compare expM and exM. result equal: " ++ (show $ (exM 3 200 50) == (expM 3 200 50))
+  putStrLn $ "Generating arbitrary amount, using quickCheck"
   quickCheck prop_exm
 
 -- | Copied implementation from exM in the lecture.hs
@@ -48,7 +49,7 @@ exM' b e m | even e = squaredMod 1
             where squaredMod v = v * (exM' b (e `shiftR` 1) m) ^ 2 `mod` m
 
 prop_exm :: (Positive Integer, Positive Integer, Positive Integer) -> Bool
-prop_exm (Positive a, Positive b, Positive c) = exM' a b c == expM a b c
+prop_exm (Positive b, Positive e, Positive m) = exM' b e m == expM b e m
 
 -- =============================================================================
 -- Exercise 2 :: Time spent: +-
