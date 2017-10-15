@@ -114,31 +114,35 @@ composites' = filter (not.prime) [4..]
 -- takes a lot longer and got as low as 15 in one test.
 -- =============================================================================
 exercise4 = do
-  k1Small <- testFer (testFermatKn 1)
-  k2Small <- testFer (testFermatKn 2)
-  k3Small <- testFer (testFermatKn 3)
+  k1 <- testFer (testFermatKn 1)
+  k2 <- testFer (testFermatKn 2)
+  k3 <- testFer (testFermatKn 3)
 
   putStrLn " Exercise 4: Smallest composite number that passes Fermat test"
   putStrLn " K = 1 "
-  print k1Small
+  print k1
   putStrLn " K = 2 "
-  print k2Small
+  print k2
   putStrLn " K = 3 "
-  print k3Small
+  print k3
   
-testFer x =  testFerAvg x
+testFer x = do
+    avg <-  testFerAvg x
+    small <- testFerSmall x
+    return (small , avg)
 
+testFerAvg :: IO Integer -> IO Integer
 testFerAvg tk = do
-  x <- replicateM 10 tk
-  let sorted = (sum x) `div` 10
-  return $  sorted
+  x <- replicateM 100 tk
+  let avg = (sum x) `div` 100
+  return avg
 
 testFerSmall tk = do
-  x <- replicateM 10 tk
+  x <- replicateM 100 tk
   let sorted = sort x
   return $ head sorted
 
-testFermatKn n= foolFermat' n composites
+testFermatKn n = foolFermat' n composites
 
 foolFermat' :: Int -> [Integer] -> IO Integer
 foolFermat' k (x:xs) = do
@@ -206,6 +210,7 @@ testMR k (x:xs) = do
 -- I manage to get to 607 easily but then the program hangs.
 -- =============================================================================
 exercise62 = do
+  print ()
   filterM ((primeMR 1).(\x -> ((2^x) - 1 ))) $ take 150 primes
     
 -- =============================================================================
