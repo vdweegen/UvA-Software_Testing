@@ -5,6 +5,7 @@ where
 
 import Data.List
 import System.Random
+import Data.Bits
 
 factorsNaive :: Integer -> [Integer]
 factorsNaive n0 = factors' n0 2 where
@@ -117,7 +118,7 @@ exM b e m = (product [ squaredMods b m !! a | a <- [0..(genericLength bits)-1], 
 
 int2bin :: Integer -> [Integer]
 int2bin 0 = []
-int2bin n = (mod n 2) : (int2bin $ div n 2)
+int2bin n = (mod n 2) : (int2bin $ shiftR n 1)
 
 -- | Compose the list of modulos
 squaredMods :: Integer -> Integer -> [Integer]
