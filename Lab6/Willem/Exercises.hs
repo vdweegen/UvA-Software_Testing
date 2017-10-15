@@ -63,16 +63,37 @@ composites = filter (not.prime) [3..]
 exercise3 = putStrLn $ show (take 114 Lab6.composites)
 
 -- =============================================================================
--- Exercise 4 :: Time spent: +-
+-- Exercise 4 :: Time spent: 30 mins
 -- =============================================================================
 exercise4 = do
-  print()
+  k1 <- foolsFermat 1 Lab6.composites
+  k2 <- foolsFermat 2 Lab6.composites
+  k3 <- foolsFermat 3 Lab6.composites
+  k4 <- foolsFermat 4 Lab6.composites
+  print(k1)
+  print(k2)
+  print(k3)
+  print(k4)
+
+foolsFermat :: Int -> [Integer] -> IO Integer
+foolsFermat k (c:cs) = do
+                         check <- primeTestsF k c
+                         if check then return c
+                         else foolsFermat k cs
 
 -- =============================================================================
 -- Exercise 5 :: Time spent: +-
 -- =============================================================================
 exercise5 = do
   print()
+
+
+carmichael :: [Integer]
+carmichael = [ (6*k+1)*(12*k+1)*(18*k+1)
+              | k <- [2..],
+              prime (6*k+1),
+              prime (12*k+1),
+              prime (18*k+1) ]
 
 -- =============================================================================
 -- Exercise 6 (1) :: Time spent: +-
