@@ -48,9 +48,9 @@ main = do
 -- =============================================================================
 
 exercise1 = do
-  putStrLn $ "Checking example. 3^200 mod 50: " ++ (show $ exM 3 200 50)
-  putStrLn $ "Compare expM and exM. result equal: " ++ (show $ (exM 3 200 50) == (expM 3 200 50))
-  putStrLn $ "Generating arbitrary amount, using quickCheck"
+  putStrLn $ "Checking example. 3^200 mod 50: " ++ show (exM 3 200 50)
+  putStrLn $ "Compare expM and exM. result equal: " ++ show ((exM 3 200 50) == (expM 3 200 50))
+  putStrLn "Generating arbitrary amount, using quickCheck"
   quickCheck prop_exm
 
 -- | Copied implementation from exM in the lecture.hs
@@ -58,7 +58,7 @@ exM' :: Integer -> Integer -> Integer -> Integer
 exM' b 1 m = b `mod` m
 exM' b e m | even e = squaredMod 1
            | odd e = squaredMod b
-            where squaredMod v = v * (exM' b (e `shiftR` 1) m) ^ 2 `mod` m
+            where squaredMod v = v * exM' b (e `shiftR` 1) m ^ 2 `mod` m
 
 prop_exm :: (Positive Integer, Positive Integer, Positive Integer) -> Bool
 prop_exm (Positive b, Positive e, Positive m) = exM' b e m == expM b e m
@@ -84,7 +84,7 @@ exercise2 = do
 
 reportTime :: String -> Interval -> IO ()
 reportTime str (start,end) = do
-  fprint (timeSpecs) start end
+  fprint timeSpecs start end
   putStrLn $ " when using the " ++ str
 
 profile :: Show a => a -> IO Interval
@@ -97,7 +97,7 @@ profile f = do
 doCalculation' :: (Integer -> Integer -> Integer -> Integer) -> [Integer] -> [Integer] -> [ Integer] ->[[Integer]]
 doCalculation' fn bs es ms = do
   let z = zip3 bs es ms
-  let ys = map (runFn) z
+  let ys = map runFn z
   return ys
   where
     runFn (b, e , m) = fn b e m
@@ -107,8 +107,7 @@ randomValues = replicateM 10 randomInt
 
 randomInt :: IO Integer
 randomInt = do
-    x <- randomRIO (400, 10000 :: Integer)
-    return x
+    randomRIO (400, 10000 :: Integer)
 
 -- =============================================================================
 -- Exercise 3 :: Time spent: +- 5 minutes
@@ -120,13 +119,13 @@ randomInt = do
 
 exercise3 = do
   putStr "Checking composites against known values up to 150: "
-  print $ verifyComposites
+  print verifyComposites
 
 composites' :: [Integer]
 composites' = [ a | a <- [3..], not $ prime a]
 
 verifyComposites :: Bool
-verifyComposites = (takeWhile (<=150) composites) == firstComposites
+verifyComposites = takeWhile (<=150) composites == firstComposites
 
 firstComposites :: [Integer]
 firstComposites = [4, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 22, 24, 25, 26, 27, 28,
@@ -157,7 +156,7 @@ exercise4 = do
   report 5 k5
 
 report :: Integer -> (Integer, Integer) -> IO()
-report n (min,avg) = putStrLn $ "K = " ++ (show n) ++ ", minimum 'prime': " ++ (show min) ++ " can be divided by " ++ (show $ take 3 $ dividers min) ++ ", average value of primes found: " ++ (show avg)
+report n (min,avg) = putStrLn $ "K = " ++ show n ++ ", minimum 'prime': " ++ show min ++ " can be divided by " ++ show (take 3 $ dividers min) ++ ", average value of primes found: " ++ show avg
 
 testFer :: Int -> IO Integer -> IO (Integer, Integer)
 testFer n x = do
@@ -168,7 +167,7 @@ testFer n x = do
 
 testFerAvg, testFerSmall :: [Integer] -> IO Integer
 testFerAvg x = do
-  let avg = (sum x) `div` (genericLength x)
+  let avg = sum x `div` genericLength x
   return avg
 
 testFerSmall x = do
@@ -246,17 +245,17 @@ testMR k (x:xs) = do
 -- =============================================================================
 exercise62 = do
  putStr "Comparing first 10 mersenne primes: "
- calculatedPrimes <- filterM ((primeMR 1).(\x -> ((2^x) - 1 ))) $ take 150 primes
- let primeValues = map (mersenne) calculatedPrimes
- print $ (take 10 primeValues) == (take 10 knownMersennePrimes)
- putStrLn $ ""
+ calculatedPrimes <- filterM (primeMR 1.(\x -> (2^x) - 1)) $ take 150 primes
+ let primeValues = map mersenne calculatedPrimes
+ print $ take 10 primeValues == take 10 knownMersennePrimes
+ putStrLn ""
 
 -- | Known mersenne Numbers
 knownMersennePrimes :: [Integer]
 knownMersennePrimes = [ mers n | n <- [1..25]]
 
 mersenne :: Integer -> Integer
-mersenne = (subtract 1) . (2^)
+mersenne = subtract 1 . (2^)
 -- =============================================================================
 -- Exercise 7 :: Time spent: +- 30 minutes on large prime generator
 -- Additional 2 hours on implementing and refactoring.
@@ -276,7 +275,7 @@ exercise7 = do
 
 -- | composes a message in one hexadeximal value
 composeMessage :: String -> Integer
-composeMessage msg = read $ "0x" ++ (concat $ [ showHex (ord a) ""| a <- msg]) :: Integer
+composeMessage msg = read $ "0x" ++ (concat [ showHex (ord a) ""| a <- msg]) :: Integer
 
 -- | decomposes message back to string
 decomposeMessage :: Integer -> String
@@ -285,18 +284,18 @@ decomposeMessage n = convert (showHex n "")
 -- | Convert hex number to Ascii String
 convert :: String -> String
 convert [] = []
-convert (x1:x2:xs) = [(chr $ (read ("0x" ++ [x1] ++ [x2]) :: Int))] ++ convert xs
+convert (x1:x2:xs) = (chr $ (read ("0x" ++ [x1] ++ [x2]) :: Int)) : convert xs
 
 -- | Encrypt and decrypt a message
 encryptionExample :: String -> IO()
 encryptionExample str = do
   let inputNumber = composeMessage str
-  putStrLn $ "Composed message to single hex number: " ++ (show inputNumber)
+  putStrLn $ "Composed message to single hex number: " ++ show inputNumber
   (p,q) <- largePrimePair $ Lab6.bitSize inputNumber
   let encrypted = rsaEncode (rsaPublic p q) inputNumber
-  putStrLn $ "Encrypted message: " ++ (show encrypted)
+  putStrLn $ "Encrypted message: " ++ show encrypted
   let decrypted = rsaDecode (rsaPrivate p q) encrypted
-  putStrLn $ "Received an encrypted message, decoding results in: " ++ (show decrypted)
+  putStrLn $ "Received an encrypted message, decoding results in: " ++ show decrypted
   putStrLn $ "Composed back to ASCII:" ++ decomposeMessage decrypted
 
 -- | returns a large prime pair based on the bit size
@@ -313,7 +312,7 @@ bitSize = genericLength . int2bin
 -- | Compose integer as list of bits [LSB .. MSB ]
 int2bin :: Integer -> [Integer]
 int2bin 0 = []
-int2bin n = (mod n 2) : (int2bin $ shiftR n 1)
+int2bin n = mod n 2 : int2bin (shiftR n 1)
 
 -- | Given a start value, finds the closest prime above
 findPrime :: Integer -> IO Integer
