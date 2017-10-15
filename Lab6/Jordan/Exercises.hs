@@ -1,6 +1,6 @@
 module Lab6 where
 
-import Control.Monad 
+import Control.Monad
 import Lecture6
 import Data.List
 import Data.Bits
@@ -36,7 +36,7 @@ main = do
 -- =============================================================================
 -- Exercise 1 :: Time spent: +- 5 hours
 -- While implementing multiple versions of the exM function I came acros a package
--- that implemented the function if the squaring method. 
+-- that implemented the function if the squaring method.
 -- =============================================================================
 
 exercise1 = do
@@ -49,14 +49,14 @@ exM' b e m = loop e b 1
     where sq x          = (x * x) `mod` m
           loop 0 _  a = a `mod` m
           loop i s a = loop (i `shiftR` 1) (sq s) (if odd i then a * s else a)
-  
+
 exM'' 0 _ m = 1 `mod` m
 exM'' b e m = f e b 1
-      where 
+      where
         f e' b' r | e' <= 0 = r
                 | ((e' `mod` 2) == 1) = f (e' `shiftR` 1) ((b' * b') `mod` m) ((r * b') `mod` m)
                 | otherwise = f (e' `shiftR` 1) ((b' * b') `mod` m) (r)
- 
+
 -- =============================================================================
 -- Exercise 2 :: Time spent: +- 2 hours
 -- A fair test should apply the same inputs to each function
@@ -72,8 +72,12 @@ exercise2 = do
     start' <- getTime Monotonic
     print $ doCalculation' expM bs es ms
     end' <- getTime Monotonic
+    putStrLn "Improved code:"
     fprint (timeSpecs) start end
+    putStrLn ""
+    putStrLn "Original code:"
     fprint (timeSpecs) start' end'
+    putStrLn ""
 
 
 doCalculation = do
@@ -88,9 +92,9 @@ doCalculation' fn bs es ms = do
   let z = zip3 bs es ms
   let ys = map (runFn) z
   return ys
-  where 
+  where
     runFn (b, e , m) = fn b e m
-  
+
 
 randomInt = do
     x <- randomRIO (0, 10000 :: Int)
@@ -124,7 +128,7 @@ exercise4 = do
   print k2
   putStrLn " K = 3 "
   print k3
-  
+
 testFer x = do
     avg <-  testFerAvg x
     small <- testFerSmall x
@@ -172,10 +176,10 @@ exercise5 = do
 testFermatCarmichaelKn n= foolFermat' n carmichael
 
 carmichael :: [Integer]
-carmichael = [ (6*k+1)*(12*k+1)*(18*k+1) | 
-          k <- [2..], 
-          prime (6*k+1), 
-          prime (12*k+1), 
+carmichael = [ (6*k+1)*(12*k+1)*(18*k+1) |
+          k <- [2..],
+          prime (6*k+1),
+          prime (12*k+1),
           prime (18*k+1) ]
 
 -- =============================================================================
@@ -202,7 +206,7 @@ testMR k (x:xs) = do
     if z then
       return x
     else
-      testMR k xs  
+      testMR k xs
 
 -- =============================================================================
 -- Exercise 6 (2) :: Time spent: +- 15 minutes
@@ -211,7 +215,7 @@ testMR k (x:xs) = do
 exercise62 = do
   print ()
   filterM ((primeMR 1).(\x -> ((2^x) - 1 ))) $ take 150 primes
-    
+
 -- =============================================================================
 -- Exercise 7 :: Time spent: +-
 -- =============================================================================
