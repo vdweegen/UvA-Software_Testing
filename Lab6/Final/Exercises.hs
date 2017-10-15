@@ -25,11 +25,24 @@ main = do
     exercise7
 
 -- =============================================================================
--- Exercise 1 :: Time spent: +-
+-- Exercise 1 :: Time spent: +- 2 hours
+-- First looked up the example on youtube.
+-- Then fixed the implementation using the 'div' method.
+-- When merging final solutions, some used the shiftR which is faster than div
+-- Modified the solution. The implementation is shown here as exM', equal to exM in the lecture
 -- =============================================================================
 
 exercise1 = do
-  print()
+  putStrLn $ "checking example. 3^200 mod 50: " ++ (show $ exM 3 200 50)
+  putStrLn $ "compare expM and exM. result equal: " ++ (show $ (exM 3 200 50) == (expM 3 200 50))
+
+
+-- | Copied implementation from exM in the lecture.hs
+exM' :: Integer -> Integer -> Integer -> Integer
+exM' b 1 m = b `mod` m
+exM' b e m | even e = squaredMod 1
+           | odd e = squaredMod b
+            where squaredMod v = v * (exM' b (e `shiftR` 1) m) ^ 2 `mod` m
 
 -- =============================================================================
 -- Exercise 2 :: Time spent: +-
