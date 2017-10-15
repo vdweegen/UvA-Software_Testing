@@ -172,9 +172,9 @@ firstComposites = [4, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 22, 24, 25, 26, 2
 -- The value of the found values decreases, as can be seen from the calculated average 'prime' value
 -- =============================================================================
 exercise4 = do
-  k1 <- testFer 10 (testFermatKn 1)
-  k2 <- testFer 10 (testFermatKn 2)
-  k5 <- testFer 10 (testFermatKn 5)
+  k1 <- testFer 1 (testFermatKn 1)
+  k2 <- testFer 1 (testFermatKn 2)
+  k5 <- testFer 1 (testFermatKn 5)
 
   putStrLn " Exercise 4: Smallest composite number that passes Fermat test"
   report 1 k1
@@ -182,22 +182,23 @@ exercise4 = do
   report 5 k5
 
 report :: Integer -> (Integer, Integer) -> IO()
-report n (min,avg) = putStrLn $ "K = " ++ (show n) ++ ", minimum 'prime': " ++ (show min) ++ " can be divided by for example:" ++ (show $ take 3 $ dividers min) ++ ", average value of primes found: " ++ (show avg)
+report n (min,avg) = putStrLn $ "K = " ++ (show n) ++ ", minimum 'prime': " ++ (show min) ++ " can be divided by " ++ (show $ dividers min) ++ ", average value of primes found: " ++ (show avg)
 
 testFer :: Int -> IO Integer -> IO (Integer, Integer)
 testFer n x = do
-    small <- testFerSmall n x
-    avg <-  testFerAvg n x
+    x <- replicateM n x
+    avg <-  testFerAvg x
+    small <- testFerSmall x
+
     return (small , avg)
 
-testFerAvg, testFerSmall :: Int -> IO Integer -> IO Integer
-testFerAvg n tk = do
-  x <- replicateM n tk
+testFerAvg, testFerSmall :: [Integer] -> IO Integer
+testFerAvg x = do
   let avg = (sum x) `div` (genericLength x)
+  print avg
   return avg
 
-testFerSmall n tk = do
-  x <- replicateM n tk
+testFerSmall x = do
   let sorted = sort x
   return $ head sorted
 
