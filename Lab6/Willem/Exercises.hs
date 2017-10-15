@@ -2,6 +2,7 @@ module Lab6 where
 
 import Lecture6
 import System.Clock
+import Test.QuickCheck
 
 -- Define Main --
 main = do
@@ -31,6 +32,10 @@ main = do
 
 exercise1 = do
     print(exM 123 33 5)
+    quickCheck prop_exm
+
+prop_exm :: (Positive Integer, Positive Integer, Positive Integer) -> Bool
+prop_exm (Positive a, Positive b, Positive c) = exM a b c == expM a b c
 
 -- =============================================================================
 -- Exercise 2 :: Time spent: +-
