@@ -50,6 +50,13 @@ exM' b e m = loop e b 1
           loop 0 _  a = a `mod` m
           loop i s a = loop (i `shiftR` 1) (sq s) (if odd i then a * s else a)
   
+exM'' 0 _ m = 1 `mod` m
+exM'' b e m = f e b 1
+      where 
+        f e' b' r | e' <= 0 = r
+                | ((e' `mod` 2) == 1) = f (e' `shiftR` 1) ((b' * b') `mod` m) ((r * b') `mod` m)
+                | otherwise = f (e' `shiftR` 1) ((b' * b') `mod` m) (r)
+ 
 -- =============================================================================
 -- Exercise 2 :: Time spent: +- 2 hours
 -- A fair test should apply the same inputs to each function
