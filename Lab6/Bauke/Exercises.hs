@@ -205,6 +205,7 @@ mrPrimes = filterMIO (primeMR 5) [1..]
 knownMersennePrimes :: [Integer]
 knownMersennePrimes = [ mers n | n <- [1..25]]
 
+mersenne :: Integer -> Integer
 mersenne = (subtract 1) . (2^)
 
 normalPrimes :: [Integer]
