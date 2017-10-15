@@ -10,6 +10,7 @@ import System.Random
 import Formatting
 import Formatting.Clock
 import System.Clock
+import Control.Monad
 -- Define Main --
 main = do
     putStrLn "===================="
@@ -104,8 +105,12 @@ exercise4 = do
   k1 <- testFer (testFermatKn 1)
   k2 <- testFer (testFermatKn 2)
   k3 <- testFer (testFermatKn 3)
+  putStrLn " Exercise 4: Smallest composite number that passes Fermat test"
+  putStrLn " K = 1 "
   print k1
+  putStrLn " K = 2 "
   print k2
+  putStrLn " K = 3 "
   print k3
   
 testFer tk = do
@@ -133,8 +138,12 @@ exercise5 = do
   k1 <- testFer (testFermatCarmichaelKn 1)
   k2 <- testFer (testFermatCarmichaelKn 2)
   k3 <- testFer (testFermatCarmichaelKn 3)
+  putStrLn " Exercise 5: Smallest number in J. Chernick's subset of carmichael numbers that passes Fermat test"
+  putStrLn " K = 1 "
   print k1
+  putStrLn " K = 2 "
   print k2
+  putStrLn " K = 3 "
   print k3
 
 testFermatCarmichaelKn n= foolFermat' n carmichael
@@ -147,17 +156,39 @@ carmichael = [ (6*k+1)*(12*k+1)*(18*k+1) |
           prime (18*k+1) ]
 
 -- =============================================================================
--- Exercise 6 (1) :: Time spent: +-
+-- Exercise 6 (1) :: Time spent: +- 30 min
+-- The numbers are much larger but the Miller-Rabin primality check does get fooled.
 -- =============================================================================
 exercise6 = do
-  print()
+  k1 <- testFer (testMRKn 1)
+  k2 <- testFer (testMRKn 2)
+  k3 <- testFer (testMRKn 3)
+  putStrLn " Exercise 6: Smallest number in J. Chernick's subset of carmichael numbers that passes Miller-Rabin"
+  putStrLn " K = 1 "
+  print k1
+  putStrLn " K = 2 "
+  print k2
+  putStrLn " K = 3 "
+  print k3
+
+testMRKn n = testMR n carmichael
+
+testMR :: Int -> [Integer] -> IO Integer
+testMR k (x:xs) = do
+    z <- primeMR k x
+    if z then
+      return x
+    else
+      testMR k xs  
 
 -- =============================================================================
--- Exercise 6 (2) :: Time spent: +-
+-- Exercise 6 (2) :: Time spent: +- 15 minutes
+-- I manage to get to 31 easily but then the program hangs. I confirmed online that 31 is a Mersenne prime
 -- =============================================================================
 exercise62 = do
-  print()
-
+  let mp =  take 8 [x | x <- primes, prime ((2^x)-1)]
+  filterM ((primeMR 1).(\x -> ((2^x) - 1 ))) $ take 150 primes
+    
 -- =============================================================================
 -- Exercise 7 :: Time spent: +-
 -- =============================================================================
