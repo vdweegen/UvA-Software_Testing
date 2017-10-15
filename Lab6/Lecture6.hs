@@ -110,18 +110,18 @@ coprimes = filter (uncurry coprime) pairs
 expM ::  Integer -> Integer -> Integer -> Integer
 expM x y = rem (x^y)
 
--- exM :: Integer -> Integer -> Integer -> Integer
--- exM = expM -- to be replaced by a fast version
+exM :: Integer -> Integer -> Integer -> Integer
+exM = expM -- to be replaced by a fast version
 
 primeTestF :: Integer -> IO Bool
 primeTestF n = do
    a <- randomRIO (2, n-1) :: IO Integer
-   return (exM a (n-1) n == 1)
+   return (Lecture6.exM a (n-1) n == 1)
 
 primeTestsF :: Int -> Integer -> IO Bool
 primeTestsF k n = do
  as <- sequence $ fmap (\_-> randomRIO (2,n-1)) [1..k]
- return (all (\ a -> exM a (n-1) n == 1) as)
+ return (all (\ a -> Lecture6.exM a (n-1) n == 1) as)
 
 decomp :: Integer -> (Integer,Integer)
 decomp n0 = decomp' (0,n0) where
@@ -131,16 +131,16 @@ mrComposite :: Integer -> Integer -> Bool
 mrComposite x n = let
     (r,s) = decomp (n-1)
     fs     = takeWhile (/= 1)
-       (map (\ j -> exM x (2^j*s) n)  [0..r])
+       (map (\ j -> Lecture6.exM x (2^j*s) n)  [0..r])
   in
-    exM x s n /= 1 && last fs /= (n-1)
+    Lecture6.exM x s n /= 1 && last fs /= (n-1)
 
 primeMR :: Int -> Integer -> IO Bool
 primeMR _ 2 = return True
 primeMR 0 _ = return True
 primeMR k n = do
     a <- randomRIO (2, n-1) :: IO Integer
-    if exM a (n-1) n /= 1 || mrComposite a n
+    if Lecture6.exM a (n-1) n /= 1 || mrComposite a n
     then return False else primeMR (k-1) n
 
 composites :: [Integer]
@@ -151,7 +151,7 @@ encodeDH p k m = m*k `mod` p
 
 decodeDH :: Integer -> Integer -> Integer -> Integer -> Integer
 decodeDH p ga b c = let
-    gab' = exM ga ((p-1)-b) p
+    gab' = Lecture6.exM ga ((p-1)-b) p
   in
     rem (c*gab') p
 
@@ -160,7 +160,7 @@ encode p k m = let
    p' = p-1
    e  = head [ x | x <- [k..], gcd x p' == 1 ]
  in
-   exM m e p
+   Lecture6.exM m e p
 
 decode :: Integer -> Integer -> Integer -> Integer
 decode p k m = let
@@ -168,7 +168,7 @@ decode p k m = let
    e  = head [ x | x <- [k..], gcd x p' == 1 ]
    d  = invM e p'
  in
-   exM m d p
+   Lecture6.exM m d p
 
 cipher :: Integer -> Integer
 cipher = encode secret bound
@@ -203,7 +203,7 @@ rsaPrivate p q = let
    (d,p*q)
 
 rsaEncode :: (Integer,Integer) -> Integer -> Integer
-rsaEncode (e,n) m =  exM m e n
+rsaEncode (e,n) m =  Lecture6.exM m e n
 
 rsaDecode :: (Integer,Integer) -> Integer -> Integer
 rsaDecode = rsaEncode
