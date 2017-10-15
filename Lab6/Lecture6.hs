@@ -1,8 +1,7 @@
 
-module Lecture6
+module Lecture6 where
 
-where
-
+import Data.Bits
 import System.Random
 
 factorsNaive :: Integer -> [Integer]
@@ -111,7 +110,10 @@ expM ::  Integer -> Integer -> Integer -> Integer
 expM x y = rem (x^y)
 
 exM :: Integer -> Integer -> Integer -> Integer
-exM = expM -- to be replaced by a fast version
+exM b 1 m = b `mod` m
+exM b e m | even e = squaredMod 1
+          | odd e = squaredMod b
+            where squaredMod v = v * (exM b (e `shiftR` 1) m) ^ 2 `mod` m
 
 primeTestF :: Integer -> IO Bool
 primeTestF n = do
