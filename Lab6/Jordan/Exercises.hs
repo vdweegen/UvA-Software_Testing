@@ -63,29 +63,25 @@ exM'' b e m = f e b 1
 -- It first generate 3 list of input and use them with both functions
 -- =============================================================================
 exercise2 = do
-    bs <- replicateM  10 (randomRIO (400, 10000 :: Integer))
-    es <- replicateM  10 (randomRIO (400, 10000 :: Integer))
-    ms <- replicateM  10 (randomRIO (400, 10000 :: Integer))
-    start <- getTime Monotonic
-    print $ doCalculation' exM'' bs es ms
-    end <- getTime Monotonic
-    start' <- getTime Monotonic
-    print $ doCalculation' expM bs es ms
-    end' <- getTime Monotonic
-    putStrLn "Improved code:"
-    fprint (timeSpecs) start end
-    putStrLn ""
-    putStrLn "Original code:"
-    fprint (timeSpecs) start' end'
-    putStrLn ""
+    bs <- runRepl
+    es <- runRepl
+    ms <- runRepl
+    package <- doRun (doCalculation' exM'' bs es ms)
+    ownImplementation <- doRun (doCalculation' exM' bs es ms)
+    standardImplementation <- doRun (doCalculation' exM bs es ms)
+    reportTime "package variant" package
+    reportTime "optimized variant" ownImplementation
+    reportTime "standard implementation" standardImplementation
 
+reportTime str (start,end) = do
+  fprint (timeSpecs) start end
+  putStrLn $ " when using the " ++ str
 
-doCalculation = do
-  b <- randomRIO (1, 10000)
-  e <- randomRIO (1, 10000)
-  m <- randomRIO (1, 10000)
-  evaluate (exM b e m)
-
+doRun f = do
+  start <- getTime Monotonic
+  print f
+  end <- getTime Monotonic
+  return (start,end)
 
 doCalculation' :: (Integer -> Integer -> Integer -> Integer) -> [Integer] -> [Integer] -> [ Integer] ->[[Integer]]
 doCalculation' fn bs es ms = do
@@ -95,11 +91,11 @@ doCalculation' fn bs es ms = do
   where
     runFn (b, e , m) = fn b e m
 
+runRepl = replicateM 10 randomInt
 
 randomInt = do
-    x <- randomRIO (0, 10000 :: Int)
+    x <- randomRIO (400, 10000 :: Integer)
     return x
-
 -- =============================================================================
 -- Exercise 3 :: Time spent: +- 20 minutes
 -- Since every whole number over 1 is either a composite number or a prime number
