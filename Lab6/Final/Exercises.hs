@@ -172,9 +172,9 @@ firstComposites = [4, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 22, 24, 25, 26, 2
 -- The value of the found values decreases, as can be seen from the calculated average 'prime' value
 -- =============================================================================
 exercise4 = do
-  k1 <- testFer (testFermatKn 1)
-  k2 <- testFer (testFermatKn 2)
-  k5 <- testFer (testFermatKn 5)
+  k1 <- testFer 1 (testFermatKn 1)
+  k2 <- testFer 1 (testFermatKn 2)
+  k5 <- testFer 1 (testFermatKn 5)
 
   putStrLn " Exercise 4: Smallest composite number that passes Fermat test"
   report 1 k1
@@ -184,21 +184,20 @@ exercise4 = do
 report :: Integer -> (Integer, Integer) -> IO()
 report n (min,avg) = putStrLn $ "K = " ++ (show n) ++ ", minimum 'prime': " ++ (show min) ++ " can be divided by " ++ (show $ dividers min) ++ ", average value of primes found: " ++ (show avg)
 
-testFer :: IO Integer -> IO (Integer, Integer)
-testFer x = do
-    avg <-  testFerAvg x
-    small <- testFerSmall x
+testFer :: Int -> IO Integer -> IO (Integer, Integer)
+testFer n x = do
+    avg <-  testFerAvg n x
+    small <- testFerSmall n x
     return (small , avg)
 
-testFerAvg :: IO Integer -> IO Integer
-testFerAvg tk = do
-  x <- replicateM 100 tk
-  let avg = (sum x) `div` 100
+testFerAvg, testFerSmall :: Int -> IO Integer -> IO Integer
+testFerAvg n tk = do
+  x <- replicateM n tk
+  let avg = (sum x) `div` (genericLength x)
   return avg
 
-testFerSmall :: (Monad m, Ord b) => m b -> m b
-testFerSmall tk = do
-  x <- replicateM 100 tk
+testFerSmall n tk = do
+  x <- replicateM n tk
   let sorted = sort x
   return $ head sorted
 
