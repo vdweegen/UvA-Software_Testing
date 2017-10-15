@@ -30,6 +30,7 @@ main = do
 -- Then fixed the implementation using the 'div' method.
 -- When merging final solutions, some used the shiftR which is faster than div
 -- Modified the solution. The implementation is shown here as exM', equal to exM in the lecture
+-- To verify the results over a larger range, we used quickCheck to generate some examples
 -- =============================================================================
 
 exercise1 = do

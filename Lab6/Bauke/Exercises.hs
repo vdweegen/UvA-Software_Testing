@@ -240,6 +240,7 @@ convert :: String -> String
 convert [] = []
 convert (x1:x2:xs) = [(chr $ (read ("0x" ++ [x1] ++ [x2]) :: Int))] ++ convert xs
 
+-- | Encrypt and decrypt a message 
 encryptionExample :: String -> IO()
 encryptionExample str = do
   let inputNumber = composeMessage str
