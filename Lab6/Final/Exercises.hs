@@ -1,13 +1,17 @@
 module Lab6 where
 
 import Lecture6
+import Numeric
+
+import Control.Monad
 
 import Data.Bits
 import Data.Char
 import Data.List
-import Numeric
+
 import System.Clock
 import System.Random
+
 import Test.QuickCheck
 
 -- Define Main --
@@ -109,7 +113,7 @@ prop_exm (Positive b, Positive e, Positive m) = exM' b e m == expM b e m
 -- Improved code 100000 primes: TimeSpec {sec = 2, nsec = 651626570}
 -- =============================================================================
 exercise2 = do
-  let n = 100000
+  let n = 20000
   testOriginal <- testTime $ mapM primeTest (take n primes)
   print $ "Testing " ++ (show n) ++ " primes with original code"
   print $ testOriginal
@@ -138,6 +142,7 @@ primeTest n = do
 -- These are exactly equal
 -- Again, composites' is posted here as a copy from the lecture
 -- =============================================================================
+
 exercise3 = do
   putStr "Checking composites against known values up to 150: "
   print $ verifyComposites
@@ -159,22 +164,111 @@ firstComposites = [4, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 22, 24, 25, 26, 2
                    145, 146, 147, 148, 150]
 
 -- =============================================================================
--- Exercise 4 :: Time spent: +-
+-- Exercise 4 :: Time spent: +- 1 hour
+-- The smallest composite number that passes the test is 9
+-- If k = 1 it runs fast if k = 2 then takes a little longer but comes to the same conclusion. Running k = 5
+-- takes a lot longer and got as low as 15 in one test.
+-- When increasing the k-value, the algorithm gets less false positives. The value of the found values decreases
 -- =============================================================================
 exercise4 = do
-  print()
+  k1 <- testFer (testFermatKn 1)
+  k2 <- testFer (testFermatKn 2)
+  k5 <- testFer (testFermatKn 5)
+
+  putStrLn " Exercise 4: Smallest composite number that passes Fermat test"
+  report 1 k1
+  report 2 k2
+  report 5 k5
+
+report :: Integer -> (Integer, Integer) -> IO()
+report n (min,avg) = putStrLn $ "K = " ++ (show n) ++ ", minimum 'prime': " ++ (show min) ++ " can be divied by " ++ (show $ dividers min) ++ ", average value of primes found: " ++ (show avg)
+
+testFer :: IO Integer -> IO (Integer, Integer)
+testFer x = do
+    avg <-  testFerAvg x
+    small <- testFerSmall x
+    return (small , avg)
+
+testFerAvg :: IO Integer -> IO Integer
+testFerAvg tk = do
+  x <- replicateM 100 tk
+  let avg = (sum x) `div` 100
+  return avg
+
+testFerSmall :: (Monad m, Ord b) => m b -> m b
+testFerSmall tk = do
+  x <- replicateM 100 tk
+  let sorted = sort x
+  return $ head sorted
+
+testFermatKn :: Int -> IO Integer
+testFermatKn n = foolFermat' n composites
+
+foolFermat' :: Int -> [Integer] -> IO Integer
+foolFermat' k (x:xs) = do
+    z <- primeTestsF k x
+    if z then
+      return x
+    else
+      foolFermat' k xs
+
+-- | an empty list is returned for every prime, otherwise the list of dividers
+dividers :: Integer -> [Integer]
+dividers n = [ a | a <- [2..n-1], n `rem` a == 0 ]
+
 
 -- =============================================================================
--- Exercise 5 :: Time spent: +-
+-- Exercise 5 :: Time spent: +- 2 hours
+-- This function uses J. Chernick's theorem to construct a subset of carmichael numbers.
+-- The fermat test is easily by the first 2 numbers produced by the carmichael function
 -- =============================================================================
 exercise5 = do
-  print()
+  k1 <- testFer (testFermatCarmichaelKn 1)
+  k2 <- testFer (testFermatCarmichaelKn 2)
+  k3 <- testFer (testFermatCarmichaelKn 3)
+  putStrLn " Exercise 5: Smallest number in J. Chernick's subset of carmichael numbers that passes Fermat test"
+  putStrLn " K = 1 "
+  print k1
+  putStrLn " K = 2 "
+  print k2
+  putStrLn " K = 3 "
+  print k3
+
+testFermatCarmichaelKn n= foolFermat' n carmichael
+
+carmichael :: [Integer]
+carmichael = [ (6*k+1)*(12*k+1)*(18*k+1) |
+          k <- [2..],
+          prime (6*k+1),
+          prime (12*k+1),
+          prime (18*k+1) ]
 
 -- =============================================================================
--- Exercise 6 (1) :: Time spent: +-
+-- Exercise 6 (1) :: Time spent: +- 30 min
+-- The numbers are much larger but the Miller-Rabin primality check does get fooled.
 -- =============================================================================
 exercise6 = do
-  print()
+  k1 <- testFer (testMRKn 1)
+  k2 <- testFer (testMRKn 2)
+  k3 <- testFer (testMRKn 3)
+  putStrLn " Exercise 6: Smallest number in J. Chernick's subset of carmichael numbers that passes Miller-Rabin"
+  putStrLn " K = 1 "
+  print k1
+  putStrLn " K = 2 "
+  print k2
+  putStrLn " K = 3 "
+  print k3
+
+testMRKn n = testMR n carmichael
+
+testMR :: Int -> [Integer] -> IO Integer
+testMR k (x:xs) = do
+    z <- primeMR k x
+    if z then
+      return x
+    else
+      testMR k xs
+
 
 -- =============================================================================
 -- Exercise 6 (2) :: Time spent: +-
