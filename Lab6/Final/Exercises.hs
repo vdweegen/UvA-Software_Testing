@@ -281,7 +281,7 @@ exercise62 = do
 
 -- | Finds the primes yielding a mersenne primes
 findMersenneNumbers :: IO [Integer]
-findMersenneNumbers = filterM ((primeMR 1).(\x -> ((2^x) - 1 ))) $ takeWhile (<2000) primes
+findMersenneNumbers = filterM ((primeMR 1).(\x -> mersenne x)) $ takeWhile (<2000) primes
 
 -- | Known mersenne Numbers
 knownMersennePrimes :: [Integer]
