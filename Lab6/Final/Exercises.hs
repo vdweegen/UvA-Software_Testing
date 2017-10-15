@@ -223,18 +223,15 @@ dividers n = [ a | a <- [2..n-1], n `rem` a == 0 ]
 -- The fermat test is easily by the first 2 numbers produced by the carmichael function
 -- =============================================================================
 exercise5 = do
-  k1 <- testFer (testFermatCarmichaelKn 1)
-  k2 <- testFer (testFermatCarmichaelKn 2)
-  k3 <- testFer (testFermatCarmichaelKn 3)
+  k1 <- testFer 5 (testFermatCarmichaelKn 1)
+  k2 <- testFer 5 (testFermatCarmichaelKn 2)
+  k5 <- testFer 5 (testFermatCarmichaelKn 3)
   putStrLn " Exercise 5: Smallest number in J. Chernick's subset of carmichael numbers that passes Fermat test"
-  putStrLn " K = 1 "
-  print k1
-  putStrLn " K = 2 "
-  print k2
-  putStrLn " K = 3 "
-  print k3
+  report 1 k1
+  report 2 k2
+  report 5 k5
 
-testFermatCarmichaelKn n= foolFermat' n carmichael
+testFermatCarmichaelKn n = foolFermat' n carmichael
 
 carmichael :: [Integer]
 carmichael = [ (6*k+1)*(12*k+1)*(18*k+1) |
@@ -248,16 +245,13 @@ carmichael = [ (6*k+1)*(12*k+1)*(18*k+1) |
 -- The numbers are much larger but the Miller-Rabin primality check does get fooled.
 -- =============================================================================
 exercise6 = do
-  k1 <- testFer (testMRKn 1)
-  k2 <- testFer (testMRKn 2)
-  k3 <- testFer (testMRKn 3)
+  k1 <- testFer 5 (testMRKn 1)
+  k2 <- testFer 5 (testMRKn 2)
+  k5 <- testFer 5 (testMRKn 5)
   putStrLn " Exercise 6: Smallest number in J. Chernick's subset of carmichael numbers that passes Miller-Rabin"
-  putStrLn " K = 1 "
-  print k1
-  putStrLn " K = 2 "
-  print k2
-  putStrLn " K = 3 "
-  print k3
+  report 1 k1
+  report 2 k2
+  report 5 k5
 
 testMRKn n = testMR n carmichael
 
