@@ -172,9 +172,9 @@ firstComposites = [4, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 22, 24, 25, 26, 2
 -- The value of the found values decreases, as can be seen from the calculated average 'prime' value
 -- =============================================================================
 exercise4 = do
-  k1 <- testFer 1 (testFermatKn 1)
-  k2 <- testFer 1 (testFermatKn 2)
-  k5 <- testFer 1 (testFermatKn 5)
+  k1 <- testFer 10 (testFermatKn 1)
+  k2 <- testFer 10 (testFermatKn 2)
+  k5 <- testFer 10 (testFermatKn 5)
 
   putStrLn " Exercise 4: Smallest composite number that passes Fermat test"
   report 1 k1
@@ -182,12 +182,12 @@ exercise4 = do
   report 5 k5
 
 report :: Integer -> (Integer, Integer) -> IO()
-report n (min,avg) = putStrLn $ "K = " ++ (show n) ++ ", minimum 'prime': " ++ (show min) ++ " can be divided by " ++ (show $ dividers min) ++ ", average value of primes found: " ++ (show avg)
+report n (min,avg) = putStrLn $ "K = " ++ (show n) ++ ", minimum 'prime': " ++ (show min) ++ " can be divided by for example:" ++ (show $ take 3 $ dividers min) ++ ", average value of primes found: " ++ (show avg)
 
 testFer :: Int -> IO Integer -> IO (Integer, Integer)
 testFer n x = do
-    avg <-  testFerAvg n x
     small <- testFerSmall n x
+    avg <-  testFerAvg n x
     return (small , avg)
 
 testFerAvg, testFerSmall :: Int -> IO Integer -> IO Integer
@@ -245,9 +245,9 @@ carmichael = [ (6*k+1)*(12*k+1)*(18*k+1) |
 -- The numbers are much larger but the Miller-Rabin primality check does get fooled.
 -- =============================================================================
 exercise6 = do
-  k1 <- testFer 5 (testMRKn 1)
-  k2 <- testFer 5 (testMRKn 2)
-  k5 <- testFer 5 (testMRKn 5)
+  k1 <- testFer 1 (testMRKn 1)
+  k2 <- testFer 1 (testMRKn 2)
+  k5 <- testFer 1 (testMRKn 3) -- | NO counter values for K = 5
   putStrLn " Exercise 6: Smallest number in J. Chernick's subset of carmichael numbers that passes Miller-Rabin"
   report 1 k1
   report 2 k2
@@ -257,11 +257,11 @@ testMRKn n = testMR n carmichael
 
 testMR :: Int -> [Integer] -> IO Integer
 testMR k (x:xs) = do
-    z <- primeMR k x
-    if z then
-      return x
-    else
-      testMR k xs
+  z <- primeMR k x
+  if z then
+    return x
+  else
+    testMR k xs
 
 
 -- =============================================================================
@@ -332,6 +332,7 @@ int2bin n = (mod n 2) : (int2bin $ shiftR n 1)
 findPrime :: Integer -> IO Integer
 findPrime val = do
   prime <- primeMR 5 val
-  if prime
-  then return val
-  else findPrime (val+1)
+  if prime then
+    return val
+  else
+    findPrime (val+1)
