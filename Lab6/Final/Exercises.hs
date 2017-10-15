@@ -242,6 +242,7 @@ carmichael = [ (6*k+1)*(12*k+1)*(18*k+1) |
 -- =============================================================================
 -- Exercise 6 (1) :: Time spent: +- 30 min
 -- The numbers are much larger but the Miller-Rabin primality check does get fooled.
+-- When using K factor 5, no counter examples were found, even running for very long periods of time.
 -- =============================================================================
 exercise6 = do
   k1 <- testFer 1 (testMRKn 1)
@@ -264,11 +265,30 @@ testMR k (x:xs) = do
 
 
 -- =============================================================================
--- Exercise 6 (2) :: Time spent: +-
+-- Exercise 6 (2) :: Time spent: +- 1 hour
+-- Finding a list of mersenneprimes
+-- Using the miller rabin primes, this is much faster than the algorithm using the normal prime
 -- =============================================================================
 exercise62 = do
-  print()
+ let n = 10
+ putStr $ "Comparing first " ++ (show n) ++ " mersenne primes: "
+ calculatedPrimes <- findMersenneNumbers
+ let primeValues = take n calculatedPrimes
+ let mersenneValues = map (mersenne) calculatedPrimes
+ print $ primeValues == (take n knownMersennePrimes)
+ putStrLn $ "Primes: " ++ (show primeValues)
+ putStrLn $ "Mersennes: " ++ (show mersenneValues)
 
+-- | Finds the primes yielding a mersenne primes
+findMersenneNumbers :: IO [Integer]
+findMersenneNumbers = filterM ((primeMR 1).(\x -> ((2^x) - 1 ))) $ takeWhile (<2000) primes
+
+-- | Known mersenne Numbers
+knownMersennePrimes :: [Integer]
+knownMersennePrimes = [ mers n | n <- [1..25]]
+
+mersenne :: Integer -> Integer
+mersenne = (subtract 1) . (2^)
 -- =============================================================================
 -- Exercise 7 :: Time spent: +- 30 minutes on large prime generator
 -- Additional 2 hours on implementing and refactoring.
@@ -308,7 +328,7 @@ encryptionExample str = do
   let encrypted = rsaEncode (rsaPublic p q) inputNumber
   putStrLn $ "Encrypted message: " ++ (show encrypted)
   let decrypted = rsaDecode (rsaPrivate p q) encrypted
-  putStrLn $ "Received an encrypted message, decoding result in: " ++ (show decrypted)
+  putStrLn $ "Received an encrypted message, decoding results in: " ++ (show decrypted)
   putStrLn $ "Composed back to ASCII:" ++ decomposeMessage decrypted
 
 -- | returns a large prime pair based on the bit size
