@@ -105,13 +105,15 @@ prop_exm (Positive b, Positive e, Positive m) = exM' b e m == expM b e m
 -- Profiling results gave me a line that I needed to fix, which resulted into the
 -- following results:
 -- Improved code 100000 primes: TimeSpec {sec = 2, nsec = 651626570}
+-- Note: In order to correctly profile the function, execute :set +r on the commandline, to disable caching
 -- =============================================================================
 exercise2 = do
-  -- testOriginal <- testTime $ mapM primeTestF (take 100000 primes)
-  -- print $ "Testing 100000 primes with original code"
-  -- print $ testOriginal
-  testRefactored <- testTime $ mapM primeTest (take 100000 primes)
-  print $ "Testing 100000 primes with improved code"
+  let n = 100000
+  testOriginal <- testTime $ mapM primeTestF (take n primes)
+  print $ "Testing " ++ (show n) ++ " primes with original code"
+  print $ testOriginal
+  testRefactored <- testTime $ mapM primeTest (take n primes)
+  print $ "Testing " ++ (show n) ++ " primes with improved code"
   print $ testRefactored
 
 testTime :: IO a -> IO (TimeSpec)
