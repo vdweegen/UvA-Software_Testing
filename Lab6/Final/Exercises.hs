@@ -105,6 +105,7 @@ doCalculation' fn bs es ms = do
 randomValues :: IO [Integer]
 randomValues = replicateM 10 randomInt
 
+randomInt :: IO Integer
 randomInt = do
     x <- randomRIO (400, 10000 :: Integer)
     return x
