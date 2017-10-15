@@ -1,11 +1,14 @@
 module Lab6 where
 
 import Lecture6
-import Test.QuickCheck
-import Data.Bits
 
+import Data.Bits
+import Data.Char
+import Data.List
+import Numeric
 import System.Clock
 import System.Random
+import Test.QuickCheck
 
 -- Define Main --
 main = do
@@ -57,7 +60,6 @@ prop_exm (Positive b, Positive e, Positive m) = exM' b e m == expM b e m
 -- =============================================================================
 -- Exercise 2 :: Time spent: +- 3 hours
 --
--- Note: In order to correctly profile the function, execute :set +r on the commandline, to disable caching
 -- Initial attempt:
 -- Original code 100000 primes: TimeSpec {sec = 48, nsec = 252859097}
 -- Improved code 100000 primes: TimeSpec {sec = 44, nsec = 955916568}
@@ -115,6 +117,7 @@ exercise2 = do
   print $ "Testing " ++ (show n) ++ " primes with improved code"
   print $ testRefactored
 
+-- | Profile execution time of f
 testTime :: IO a -> IO (TimeSpec)
 testTime f = do
   start <- getTime Monotonic
@@ -180,7 +183,67 @@ exercise62 = do
   print()
 
 -- =============================================================================
--- Exercise 7 :: Time spent: +-
+-- Exercise 7 :: Time spent: +- 30 minutes on large prime generator
+-- Additional 2 hours on implementing and refactoring.
+-- First I wrote down all methods myself, to completely understand how it's working.
+-- Then refactored out the methods, replacing them by the ones provided in the lecture code
+-- How does it work:
+-- Encode a message to a single integer
+-- Find a (large prime pair) with equal bit size as this integer
+-- Anyone can encode the data using the public key, but only the keeper of the private key can decrypt
+-- When the single integer is encoded, the encoded value is sent to the private key keeper
+-- Only the recipient, knowing the private key, can decrypt this back to the original information.
 -- =============================================================================
 exercise7 = do
-  print()
+  let message = "Hello, World!"
+  putStrLn $"Encrypting a message: " ++ message
+  encryptionExample message
+
+-- | composes a message in one hexadeximal value
+composeMessage :: String -> Integer
+composeMessage msg = read $ "0x" ++ (concat $ [ showHex (ord a) ""| a <- msg]) :: Integer
+
+-- | decomposes message back to string
+decomposeMessage :: Integer -> String
+decomposeMessage n = convert (showHex n "")
+
+-- | Convert hex number to Ascii String
+convert :: String -> String
+convert [] = []
+convert (x1:x2:xs) = [(chr $ (read ("0x" ++ [x1] ++ [x2]) :: Int))] ++ convert xs
+
+-- | Encrypt and decrypt a message
+encryptionExample :: String -> IO()
+encryptionExample str = do
+  let inputNumber = composeMessage str
+  putStrLn $ "Composed message to single hex number: " ++ (show inputNumber)
+  (p,q) <- largePrimePair $ Lab6.bitSize inputNumber
+  let encrypted = rsaEncode (rsaPublic p q) inputNumber
+  putStrLn $ "Encrypted message: " ++ (show encrypted)
+  let decrypted = rsaDecode (rsaPrivate p q) encrypted
+  putStrLn $ "Received an encrypted message, decoding result in: " ++ (show decrypted)
+  putStrLn $ "Composed back to ASCII:" ++ decomposeMessage decrypted
+
+-- | returns a large prime pair based on the bit size
+largePrimePair :: Integer -> IO (Integer,Integer)
+largePrimePair n = do
+  a <- findPrime (2^n)
+  b <- findPrime (a+1)
+  return (a,b)
+
+-- | Bit size of an integer
+bitSize :: Integer -> Integer
+bitSize = genericLength . int2bin
+
+-- | Compose integer as list of bits [LSB .. MSB ]
+int2bin :: Integer -> [Integer]
+int2bin 0 = []
+int2bin n = (mod n 2) : (int2bin $ shiftR n 1)
+
+-- | Given a start value, finds the closest prime above
+findPrime :: Integer -> IO Integer
+findPrime val = do
+  prime <- primeMR 5 val
+  if prime
+  then return val
+  else findPrime (val+1)
