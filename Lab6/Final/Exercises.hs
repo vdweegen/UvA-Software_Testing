@@ -57,6 +57,7 @@ prop_exm (Positive b, Positive e, Positive m) = exM' b e m == expM b e m
 -- =============================================================================
 -- Exercise 2 :: Time spent: +- 3 hours
 --
+-- Note: In order to correctly profile the function, execute :set +r on the commandline, to disable caching
 -- Initial attempt:
 -- Original code 100000 primes: TimeSpec {sec = 48, nsec = 252859097}
 -- Improved code 100000 primes: TimeSpec {sec = 44, nsec = 955916568}
@@ -82,7 +83,6 @@ prop_exm (Positive b, Positive e, Positive m) = exM' b e m == expM b e m
 -- CAF          Lecture6      <entire-module>                     97.0   96.2
 -- getStdRandom System.Random System/Random.hs:(586,1)-(587,26)    2.4    2.8
 --
---
 --                                                                                          individual      inherited
 -- COST CENTRE   MODULE                SRC                               no.     entries  %time %alloc   %time %alloc
 --
@@ -105,14 +105,13 @@ prop_exm (Positive b, Positive e, Positive m) = exM' b e m == expM b e m
 -- Profiling results gave me a line that I needed to fix, which resulted into the
 -- following results:
 -- Improved code 100000 primes: TimeSpec {sec = 2, nsec = 651626570}
--- Note: In order to correctly profile the function, execute :set +r on the commandline, to disable caching
 -- =============================================================================
 exercise2 = do
   let n = 100000
-  testOriginal <- testTime $ mapM primeTestF (take n primes)
+  testOriginal <- testTime $ mapM primeTest (take n primes)
   print $ "Testing " ++ (show n) ++ " primes with original code"
   print $ testOriginal
-  testRefactored <- testTime $ mapM primeTest (take n primes)
+  testRefactored <- testTime $ mapM primeTestF (take n primes)
   print $ "Testing " ++ (show n) ++ " primes with improved code"
   print $ testRefactored
 
@@ -123,11 +122,11 @@ testTime f = do
   end <- getTime Monotonic
   return (diffTimeSpec start end)
 
--- Modified version from Lecture6.hs
+-- | Uses the expM, instead of the exM
 primeTest :: Integer -> IO Bool
 primeTest n = do
    a <- randomRIO (2, n-1) :: IO Integer
-   return $ (exM a (n-1) n) == 1
+   return $ (expM a (n-1) n) == 1
 
 -- =============================================================================
 -- Exercise 3 :: Time spent: +-
