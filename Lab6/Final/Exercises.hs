@@ -1,6 +1,8 @@
 module Lab6 where
 
 import Lecture6
+import Test.QuickCheck
+import Data.Bits
 
 -- Define Main --
 main = do
@@ -36,7 +38,7 @@ main = do
 exercise1 = do
   putStrLn $ "checking example. 3^200 mod 50: " ++ (show $ exM 3 200 50)
   putStrLn $ "compare expM and exM. result equal: " ++ (show $ (exM 3 200 50) == (expM 3 200 50))
-
+  quickCheck prop_exm
 
 -- | Copied implementation from exM in the lecture.hs
 exM' :: Integer -> Integer -> Integer -> Integer
@@ -44,6 +46,9 @@ exM' b 1 m = b `mod` m
 exM' b e m | even e = squaredMod 1
            | odd e = squaredMod b
             where squaredMod v = v * (exM' b (e `shiftR` 1) m) ^ 2 `mod` m
+
+prop_exm :: (Positive Integer, Positive Integer, Positive Integer) -> Bool
+prop_exm (Positive a, Positive b, Positive c) = exM' a b c == expM a b c
 
 -- =============================================================================
 -- Exercise 2 :: Time spent: +-

@@ -113,9 +113,9 @@ expM x y = rem (x^y)
 
 exM :: Integer -> Integer -> Integer -> Integer
 exM b 1 m = b `mod` m
-exM b e m | even e = bla
-          | odd  e = b * bla
-          where bla = (exM b (e `shiftR` 1) m) ^ 2 `mod m`
+exM b e m | even e = squaredMod 1
+           | odd e = squaredMod b
+            where squaredMod v = v * (exM' b (e `shiftR` 1) m) ^ 2 `mod` m
 
 primeTestF :: Integer -> IO Bool
 primeTestF n = do
