@@ -114,20 +114,28 @@ composites' = filter (not.prime) [4..]
 -- takes a lot longer and got as low as 15 in one test.
 -- =============================================================================
 exercise4 = do
-  k1 <- testFer (testFermatKn 1)
-  k2 <- testFer (testFermatKn 2)
-  k3 <- testFer (testFermatKn 3)
+  k1Small <- testFer (testFermatKn 1)
+  k2Small <- testFer (testFermatKn 2)
+  k3Small <- testFer (testFermatKn 3)
+
   putStrLn " Exercise 4: Smallest composite number that passes Fermat test"
   putStrLn " K = 1 "
-  print k1
+  print k1Small
   putStrLn " K = 2 "
-  print k2
+  print k2Small
   putStrLn " K = 3 "
-  print k3
+  print k3Small
   
-testFer tk = do
-  x <- replicateM  1 tk
-  let sorted = sort x 
+testFer x =  testFerAvg x
+
+testFerAvg tk = do
+  x <- replicateM 10 tk
+  let sorted = (sum x) `div` 10
+  return $  sorted
+
+testFerSmall tk = do
+  x <- replicateM 10 tk
+  let sorted = sort x
   return $ head sorted
 
 testFermatKn n= foolFermat' n composites
