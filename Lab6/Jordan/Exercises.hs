@@ -186,7 +186,6 @@ testMR k (x:xs) = do
 -- I manage to get to 607 easily but then the program hangs.
 -- =============================================================================
 exercise62 = do
-  let mp =  take 8 [x | x <- primes, prime ((2^x)-1)]
   filterM ((primeMR 1).(\x -> ((2^x) - 1 ))) $ take 150 primes
     
 -- =============================================================================
