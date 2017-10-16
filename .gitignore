@@ -1,12 +1,6 @@
-# Created by .ignore support plugin (hsz.mobi)
-.idea
-Lab1/.DS_Store
-.DS_Store
-*.hi
-*.o
-Lab2/Bauke/ScratchPad.hs
-Lab3/Bauke/Scratchpad.hs
-Lab4/Bauke/ScratchPad.hs
-Lab4/Bauke/Workshop.hs
-Lab4/Bauke/Chapter4.hs
-Lab4/Bauke/Chapter5.hs
+**.idea
+**.DS_Store
+**.hi
+**.prof
+**.o
+**.ScratchPad.hs
