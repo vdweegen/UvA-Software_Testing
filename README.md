@@ -17,4 +17,5 @@ Repository for the course 'Software Testing' at the 'Universiteit van Amsterdam'
   - Lab3: 10.55
   - Lab4:  8.75
   - Lab5: 10.6
-  - Lab6: TBD
+  - Lab6: 8
+  - Average: 9.164880952
