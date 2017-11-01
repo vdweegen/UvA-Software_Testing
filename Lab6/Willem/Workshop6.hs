@@ -1,6 +1,10 @@
 module Workshop6 where
 import Data.Char
 import Data.List
+import Data.List
+import Test.QuickCheck
+import System.Random
+import Control.Monad
 
 data Blt a = Leaf a | Node (Blt a) (Blt a) deriving (Eq,Show)
 
@@ -37,6 +41,10 @@ depth :: Tree a -> Int
 depth (T _ []) = 0
 depth (T _ ts) = foldl max 0 (map depth ts) + 1
 
+depthR :: Tree a -> Int
+depthR (T _ []) = 0
+depthR (T _ ts) = 1 + maximum (map depthR ts)
+
 mapT :: (a -> b) -> Tree a -> Tree b
 mapT f (T n []) = T (f n) []
 mapT f (T n ts) = T (f n) (map (mapT f) ts)
@@ -47,7 +55,7 @@ example2MapT = mapT succ example2
 
 collect :: Tree a -> [a]
 collect (T n []) = [n]
-collect (T n ts) = n : (concatMap collect ts)
+collect (T n ts) = n : (concatMap Workshop6.collect ts)
 
 foldT :: (a -> [b] -> b) -> Tree a -> b
 foldT f (T x ts) = f x (map (foldT f) ts)
@@ -56,21 +64,19 @@ count' :: Tree a -> Int
 count' = foldT (\_ ts -> 1 + sum ts)
 
 depth' :: Tree a -> Int
-depth' ts = foldT (\_ xs -> foldl max 0 xs + 1) ts - 1
+depth' =  minus1 . (foldT (\_ xs -> 1 + foldl max 0 xs))
+
+depth'' :: Tree a -> Int
+depth''  = foldT (\_ xs -> max 0 (foldr (max.(+1)) 0 xs))
+
+minus1 :: Integer -> Int
+minus1 a = fromIntegral(a - 1)
 
 collect' :: Tree a -> [a]
-collect' ts = error ""
+collect' = foldT (\t ts -> t : concat ts)
 
 mapT' :: (a -> b) -> Tree a -> Tree b
-mapT' f xs = foldT (fts) xs
-
-
-fts :: a -> [b] -> b
-fts = error ""
---map f = foldr ((:).f) []
---map' f = foldr (\x xs -> f x : xs) []
---filter' p = foldr (\x xs -> if p x then x : xs else xs) []
-
+mapT' f = foldT (\t ts -> T (f t) ts)
 
 grow :: (node -> [node]) -> node -> Tree node
 grow step seed = T seed (map (grow step) (step seed))
@@ -84,4 +90,14 @@ takeT = error "not yet implemented"
 tree n = grow (f n) (1,1)
 f n = \ (x,y) -> if x+y <= n then [(x+y,x),(x,x+y)] else []
 
-instance Arbitrary a => Arbitrary (Tree a)
+instance (Arbitrary a, Num a) => Arbitrary (Tree a) where
+  arbitrary = sized $ \n -> do
+     k <- choose (0, n)
+     t <- arbitrary
+     ts <- sequence [arbitrary | _ <- [0..k `div` 8]]
+     return (T t (drop 1 ts))
+
+  shrink (T t ts) = T t `liftM` shrink ts
+
+prop_depth :: Tree Int -> Bool
+prop_depth t = depth t == depth' t
